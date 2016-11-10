@@ -132,12 +132,12 @@ class Domain(abstract.Item):
 
         if recursive:
             reader = ldap3.Reader(self._conn, self._userdef, self._base, query)
-            user_entries = reader.search_subtree(ldap3.ALL_ATTRIBUTES)
+            user_entries = reader.search_subtree(user.User.USED_LDAP_ATTRS)
 
         else:
             reader = ldap3.Reader(self._conn, self._userdef,
                                   'CN=Users,' + self._base, query)
-            user_entries = reader.search_level(ldap3.ALL_ATTRIBUTES)
+            user_entries = reader.search_level(user.User.USED_LDAP_ATTRS)
 
         for user_entry in user_entries:
             if not user_entry:
@@ -154,12 +154,12 @@ class Domain(abstract.Item):
         if recursive:
             reader = ldap3.Reader(self._conn, self._groupdef, self._base,
                                   query)
-            group_entries = reader.search_subtree(ldap3.ALL_ATTRIBUTES)
+            group_entries = reader.search_subtree(group.Group.USED_LDAP_ATTRS)
 
         else:
             reader = ldap3.Reader(self._conn, self._groupdef,
                                   'CN=Users,' + self._base, query)
-            group_entries = reader.search_level()
+            group_entries = reader.search_level(group.Group.USED_LDAP_ATTRS)
 
         for group_entry in group_entries:
             if not (group_entry and self._is_user_group(group_entry.entry_dn)):

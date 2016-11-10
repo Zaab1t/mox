@@ -14,6 +14,17 @@ class User(abstract.Item):
 
     moxtype = 'Bruger'
 
+    USED_LDAP_ATTRS = (
+        'accountExpires',
+        'cn',
+        'description',
+        'objectGuid',
+        'sAMAccountName',
+        'userAccountControl',
+        'userPrincipalName',
+        'whenChanged',
+    )
+
     def data(self):
         # userAccountControl is a bitfield, containing the 'account is
         # disabled' field, among others

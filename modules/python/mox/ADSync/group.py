@@ -17,6 +17,15 @@ class Group(abstract.Item):
 
     moxtype = 'OrganisationFunktion'
 
+    USED_LDAP_ATTRS = (
+        'cn',
+        'description',
+        'name',
+        'objectGuid',
+        'sAMAccountName',
+        'whenChanged',
+    )
+
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)
 
