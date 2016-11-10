@@ -24,17 +24,19 @@ class Lora(object):
         Klassifikation
     ]
 
-    def __init__(self, host, username, password):
+    def __init__(self, host, username, password, verbose=False):
         """ Args:
         host:   string - the hostname of the LoRa instance
         username:   string - the username to authenticate as
         password:   string - the corresponding password
+        verbose:   boolean - set to true to enable logging
         """
         self.host = host
 
         self.username = username
         self.password = password
         self.obtain_token()
+        self._verbose = verbose
         self.object_map = {
             cls.ENTITY_CLASS: cls for cls in self.objecttypes
         }
@@ -45,6 +47,13 @@ class Lora(object):
 
     def __str__(self):
         return 'Lora: %s' % (self.host)
+
+    def log(self, *args):
+        if self._verbose:
+            print(*args)
+
+    def log_error(self, *args):
+        print(*args)
 
     def obtain_token(self):
         response = requests.post(
@@ -108,8 +117,7 @@ class Lora(object):
             objecttype = [objecttype]
 
         for otype in objecttype:
-
-            print "get object of type %s" % otype
+            self.log("get object of type %s" % otype)
 
             try:
                 otypeobj = self.object_map[otype]
@@ -120,10 +128,10 @@ class Lora(object):
             try:
                 item.load()
             except ItemNotFoundException:
-                # print "It's not a %s" % otype
+                # self.log("It's not a %s" % otype)
                 continue
 
             if refresh_cache:
                 self.all_items[uuid] = item
             return item
-        print "Object %s not found" % uuid
+        self.log("Object %s not found" % uuid)

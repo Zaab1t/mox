@@ -61,20 +61,20 @@ class OIOEntity(object):
 
     def load(self):
         self._loading = True
-        # print "Load %s" % self.path
+        # self.lora.log("Load %s" % self.path)
         response = self.lora.request(self.lora.host + self.path, headers=self.get_headers())
         if response.status_code == 200:
             jsondata = json.loads(response.text)
             if jsondata[self.id] is None:
                 raise ItemNotFoundException(self.id, self.ENTITY_CLASS, self.path)
-            print "Load %s" % self.path
+            self.lora.log("Load %s" % self.path)
             self.json = jsondata[self.id][0]
             self.parse_json()
             self.loaded()
         elif response.status_code == 404:
             raise ItemNotFoundException(self.id, self.ENTITY_CLASS, self.path)
         else:
-            print "got error %d" % response.status_code
+            self.lora.log_error("got error %d" % response.status_code)
             pass
 
     def parse_json(self):
