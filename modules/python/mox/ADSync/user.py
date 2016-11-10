@@ -14,17 +14,16 @@ class User(abstract.Item):
 
     moxtype = 'Bruger'
 
-    def dirty(self, lora):
-        raise NotImplementedError
-
     def data(self):
         # userAccountControl is a bitfield, containing the 'account is
         # disabled' field, among others
         disabled = bool(self.entry.userAccountControl.value & 2)
 
-        parentdn = self.parent.entry.distinguishedName
+        parent_dn = self.parent.entry.entry_dn
+        parent_uuid = self.parent.entry.objectGuid.value
 
         return {
+            'note': self.entry.description.value,
             'attributter': {
                 'brugeregenskaber': [
                     {
@@ -37,8 +36,6 @@ class User(abstract.Item):
                     },
                 ],
             },
-            'note':
-                self.entry.self.entry_attributes_as_dict.get('description'),
             'tilstande': {
                 'brugergyldighed': [
                     {
@@ -60,18 +57,18 @@ class User(abstract.Item):
 
                 'tilknyttedeenheder': [
                     {
-                        'uuid': orgunits[parentdn].objectGuid.value,
+                        'uuid': parent_uuid,
                         'virkning': util.virkning(self.entry.whenChanged,
                                                   self.entry.accountExpires),
                     }
-                ] if parentdn.startswith('OU=') else [],
+                ] if parent_dn.startswith('OU=') else [],
 
                 'tilknyttedeorganisationer': [
                     {
-                        'uuid': domains[parentdn].objectGuid.value,
+                        'uuid': parent_uuid,
                         'virkning': util.virkning(self.entry.whenChanged,
                                                   self.entry.accountExpires),
                     }
-                ] if parentdn.startswith('DC=') else [],
+                ] if parent_dn.startswith('DC=') else [],
             },
         }

@@ -45,7 +45,7 @@ for group in domain.groups():
     else:
         print('up-to-date!')
 
-for user in domain.groups():
+for user in domain.users():
     print('processing user {}...'.format(user.name))
 
     if user.dirty(lora):

@@ -132,7 +132,7 @@ class Domain(abstract.Item):
 
         if recursive:
             reader = ldap3.Reader(self._conn, self._userdef, self._base, query)
-            user_entries = reader.search_subtree()
+            user_entries = reader.search_subtree(ldap3.ALL_ATTRIBUTES)
 
         else:
             reader = ldap3.Reader(self._conn, self._userdef,
@@ -140,6 +140,8 @@ class Domain(abstract.Item):
             user_entries = reader.search_level(ldap3.ALL_ATTRIBUTES)
 
         for user_entry in user_entries:
+            if not user_entry:
+                continue
             yield user.User(self, user_entry)
 
     def groups(self, recursive=True):
