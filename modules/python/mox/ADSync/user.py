@@ -18,6 +18,7 @@ class User(abstract.Item):
         'accountExpires',
         'cn',
         'description',
+        'name',
         'objectGuid',
         'sAMAccountName',
         'userAccountControl',

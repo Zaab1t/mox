@@ -14,10 +14,19 @@ class Item(object):
 
     moxtype = None
 
+    USED_LDAP_ATTRS = None
+
     def __init__(self, parent, entry, uuid=None):
         self._parent = parent
         self._entry = entry
         self._uuid = uuid
+
+    def __str__(self):
+        return "{} {!r} <{}>".format(
+            type(self).__name__,
+            self.name.encode('utf-8'),
+            self.uuid,
+        )
 
     @property
     def entry(self):
@@ -25,7 +34,7 @@ class Item(object):
 
     @property
     def name(self):
-        return self._entry.cn
+        return self._entry.name.value or self._entry.description.value
 
     @property
     def parent(self):

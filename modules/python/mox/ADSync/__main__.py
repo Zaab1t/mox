@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import, unicode_literals
 
+import itertools
 import json
 import os
 
@@ -29,27 +30,12 @@ print('making domain...')
 domain = domain.Domain(adcfg['domain'], adcfg['host'],
                        adcfg['user'], adcfg['password'])
 
-print('processing domain {}...'.format(adcfg['domain']))
-if domain.dirty(lora):
-    domain.save_to(lora)
-    print('saved!')
-else:
-    print('up-to-date!')
+for unit in domain.all_units():
+    for obj in itertools.chain([unit], unit.groups(), unit.users()):
+        print('checking {}...'.format(obj))
 
-for group in domain.groups():
-    print('processing group {}...'.format(group.name))
-
-    if group.dirty(lora):
-        group.save_to(lora)
-        print('saved!')
-    else:
-        print('up-to-date!')
-
-for user in domain.users():
-    print('processing user {}...'.format(user.name))
-
-    if user.dirty(lora):
-        user.save_to(lora)
-        print('saved!')
-    else:
-        print('up-to-date!')
+        if obj.dirty(lora):
+            obj.save_to(lora)
+            print('saved!')
+        else:
+            print('up-to-date!')
