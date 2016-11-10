@@ -42,6 +42,32 @@ class Lora(object):
     def __str__(self):
         return 'Lora: %s' % (self.host)
 
+    @staticmethod
+    def __check_uuid(uuid):
+        try:
+            UUID(uuid)
+        except ValueError:
+            raise InvalidUUIDException(uuid)
+
+    @staticmethod
+    def __check_response(response):
+        if response:
+            return
+
+        try:
+            msg = response.json()["message"]
+        except:
+            try:
+                msg = response.text
+            except:
+                raise
+            msg = '{} {}'.format(response.status_code, response.reason)
+
+        if isinstance(msg, unicode):
+            msg = msg.encode("utf-8")
+
+        raise RestAccessException(msg)
+
     def log(self, *args):
         if self._verbose:
             print(*args)
@@ -97,13 +123,7 @@ class Lora(object):
             self.get_object(guid, objecttype, True, True)
 
     def get_object(self, uuid, objecttype=None, force_refresh=False, refresh_cache=True):
-        try:
-            UUID(uuid)
-        except ValueError:
-            raise InvalidUUIDException(uuid)
-
-        if uuid in self.all_items and not force_refresh:
-            return self.all_items[uuid]
+        self.__check_uuid(uuid)
 
         if objecttype is None:
             objecttype = self.object_map.keys()
@@ -129,3 +149,40 @@ class Lora(object):
                 self.all_items[uuid] = item
             return item
         self.log("Object %s not found" % uuid)
+
+    def import_object(self, uuid, objecttype, **kwargs):
+        '''import an object with the given UUID into the database
+        '''
+        self.__check_uuid(uuid)
+
+        objcls = self.object_map[objecttype]
+        path = '/'.join((objcls.basepath, uuid))
+
+        self.log('Import {}'.format(path))
+
+        response = self.request(self.host + path, method='PUT', **kwargs)
+
+        self.__check_response(response)
+
+        # always invalidate the cache
+        try:
+            del self.all_items[uuid]
+        except KeyError:
+            pass
+
+        return response.json()['uuid']
+
+    def create_object(self, objecttype, **kwargs):
+        '''import an object with the given UUID into the database
+        '''
+
+        objcls = self.object_map[objecttype]
+        path = '/' + objcls.basepath
+
+        self.log('Create {}'.format(path))
+
+        response = self.request(self.host + path, method='POST', **kwargs)
+
+        self.__check_response(response)
+
+        return response.json()['uuid']
