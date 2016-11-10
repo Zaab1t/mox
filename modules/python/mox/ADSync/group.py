@@ -26,11 +26,8 @@ class Group(abstract.Item):
         'whenChanged',
     )
 
-    def __init__(self, *args, **kwargs):
-        super(Group, self).__init__(*args, **kwargs)
-
     def get_class(self, lora):
-        if not getattr(self, '._class_id', None):
+        if not getattr(self, '_class_id', None):
             self.load_from(lora)
 
         return GroupClass(self.parent, self.entry, self._class_id)
@@ -41,7 +38,7 @@ class Group(abstract.Item):
 
         if orgfunktion and opgaver:
             assert len(opgaver) == 1
-            self._class_id = opgaver[0]['uuid']
+            self._class_id = opgaver[0].item.id
         else:
             self._class_id = str(uuid.uuid4())
 
@@ -50,6 +47,10 @@ class Group(abstract.Item):
     def save_to(self, lora):
         self.get_class(lora).save_to(lora)
         super(Group, self).save_to(lora)
+
+    def dirty(self, lora):
+        return (super(Group, self).dirty(lora) or
+                self.get_class(lora).dirty(lora))
 
     def data(self):
         assert getattr(self, '_class_id', None), 'class id undetermined!'
