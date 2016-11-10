@@ -20,7 +20,8 @@ class OIOEntity(object):
 
     ENTITY_CLASS = "OIOEntity"
     EGENSKABER_KEY = 'egenskaber'
-    GYLDIGHED_KEY = 'gyldighed'
+    GYLDIGHED_KEY = None
+    PUBLICERET_KEY = None
 
     egenskaber_keys = ['brugervendtnoegle']
     name_key = 'brugervendtnoegle'
@@ -138,7 +139,6 @@ class OIORegistrering(object):
         self.json = data
         self.registrering_number = registrering_number
         self.attributter = {}
-        self.tilstande = {}
         self.note = data.get('note')
         self.livscykluskode = data['livscykluskode']
         from_time = data.get('fratidspunkt',{}).get('tidsstempeldatotid')
@@ -149,9 +149,14 @@ class OIORegistrering(object):
             self.to_time = parse_time(to_time)
         # self.created_by = Bruger(self.lora, data['brugerref'])
 
-        self.gyldigheder = OIOGyldighedContainer.from_json(
-            self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
-        )
+        if self.entity.GYLDIGHED_KEY:
+            self.gyldigheder = OIOGyldighedContainer.from_json(
+                self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
+            )
+        if self.entity.PUBLICERET_KEY:
+            self.publiceret = OIOPubliceretContainer.from_json(
+                self, self.json['tilstande'][self.entity.PUBLICERET_KEY]
+            )
         self._relationer = OIORelationContainer.from_json(
             self, self.json.get('relationer', [])
         )

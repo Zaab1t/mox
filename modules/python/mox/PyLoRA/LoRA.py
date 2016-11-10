@@ -1,28 +1,22 @@
 from __future__ import print_function
 
+import itertools
 import requests
 import json
 from uuid import UUID
 from PyOIO.OIOCommon.entity import OIOEntity
-from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion
-from PyOIO.klassifikation import Facet, Klasse, Klassifikation
+from PyOIO import organisation, klassifikation
 from PyOIO.OIOCommon.exceptions import InvalidUUIDException, InvalidObjectTypeException, TokenException, ItemNotFoundException, RestAccessException
 import pylru
 
 class Lora(object):
     """A Lora object represents a single running instance of the LoRa service.
     """
-    objecttypes = [
-        Bruger,
-        Interessefaellesskab,
-        ItSystem,
-        Organisation,
-        OrganisationEnhed,
-        OrganisationFunktion,
-        Facet,
-        Klasse,
-        Klassifikation
-    ]
+    objecttypes = list(
+        val for val in itertools.chain(vars(organisation).itervalues(),
+                                       vars(klassifikation).itervalues())
+        if isinstance(val, type) and issubclass(val, OIOEntity)
+    )
 
     def __init__(self, host, username, password, verbose=False):
         """ Args:
