@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from PyOIO.OIOCommon.util import parse_time
+from .util import parse_time
 
 class Virkning(object):
     """ Virkning is a fairly broadly used class. Its purpose when attached to

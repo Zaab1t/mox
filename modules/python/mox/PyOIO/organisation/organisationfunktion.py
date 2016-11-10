@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from PyOIO.OIOCommon import OIOEntity
 
 

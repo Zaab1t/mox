@@ -78,7 +78,7 @@ class OIOEntity(object):
             pass
 
     def parse_json(self):
-        if 'registreringer' not in self.json or len(self.json.get('registreringer')) == 0:
+        if len(self.json.get('registreringer', [])) == 0:
             raise InvalidOIOException("Item %s has no registreringer" % self.id)
         self.registreringer = []
         for index, registrering in enumerate(self.json['registreringer']):
@@ -153,10 +153,11 @@ class OIORegistrering(object):
             self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
         )
         self._relationer = OIORelationContainer.from_json(
-            self, self.json['relationer']
+            self, self.json.get('relationer', [])
         )
         self.egenskaber = OIOEgenskabContainer.from_json(
-            self, self.json['attributter'][self.entity.EGENSKABER_KEY], self.entity._egenskab_class
+            self, self.json.get('attributter')[self.entity.EGENSKABER_KEY],
+            self.entity._egenskab_class
         )
 
 

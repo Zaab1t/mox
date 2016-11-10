@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import print_function
 
 import requests
 import json
@@ -111,10 +111,12 @@ class Lora(object):
 
             print "get object of type %s" % otype
 
-            if otype not in self.object_map.keys():
+            try:
+                otypeobj = self.object_map[otype]
+            except KeyError:
                 raise InvalidObjectTypeException(otype)
 
-            item = self.object_map[otype](self, uuid)
+            item = otypeobj(self, uuid)
             try:
                 item.load()
             except ItemNotFoundException:
