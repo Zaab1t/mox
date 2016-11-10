@@ -7,6 +7,7 @@ from PyOIO.OIOCommon.util import parse_time
 from PyOIO.OIOCommon.exceptions import ItemNotFoundException, InvalidOIOException
 
 from PyOIO.OIOCommon.gyldighed import OIOGyldighedContainer
+from PyOIO.OIOCommon.publiceret import OIOPubliceretContainer
 from PyOIO.OIOCommon.relation import OIORelationContainer
 from PyOIO.OIOCommon.egenskab import OIOEgenskabContainer, OIOEgenskab
 
