@@ -29,8 +29,16 @@ class TokenException(Exception):
 
 
 class ItemNotFoundException(Exception):
-    def __init__(self, uuid, objecttype, url):
-        super(ItemNotFoundException, self).__init__("Item %s not found as a %s (tried %s)" % (uuid, objecttype, url))
+    def __init__(self, uuid, objecttype, url=None):
+        if not isinstance(objecttype, basestring):
+            objecttype = ', '.join(objecttype)
+
+        msg = "Item %s not found as a %s" % (uuid, objecttype)
+
+        if url:
+            msg += " (tried %s)" % (url,)
+
+        super(ItemNotFoundException, self).__init__(msg)
 
 
 class RestAccessException(Exception):

@@ -130,6 +130,14 @@ class Lora(object):
         elif type(objecttype) != list:
             objecttype = [objecttype]
 
+        item = self.all_items.get(uuid, None)
+        if item and not force_refresh:
+            if not isinstance(item, tuple(self.object_map[otype]
+                                          for otype in objecttype)):
+                raise ItemNotFoundException(uuid, objecttype)
+
+            return self.all_items[uuid]
+
         for otype in objecttype:
             self.log("get object of type %s" % otype)
 
