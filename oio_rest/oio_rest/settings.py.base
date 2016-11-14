@@ -6,6 +6,7 @@ BASE_URL = ''
 DATABASE = 'mox'
 DB_USER = 'mox'
 DB_PASSWORD = 'mox'
+DB_HOST = 'localhost'
 
 # This is where file uploads are stored. It must be readable and writable by
 # the mox user, running the REST API server. This is used in the Dokument
