@@ -1,12 +1,14 @@
+import os
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
 
-activate_this = '/srv/mox/oio_rest/python-env/bin/activate_this.py'
-execfile(activate_this, dict(__file__=activate_this))
+if os.getenv('NO_VENV') != '1':
+    activate_this = '/srv/mox/oio_rest/python-env/bin/activate_this.py'
+    execfile(activate_this, dict(__file__=activate_this))
 
+    sys.path.append('/srv/mox/oio_rest')
 
-sys.path.append('/srv/mox/oio_rest')
 from oio_rest.settings import BASE_URL
 from oio_rest.klassifikation import KlassifikationsHierarki
 from oio_rest.organisation import OrganisationsHierarki
