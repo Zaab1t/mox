@@ -81,35 +81,35 @@ class OrgUnit(abstract.Item):
 
     def data(self):
         relations = {
-            'tilhoerer': [
+            'tilknyttedeenheder': [
+                {
+                    'uuid': subunit_id,
+                    'virkning': util.virkning(self.entry.whenChanged),
+                }
+                for subunit_id in self.units('objectGuid')
+            ],
+            'tilknyttedefunktioner': [
+                {
+                    'uuid': group_id,
+                    'virkning': util.virkning(self.entry.whenChanged),
+                }
+                for group_id in self.groups('objectGuid')
+            ],
+            'tilknyttedebrugere': [
+                {
+                    'uuid': user_id,
+                    'virkning': util.virkning(self.entry.whenChanged),
+                }
+                for user_id in self.users('objectGuid')
+            ],
+        }
+
+        if self.domain != self:
+            relations['tilhoerer'] = [
                 {
                     'uuid': self.domain.uuid,
                     'virkning': util.virkning(self.entry.whenChanged),
                 },
-            ],
-            'tilknyttedeenheder': [
-                {
-                    'uuid': subunit.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
-                }
-                for subunit in self.units()
-            ],
-        }
-
-        if False:
-            relations['tilknyttedefunktioner'] = [
-                {
-                    'uuid': group.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
-                }
-                for group.entry.entry_dn in self.domain.groups()
-            ]
-            relations['tilknyttedebrugere'] = [
-                {
-                    'uuid': user.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
-                }
-                for user in self.users()
             ]
 
         if isinstance(self.parent, OrgUnit):
@@ -142,22 +142,26 @@ class OrgUnit(abstract.Item):
             'relationer': relations,
         }
 
-    def units(self, recurse=False):
+    def units(self, attr=None, recurse=False):
         query = (
             '(&(objectClass=organizationalUnit)(!(isCriticalSystemObject=*)))'
         )
 
         reader = ldap3.Reader(self.domain.connection, self.__orgunitdef,
                               self.search_base, query, sub_tree=recurse)
-        child_entries = reader.search(ldap3.ALL_ATTRIBUTES)
+        child_entries = reader.search(attr or
+                                      ldap3.ALL_ATTRIBUTES)
 
         for child_entry in child_entries:
             if not child_entry:
                 continue
 
-            yield OrgUnit(self, child_entry)
+            if attr:
+                yield child_entry[attr].value
+            else:
+                yield OrgUnit(self, child_entry)
 
-    def groups(self):
+    def groups(self, attr=None):
         query = (
             '(&(sAMAccountType=268435456)'
             '(groupType:1.2.840.113556.1.4.803:=2147483648)'
@@ -166,21 +170,31 @@ class OrgUnit(abstract.Item):
 
         reader = ldap3.Reader(self.domain.connection, self.__groupdef,
                               self.user_search_base, query)
-        group_entries = reader.search_level(group.Group.USED_LDAP_ATTRS)
+        group_entries = reader.search_level(attr or
+                                            group.Group.USED_LDAP_ATTRS)
 
         for group_entry in group_entries:
             if not (group_entry and self._is_user_group(group_entry.entry_dn)):
                 continue
-            yield group.Group(self, group_entry)
 
-    def users(self):
+            if attr:
+                yield group_entry[attr].value
+            else:
+                yield group.Group(self, group_entry)
+
+    def users(self, attr=None):
         query = '(&(sAMAccountType=805306368)(!(isCriticalSystemObject=*)))'
 
         reader = ldap3.Reader(self.domain.connection, self.__userdef,
                               self.user_search_base, query)
-        user_entries = reader.search_level(user.User.USED_LDAP_ATTRS)
+        user_entries = reader.search_level(attr or
+                                           user.User.USED_LDAP_ATTRS)
 
         for user_entry in user_entries:
             if not user_entry:
                 continue
-            yield user.User(self, user_entry)
+
+            if attr:
+                yield user_entry[attr].value
+            else:
+                yield user.User(self, user_entry)

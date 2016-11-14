@@ -64,32 +64,35 @@ class Domain(orgunit.OrgUnit):
     def all_units(self):
         yield self
 
-        for unit in self.units(True):
+        for unit in self.units(recurse=True):
             yield unit
 
     def data(self):
         entry = self.entry
+        data = super(Domain, self).data()
+
         domainname = '.'.join(
             map(operator.itemgetter(1),
                 ldap3.utils.dn.parse_dn(self.entry.entry_dn))
         )
 
-        return {
-            'attributter': {
-                'organisationegenskaber': [
-                    {
-                        'organisationsnavn': entry.description.value,
-                        'brugervendtnoegle': domainname,
-                        'virkning': util.virkning(entry.whenChanged),
-                    },
-                ],
-            },
-            'tilstande': {
-                'organisationgyldighed': [
-                    {
-                        'gyldighed': 'Aktiv',
-                        'virkning': util.virkning(entry.whenChanged),
-                    },
-                ],
-            },
+        data['attributter'] = {
+            'organisationegenskaber': [
+                {
+                    'organisationsnavn': entry.description.value,
+                    'brugervendtnoegle': domainname,
+                    'virkning': util.virkning(entry.whenChanged),
+                },
+            ],
         }
+
+        data['tilstande'] = {
+            'organisationgyldighed': [
+                {
+                    'gyldighed': 'Aktiv',
+                    'virkning': util.virkning(entry.whenChanged),
+                },
+            ],
+        }
+
+        return data
