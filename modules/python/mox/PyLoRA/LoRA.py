@@ -29,6 +29,7 @@ class Lora(object):
 
         self.username = username
         self.password = password
+        self.session = requests.Session()
         self.obtain_token()
         self._verbose = verbose
         self.object_map = {
@@ -76,7 +77,7 @@ class Lora(object):
         print(*args)
 
     def obtain_token(self):
-        response = requests.post(
+        response = self.session.post(
             self.host + "/get-token",
             data={
                 'username': self.username,
@@ -90,22 +91,15 @@ class Lora(object):
             except ValueError:
                 errormessage = response.text
             raise TokenException(errormessage)
-        self.token = response.text
-
-    def get_headers(self):
-        return {'authorization': self.token}
+        self.session.headers['Authorization'] = response.text
 
     def request(self, url, method='GET', **kwargs):
         method = method.upper()
-        if 'headers' not in kwargs:
-            kwargs['headers'] = {}
-        kwargs['headers'].update(self.get_headers())
-        response = requests.request(method, url, **kwargs)
+        response = self.session.request(method, url, **kwargs)
         if response.status_code == 401:
             # Token may be expired. Get a new one and try again
             self.obtain_token()
-            kwargs['headers'].update(self.get_headers())
-            response = requests.request(method, url, **kwargs)
+            response = self.session.request(method, url, **kwargs)
             if response.status_code == 401:
                 # Failed with a new token. Bail
                 raise RestAccessException(response.text)
@@ -116,9 +110,8 @@ class Lora(object):
             objecttype = objecttype.ENTITY_CLASS
         objectclass = self.object_map[objecttype]
         url = self.host + objectclass.basepath + "?search"
-        response = self.request(url, headers=self.get_headers())
-        data = json.loads(response.text)
-        return data['results'][0]
+        response = self.request(url)
+        return response.json()['results'][0]
 
     def load_all_of_type(self, objecttype):
         if issubclass(objecttype, OIOEntity):

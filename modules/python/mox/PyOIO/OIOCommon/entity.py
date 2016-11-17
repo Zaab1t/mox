@@ -64,8 +64,8 @@ class OIOEntity(object):
     def load(self):
         self._loading = True
         # self.lora.log("Load %s" % self.path)
-        response = self.lora.request(self.lora.host + self.path, headers=self.get_headers())
-        if response.status_code == 200:
+        response = self.lora.request(self.lora.host + self.path)
+        if response.ok:
             jsondata = json.loads(response.text)
             if jsondata[self.id] is None:
                 raise ItemNotFoundException(self.id, self.ENTITY_CLASS, self.path)
@@ -76,8 +76,7 @@ class OIOEntity(object):
         elif response.status_code == 404:
             raise ItemNotFoundException(self.id, self.ENTITY_CLASS, self.path)
         else:
-            self.lora.log_error("got error %d" % response.status_code)
-            pass
+            reponse.raise_for_status()
 
     def parse_json(self):
         if len(self.json.get('registreringer', [])) == 0:
@@ -97,9 +96,6 @@ class OIOEntity(object):
         self._loaded = True
         self._loading = False
         self.sort_registreringer()
-
-    def get_headers(self):
-        return self.lora.get_headers()
 
     @requires_load
     def get_registrering(self, time):
