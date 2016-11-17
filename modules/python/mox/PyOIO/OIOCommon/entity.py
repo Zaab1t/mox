@@ -152,12 +152,13 @@ class OIORegistrering(object):
             self.to_time = parse_time(to_time)
         # self.created_by = Bruger(self.lora, data['brugerref'])
 
+
         if self.entity.GYLDIGHED_KEY:
             self.gyldigheder = OIOGyldighedContainer.from_json(
                 self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
             )
         if self.entity.PUBLICERET_KEY:
-            self.publiceret = OIOPubliceretContainer.from_json(
+            self.publiceringer = OIOPubliceretContainer.from_json(
                 self, self.json['tilstande'][self.entity.PUBLICERET_KEY]
             )
         self._relationer = OIORelationContainer.from_json(
@@ -167,7 +168,6 @@ class OIORegistrering(object):
             self, self.json.get('attributter')[self.entity.EGENSKABER_KEY],
             self.entity._egenskab_class
         )
-
 
     def __repr__(self):
         return '%sRegistrering("%s", %s)' % (self.entity.ENTITY_CLASS, self.entity.id, self.registrering_number)
@@ -183,16 +183,22 @@ class OIORegistrering(object):
         return self.from_time < time and time < self.to_time
 
     def get_gyldighed(self, time=None):
-        if time is None:
-            return self.gyldigheder.current.gyldighed
-        else:
-            gyldighed_items = self.gyldigheder.at(time)
-            if len(gyldighed_items):
-                return gyldighed_items[0]
+        gyldighed_items = self.gyldigheder.at(time) if time else self.gyldigheder.current
+        if len(gyldighed_items):
+            return gyldighed_items[0].gyldighed
 
     @property
     def gyldighed(self):
         return self.get_gyldighed()
+
+    def get_publiceret(self, time=None):
+        publiceret_items = self.publiceringer.at(time) if time else self.publiceringer.current
+        if len(publiceret_items):
+            return publiceret_items[0].publiceret
+
+    @property
+    def publiceret(self):
+        return self.get_publiceret()
 
     def get_egenskab(self, name, must_be_current=True):
         egenskaber = self.egenskaber.current if must_be_current else self.egenskaber
@@ -222,7 +228,7 @@ class OIORegistrering(object):
         return self.entity.after(self)
 
     def __getattr__(self, name):
-        if name in self.entity.relation_map.keys():
-            return getattr(self._relationer, name)
+        if name in self.entity.relation_keys:
+            return getattr(self._relationer, name, [])
         if name in self.entity.egenskaber_keys:
             return self.get_egenskab(name)

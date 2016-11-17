@@ -8,7 +8,8 @@ from agent.config import read_properties_files, MissingConfigKeyError
 from SeMaWi import Semawi
 from PyLoRA import Lora
 from PyOIO.OIOCommon.exceptions import InvalidOIOException
-from PyOIO.organisation import Bruger, ItSystem
+from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion
+from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 
 from jinja2 import Environment, PackageLoader
 from moxwiki.jinja2_override.silentundefined import SilentUndefined
@@ -19,9 +20,9 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 
 configfile = DIR + "/settings.conf"
 config = read_properties_files("/srv/mox/mox.conf", configfile)
-template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'), undefined=SilentUndefined)
+template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'), undefined=SilentUndefined, trim_blocks=True, lstrip_blocks=True)
 
-class MoxWiki(MessageListener):
+class MoxWiki(object):
 
     def __init__(self):
 
@@ -38,21 +39,25 @@ class MoxWiki(MessageListener):
             rest_host = config['moxwiki.rest.host']
             rest_username = config['moxwiki.rest.username']
             rest_password = config['moxwiki.rest.password']
+
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        # super(MoxWiki, self).__init__(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
+        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
+
+        # self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
+        # self.notification_listener.callback = self.callback
+        # self.notification_listener.run()
 
         self.semawi = Semawi(wiki_host, wiki_username, wiki_password)
         self.lora = Lora(rest_host, rest_username, rest_password)
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
-
-
     def test(self):
-        self.lora.load_all_of_type(ItSystem)
-        # print self.lora.all_items['1706778e-30ff-410a-ad31-a9bb14c6c2b5'].json
-        self.update('Itsystem', '1706778e-30ff-410a-ad31-a9bb14c6c2b5', True)
+        for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
+            uuids = self.lora.get_uuids_of_type(type)
+            for uuid in uuids:
+                item = self.lora.get_object(uuid, type.ENTITY_CLASS)
+                self.update(item.ENTITY_CLASS, uuid, True)
 
     def callback(self, channel, method, properties, body):
         message = NotificationMessage.parse(properties.headers, body)
@@ -92,18 +97,18 @@ class MoxWiki(MessageListener):
         template = template_environment.get_template("%s.txt" % objecttype)
         if template is None:
             raise TemplateNotFoundException("%s.txt" % objecttype)
-
         pagetext = template.render({'object': instance, 'begin': '{{', 'end': '}}'})
+        print pagename
         print pagetext
 
-        # if pagetext != page.text():
-        #    page.save(pagetext, summary="Imported from LoRA instance %s" % self.lora.host)
+        if pagetext != page.text():
+            page.save(pagetext, summary="Imported from LoRA instance %s" % self.lora.host)
 
     def delete(self, objecttype, objectid):
         instance = self.lora.get_object(objectid, objecttype)
         pagename = "%s_%s" % (instance.current.brugervendtnoegle, objectid)
-        #page = self.semawi.site.Pages[pagename]
-        #page.delete(reason="Deleted in LoRa instance %s" % self.lora.host)
+        page = self.semawi.site.Pages[pagename]
+        page.delete(reason="Deleted in LoRa instance %s" % self.lora.host)
 
 
 main = MoxWiki()

@@ -12,6 +12,10 @@ class OIOPubliceret(Item):
         else:
             raise InvalidOIOException('Invalid publiceret "%s"' % publiceret)
 
+    # @property
+    # def value(self):
+    #     return self.publiceret
+
     @staticmethod
     def from_json(registrering, json):
         return OIOPubliceret(registrering, json)
