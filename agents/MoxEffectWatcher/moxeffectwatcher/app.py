@@ -173,8 +173,8 @@ class MoxEffectWatcher(object):
         print "%s %s updates at %s" % (objecttype, uuid, time)
         obj = self.session.query(EffectBorder).filter_by(object_type=objecttype, uuid=uuid, time=time).first()
         if obj:
-            if obj.type != effect_type:
-                obj.type = effect_type
+            if obj.effect_type != effect_type:
+                obj.effect_type = effect_type
                 self.session.add(obj)
                 return True
         else:
