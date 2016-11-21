@@ -6,7 +6,7 @@ import pytz
 from datetime import datetime
 from dateutil import parser as dateparser
 
-from agent.amqpclient import MessageListener, CannotConnectException
+from agent.amqpclient import MessageListener, CannotConnectException, InvalidCredentialsException
 from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from SeMaWi import Semawi
@@ -58,8 +58,7 @@ class MoxWiki(object):
         try:
             self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
             self.notification_listener.callback = self.callback
-            self.notification_listener.run()
-        except CannotConnectException as e:
+        except [CannotConnectException, InvalidCredentialsException] as e:
             print "Warning: %s" % e
             print "Not listening to AMQP messages on this channel"
 
@@ -107,6 +106,10 @@ class MoxWiki(object):
         self.state['sync'][self.lora.host]['lastsync'] = newsync.isoformat()
         self.state_changed = True
         self.savestate()
+
+    # Blocks until KeyboardInterrupt
+    def listen(self):
+        self.notification_listener.run()
 
     def callback(self, channel, method, properties, body):
         message = NotificationMessage.parse(properties.headers, body)
@@ -171,3 +174,4 @@ class MoxWiki(object):
 
 main = MoxWiki()
 main.sync()
+main.listen()

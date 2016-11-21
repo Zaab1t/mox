@@ -12,9 +12,9 @@ DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 MOXDIR = os.path.abspath(DIR + "/../..")
 
 defaults = {
-    'amqp_host':"https://%s" % domain,
-    'rest_host':"https://%s" % domain,
-    'wiki_host':"https://%s" % domain
+    'amqp_host': domain,
+    'rest_host': "https://%s" % domain,
+    'wiki_host': "https://%s" % domain
 }
 
 parser = argparse.ArgumentParser(description='Install MoxWiki')
