@@ -26,6 +26,7 @@ setup(
         'pytz==2016.7',
         'jinja2==2.8',
         'pylru',
+        'pytz',
 
         # These are to satisfy the requests module with SSL support
         'pyOpenSSL',
