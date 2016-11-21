@@ -77,7 +77,7 @@ class MoxEffectWatcher(object):
         newsync = datetime.now(pytz.utc)
         # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
         for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
-            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time)
+            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
         for entity_class, type_uuids in uuids.items():
             for uuid in type_uuids:
                 item = self.lora.get_object(uuid, entity_class)
@@ -158,7 +158,7 @@ class MoxEffectWatcher(object):
 
     def store(self, objecttype, uuid, time, effect_type):
         time = time.astimezone(pytz.utc)
-        print time
+        print "%s %s updates at %s" % (objecttype, uuid, time)
         obj = self.session.query(EffectBorder).filter_by(object_type=objecttype, uuid=uuid, time=time).first()
         if obj:
             if obj.type != effect_type:
@@ -214,19 +214,17 @@ class MoxEffectWatcher(object):
     # A 'sleeper thread' runs, waiting for a specified time before emitting a notification and then exiting
     # Then the thread is recreated, waiting for another timespan, and so forth
     def restart_sleeper_thread(self):
-        print "starting sleeper thread"
         old_thread = self.sleeper_thread
         effectborders = self.get_next_borders()
         if len(effectborders) > 0:
             time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
             timediff = time - datetime.now(pytz.utc)
-            print "should wait for %d seconds" % timediff.total_seconds()
+            print "Next event occurs in %d seconds" % timediff.timediff.total_seconds()
             self.sleeper_thread = threading.Timer(timediff.total_seconds(), self.emit_message)
         else:
             self.sleeper_thread = threading.Timer(24*60*60, self.restart_sleeper_thread)
         self.sleeper_thread.start()
         if old_thread is not None:
-            print "stopping old sleeper thread"
             old_thread.cancel()
 
     # The thread waits until it's time to send a notification about an effect border
@@ -249,7 +247,6 @@ class MoxEffectWatcher(object):
     # we also join() that one
     def block_for_sleeperthread(self):
         while self.sleeper_thread is not None:
-            print "waiting for sleeper thread to end"
             try:
                 self.sleeper_thread.join()
             except:
