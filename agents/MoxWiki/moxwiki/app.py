@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import json
+import pytz
+from datetime import datetime
+from dateutil import parser as dateparser
 
 from agent.amqpclient import MessageListener
 from agent.message import NotificationMessage, EffectUpdateMessage
@@ -24,7 +28,13 @@ template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'),
 
 class MoxWiki(object):
 
+    statefile = DIR + "/state.json"
+    state = None
+    state_changed = False
+
     def __init__(self):
+
+        self.loadstate()
 
         try:
             wiki_host = config['moxwiki.wiki.host']
@@ -52,12 +62,47 @@ class MoxWiki(object):
         self.semawi = Semawi(wiki_host, wiki_username, wiki_password)
         self.lora = Lora(rest_host, rest_username, rest_password)
 
-    def test(self):
+    def loadstate(self):
+        try:
+            fp = open(self.statefile, 'r')
+            self.state = json.load(fp)
+            fp.close()
+        except:
+            self.state = {}
+        self.state_changed = False
+
+    def savestate(self):
+        if self.state_changed:
+            fp = open(self.statefile, 'w')
+            json.dump(self.state, fp, indent=2)
+            fp.close()
+            self.state_changed = False
+
+    def sync(self):
+
+        try:
+            lastsync = dateparser.parse(self.state['sync'][self.lora.host]['lastsync'])
+            print "last sync was %s" % unicode(lastsync)
+        except:
+            lastsync = None
+
+        uuids = {}
+        newsync = datetime.now(pytz.utc)
         for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
-            uuids = self.lora.get_uuids_of_type(type)
-            for uuid in uuids:
-                item = self.lora.get_object(uuid, type.ENTITY_CLASS)
+            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync)
+        print uuids
+        for entity_class, type_uuids in uuids.items():
+            for uuid in type_uuids:
+                item = self.lora.get_object(uuid, entity_class)
                 self.update(item.ENTITY_CLASS, uuid, True)
+
+        if not 'sync' in self.state:
+            self.state['sync'] = {}
+        if not self.lora.host in self.state['sync']:
+            self.state['sync'][self.lora.host] = {}
+        self.state['sync'][self.lora.host]['lastsync'] = newsync.isoformat()
+        self.state_changed = True
+        self.savestate()
 
     def callback(self, channel, method, properties, body):
         message = NotificationMessage.parse(properties.headers, body)
@@ -121,4 +166,4 @@ class MoxWiki(object):
 
 
 main = MoxWiki()
-main.test()
+main.sync()
