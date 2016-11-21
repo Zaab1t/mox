@@ -4,10 +4,10 @@ import argparse
 import os
 import sys
 import subprocess
-from socket import gethostname
+import socket
 from installutils import Config, VirtualEnv
 
-domain = gethostname()
+domain = socket.getfqdn(socket.gethostname())
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 MOXDIR = os.path.abspath(DIR + "/../..")
 
@@ -49,35 +49,20 @@ if created:
 
 configfile = DIR + "/moxeffectwatcher/settings.conf"
 
-config_map = {
-    'amqp_host': 'moxeffectwatcher.amqp.host',
-    'amqp_user': 'moxeffectwatcher.amqp.username',
-    'amqp_pass': 'moxeffectwatcher.amqp.password',
-    'amqp_queue_in': 'moxeffectwatcher.amqp.queue_in',
-    'amqp_queue_out': 'moxeffectwatcher.amqp.queue_out',
-    'rest_host': 'moxeffectwatcher.rest.host',
-    'rest_user': 'moxeffectwatcher.rest.username',
-    'rest_pass': 'moxeffectwatcher.rest.password'
-}
+config_map = [
+    ('amqp_host', 'moxeffectwatcher.amqp.host'),
+    ('amqp_user', 'moxeffectwatcher.amqp.username'),
+    ('amqp_pass', 'moxeffectwatcher.amqp.password'),
+    ('amqp_queue_in', 'moxeffectwatcher.amqp.queue_in'),
+    ('amqp_queue_out', 'moxeffectwatcher.amqp.queue_out'),
+    ('rest_host', 'moxeffectwatcher.rest.host'),
+    ('rest_user', 'moxeffectwatcher.rest.username'),
+    ('rest_pass', 'moxeffectwatcher.rest.password')
+]
 config = Config(configfile)
 
 print "\n"
-for (argkey, confkey) in sorted(config_map.iteritems()):
-    value = None
-    if hasattr(args, argkey):
-        value = getattr(args, argkey)
-    if value is None:
-        # Not good. We must have these values. Prompt the user
-        default = defaults.get(argkey)
-        if default is not None:
-            value = raw_input("%s = [%s] " % (confkey, default)).strip()
-            if len(value) == 0:
-                value = default
-        else:
-            value = raw_input("%s = " % confkey).strip()
-    else:
-        print "%s = %s" % (confkey, value)
-    config.set(confkey, value)
+config.prompt(config_map, args, defaults)
 
 config.save()
 
