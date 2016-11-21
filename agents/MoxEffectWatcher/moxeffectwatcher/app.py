@@ -89,7 +89,13 @@ class MoxEffectWatcher(object):
         self.end_session()
 
         if self.notification_listener:
-            self.notification_listener.run()
+            try:
+                self.notification_listener.run()
+            except KeyboardInterrupt:
+                try:
+                    self.sleeper_thread.cancel()
+                except:
+                    pass
         print "end of program"
 
     def begin_session(self):
@@ -155,6 +161,7 @@ class MoxEffectWatcher(object):
                 changed = True
         if changed:
             self.session.commit()
+            self.wait_for_next()
 
     def store(self, objecttype, uuid, time, effect_type):
         time = time.astimezone(pytz.utc)
@@ -213,16 +220,14 @@ class MoxEffectWatcher(object):
 
     # A 'sleeper thread' runs, waiting for a specified time before emitting a notification and then exiting
     # Then the thread is recreated, waiting for another timespan, and so forth
-    def restart_sleeper_thread(self):
+    def wait_for_next(self):
         old_thread = self.sleeper_thread
         effectborders = self.get_next_borders()
         if len(effectborders) > 0:
             time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
             timediff = time - datetime.now(pytz.utc)
-            print "Next event occurs in %d seconds" % timediff.timediff.total_seconds()
+            print "Next event occurs in %d seconds" % timediff.total_seconds()
             self.sleeper_thread = threading.Timer(timediff.total_seconds(), self.emit_message)
-        else:
-            self.sleeper_thread = threading.Timer(24*60*60, self.restart_sleeper_thread)
         self.sleeper_thread.start()
         if old_thread is not None:
             old_thread.cancel()
@@ -239,19 +244,8 @@ class MoxEffectWatcher(object):
             self.session.delete(effectborder)
         self.session.commit()
         print messages
-        self.restart_sleeper_thread()
+        self.wait_for_next()
         self.end_session()
-
-    # The main thread must in principle wait forever (until the process is killed)
-    # we join() the current sleeper thread, and because another is always ready to take over,
-    # we also join() that one
-    def block_for_sleeperthread(self):
-        while self.sleeper_thread is not None:
-            try:
-                self.sleeper_thread.join()
-            except:
-                self.sleeper_thread.cancel()
-                self.end_session()
 
 main = MoxEffectWatcher()
 main.start()
