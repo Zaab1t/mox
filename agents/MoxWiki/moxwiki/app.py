@@ -23,6 +23,7 @@ from moxwiki.exceptions import TemplateNotFoundException
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 configfile = DIR + "/settings.conf"
+statefile = DIR + "/state.json"
 config = read_properties_files("/srv/mox/mox.conf", configfile)
 template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'), undefined=SilentUndefined, trim_blocks=True, lstrip_blocks=True)
 
@@ -68,7 +69,7 @@ class MoxWiki(object):
 
     def loadstate(self):
         try:
-            fp = open(self.statefile, 'r')
+            fp = open(statefile, 'r')
             self.state = json.load(fp)
             fp.close()
         except:
@@ -77,7 +78,7 @@ class MoxWiki(object):
 
     def savestate(self):
         if self.state_changed:
-            fp = open(self.statefile, 'w')
+            fp = open(statefile, 'w')
             json.dump(self.state, fp, indent=2)
             fp.close()
             self.state_changed = False
