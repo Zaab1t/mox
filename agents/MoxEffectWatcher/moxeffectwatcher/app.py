@@ -82,7 +82,7 @@ class MoxEffectWatcher(object):
                 uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
             for entity_class, type_uuids in uuids.items():
                 for uuid in type_uuids:
-                    item = self.lora.get_object(uuid, entity_class)
+                    item = self.lora.get_object(uuid, entity_class, force_refresh=True)
                     self.update(item)
 
             self.session.add(Synchronization(host=self.lora.host, time=newsync))
@@ -105,12 +105,10 @@ class MoxEffectWatcher(object):
 
     def begin_session(self):
         if self.session is None:
-            print "starting session"
             self.session = self.sessionclass()
 
     def end_session(self):
         if self.session is not None:
-            print "ending session"
             self.session.close()
             self.session = None
 
@@ -122,7 +120,7 @@ class MoxEffectWatcher(object):
                 print "Object type '%s' accepted" % message.objecttype
                 self.begin_session()
                 try:
-                    item = self.lora.get_object(message.objectid, message.objecttype)
+                    item = self.lora.get_object(message.objectid, message.objecttype, force_refresh=True)
                     if message.lifecyclecode == 'Slettet':
                         print "lifecyclecode is '%s', performing delete" % message.lifecyclecode
                         self.delete(item)
