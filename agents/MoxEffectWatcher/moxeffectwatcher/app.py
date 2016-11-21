@@ -85,7 +85,7 @@ class MoxEffectWatcher(object):
 
         self.session.add(Synchronization(host=self.lora.host, time=newsync))
 
-        self.restart_sleeper_thread()
+        self.wait_for_next()
         self.end_session()
 
         if self.notification_listener:
@@ -126,7 +126,7 @@ class MoxEffectWatcher(object):
                         self.update(item)
                 except InvalidOIOException as e:
                     print e
-                self.restart_sleeper_thread()
+                self.wait_for_next()
                 self.end_session()
             else:
                 print "Object type '%s' rejected" % message.objecttype
@@ -221,7 +221,6 @@ class MoxEffectWatcher(object):
     # A 'sleeper thread' runs, waiting for a specified time before emitting a notification and then exiting
     # Then the thread is recreated, waiting for another timespan, and so forth
     def wait_for_next(self):
-        old_thread = self.sleeper_thread
         effectborders = self.get_next_borders()
         if len(effectborders) > 0:
             time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
@@ -229,8 +228,6 @@ class MoxEffectWatcher(object):
             print "Next event occurs in %d seconds" % timediff.total_seconds()
             self.sleeper_thread = threading.Timer(timediff.total_seconds(), self.emit_message)
         self.sleeper_thread.start()
-        if old_thread is not None:
-            old_thread.cancel()
 
     # The thread waits until it's time to send a notification about an effect border
     # Then the sleeper thread is restarted
