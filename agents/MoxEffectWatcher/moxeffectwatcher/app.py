@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from agent.amqpclient import MessageListener
+from agent.amqpclient import MessageListener, MessageSender
 from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from PyLoRA import Lora
@@ -53,6 +53,8 @@ class MoxEffectWatcher(object):
 
         self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue_in, queue_parameters={'durable': True})
         self.notification_listener.callback = self.handle_message
+
+        self.notification_sender = MessageSender(amqp_username, amqp_password, amqp_host, amqp_queue_out, queue_parameters={'durable': True})
 
         self.lora = Lora(rest_host, rest_username, rest_password)
 
@@ -246,7 +248,8 @@ class MoxEffectWatcher(object):
             messages.append(EffectUpdateMessage(effectborder.uuid, effectborder.object_type, effectborder.effect_type, effectborder.time))
             self.session.delete(effectborder)
         self.session.commit()
-        print messages
+        for message in messages:
+            self.notification_sender.send(message)
         self.wait_for_next()
         self.end_session()
 
