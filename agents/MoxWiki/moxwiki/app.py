@@ -61,6 +61,7 @@ class MoxWiki(object):
         except [CannotConnectException, InvalidCredentialsException] as e:
             print "Warning: %s" % e
             print "Not listening to AMQP messages on this channel"
+            self.notification_listener = None
 
         self.semawi = Semawi(wiki_host, wiki_username, wiki_password)
         self.lora = Lora(rest_host, rest_username, rest_password)
@@ -85,15 +86,17 @@ class MoxWiki(object):
 
         try:
             lastsync = dateparser.parse(self.state['sync'][self.lora.host]['lastsync'])
-            print "last sync was %s" % unicode(lastsync)
+            print "Last synchronization with %s was %s" % (self.lora.host, lastsync.strftime('%Y-%m-%d %H:%M:%S'))
+            print "Getting latest changes from REST server"
         except:
+            print "Has never synchronized before"
+            print "Getting all objects from REST server"
             lastsync = None
 
         uuids = {}
         newsync = datetime.now(pytz.utc)
         for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
             uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync)
-        print uuids
         for entity_class, type_uuids in uuids.items():
             for uuid in type_uuids:
                 item = self.lora.get_object(uuid, entity_class)
@@ -106,10 +109,12 @@ class MoxWiki(object):
         self.state['sync'][self.lora.host]['lastsync'] = newsync.isoformat()
         self.state_changed = True
         self.savestate()
+        print "Synchronization complete"
 
     # Blocks until KeyboardInterrupt
     def listen(self):
-        self.notification_listener.run()
+        if self.notification_listener:
+            self.notification_listener.run()
 
     def callback(self, channel, method, properties, body):
         message = NotificationMessage.parse(properties.headers, body)
