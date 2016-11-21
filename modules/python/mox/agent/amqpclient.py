@@ -12,7 +12,11 @@ class MessageInterface(object):
 
         self.queue = queue
         self.exchange = exchange
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, credentials=pika.PlainCredentials(username, password)))
+        try:
+            self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, credentials=pika.PlainCredentials(username, password)))
+        except pika.exceptions.ConnectionClosed:
+            raise CannotConnectException(host)
+
         self.channel = self.connection.channel()
 
         parameters = {'durable': False, 'exclusive': False, 'auto_delete': False}
@@ -94,3 +98,7 @@ class NoSuchJob(Exception):
     def __init__(self, message):
         super(NoSuchJob, self).__init__(message)
 
+
+class CannotConnectException(Exception):
+    def __init__(self, host):
+        super(CannotConnectException, self).__init__("Cannot connect to AMQP service at %s" % host)

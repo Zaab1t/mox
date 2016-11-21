@@ -6,7 +6,7 @@ import pytz
 from datetime import datetime
 from dateutil import parser as dateparser
 
-from agent.amqpclient import MessageListener
+from agent.amqpclient import MessageListener, CannotConnectException
 from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from SeMaWi import Semawi
@@ -55,9 +55,13 @@ class MoxWiki(object):
 
         self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
 
-        # self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
-        # self.notification_listener.callback = self.callback
-        # self.notification_listener.run()
+        try:
+            self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
+            self.notification_listener.callback = self.callback
+            self.notification_listener.run()
+        except CannotConnectException as e:
+            print "Warning: %s" % e
+            print "Not listening to AMQP messages on this channel"
 
         self.semawi = Semawi(wiki_host, wiki_username, wiki_password)
         self.lora = Lora(rest_host, rest_username, rest_password)
