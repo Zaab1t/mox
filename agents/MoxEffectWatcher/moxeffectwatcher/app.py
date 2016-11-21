@@ -13,7 +13,7 @@ from datetime import datetime
 import pytz
 
 import sqlalchemy
-from tables import Base, EffectBorder
+from tables import Base, EffectBorder, Synchronization
 
 import threading
 
@@ -50,9 +50,8 @@ class MoxEffectWatcher(object):
 
         self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
 
-        # self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue_in, queue_parameters={'durable': True})
-        # self.notification_listener.callback = self.handle_message
-        # self.notification_listener.run()
+        self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue_in, queue_parameters={'durable': True})
+        self.notification_listener.callback = self.handle_message
 
         self.lora = Lora(rest_host, rest_username, rest_password)
 
@@ -65,17 +64,32 @@ class MoxEffectWatcher(object):
 
         self.begin_session()
         Base.metadata.create_all(self.db)
+
+        lastsync = self.session.query(Synchronization).filter_by(host=self.lora.host).order_by(sqlalchemy.desc(Synchronization.time)).first()
+        if lastsync:
+            print "Last synchronization with %s was %s" % (self.lora.host, lastsync.time.strftime('%Y-%m-%d %H:%M:%S'))
+            print "Getting latest changes from REST server"
+        else:
+            print "Has never synchronized before"
+            print "Getting all objects from REST server"
+
+        uuids = {}
+        newsync = datetime.now(pytz.utc)
         # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
         for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
-            uuids = self.lora.get_uuids_of_type(type)
-            for uuid in uuids:
-                item = self.lora.get_object(uuid, type.ENTITY_CLASS)
+            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time)
+        for entity_class, type_uuids in uuids.items():
+            for uuid in type_uuids:
+                item = self.lora.get_object(uuid, entity_class)
                 self.update(item)
+
+        self.session.add(Synchronization(host=self.lora.host, time=newsync))
 
         self.restart_sleeper_thread()
         self.end_session()
 
-        self.block_for_sleeperthread()
+        if self.notification_listener:
+            self.notification_listener.run()
         print "end of program"
 
     def begin_session(self):

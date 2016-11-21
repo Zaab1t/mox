@@ -14,3 +14,12 @@ class EffectBorder(Base):
 
     def __repr__(self):
         return "<EffectBorder(objecttype='%s', uuid='%s', time='%s', type=%d)>" % (self.object_type, self.uuid, unicode(self.time), self.effect_type)
+
+class Synchronization(Base):
+    __tablename__ = 'synchronization'
+    id = Column(Integer, primary_key=True)
+    host = Column(String)
+    time = Column(DateTime)
+
+    def __repr__(self):
+        return "<Synchronization(host='%s', time='%s')>" % (self.host, unicode(self.time))
