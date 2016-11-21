@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from agent.amqpclient import MessageListener, MessageSender
+from agent.amqpclient import MessageListener
 from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from PyLoRA import Lora
@@ -49,12 +49,10 @@ class MoxEffectWatcher(object):
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
+        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion' ,'klasse', 'klassifikation', 'facet']
 
         self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue_in, queue_parameters={'durable': True})
         self.notification_listener.callback = self.handle_message
-
-        self.notification_sender = MessageSender(amqp_username, amqp_password, amqp_host, amqp_queue_out, queue_parameters={'durable': True})
 
         self.lora = Lora(rest_host, rest_username, rest_password)
 
@@ -79,8 +77,8 @@ class MoxEffectWatcher(object):
 
             uuids = {}
             newsync = datetime.now(pytz.utc)
-            # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
-            for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
+            for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
+                # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
                 uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
             for entity_class, type_uuids in uuids.items():
                 for uuid in type_uuids:
@@ -95,13 +93,15 @@ class MoxEffectWatcher(object):
 
             if self.notification_listener:
                 self.notification_listener.run()
-        except KeyboardInterrupt:
+        except:
             self.closing = True
             self.end_session()
             try:
                 self.sleeper_thread.cancel()
             except:
                 pass
+            raise
+
 
     def begin_session(self):
         if self.session is None:
@@ -118,7 +118,7 @@ class MoxEffectWatcher(object):
         message = NotificationMessage.parse(properties.headers, body)
         if message:
             print "Got a notification"
-            if message.objecttype in self.accepted_object_types:
+            if message.objecttype.lower() in self.accepted_object_types:
                 print "Object type '%s' accepted" % message.objecttype
                 self.begin_session()
                 try:
@@ -137,7 +137,7 @@ class MoxEffectWatcher(object):
                 print "Object type '%s' rejected" % message.objecttype
 
     def delete(self, item):
-        self.session.query(EffectBorder).filter(uuid=item.id).delete()
+        self.session.query(EffectBorder).filter_by(uuid=item.id).delete()
         self.session.commit()
 
     def update(self, item):
@@ -224,6 +224,7 @@ class MoxEffectWatcher(object):
         return True
 
     # A 'sleeper thread' runs, waiting for a specified time before emitting a notification and then exiting
+    # Then the thread is recreated, waiting for another timespan, and so forth
     def wait_for_next(self):
         if self.sleeper_thread and self.sleeper_thread != threading.current_thread():
             self.sleeper_thread.cancel()
@@ -247,10 +248,7 @@ class MoxEffectWatcher(object):
             messages.append(EffectUpdateMessage(effectborder.uuid, effectborder.object_type, effectborder.effect_type, effectborder.time))
             self.session.delete(effectborder)
         self.session.commit()
-
-        for message in messages:
-            self.notification_sender.send(message)
-
+        print messages
         self.wait_for_next()
         self.end_session()
 
