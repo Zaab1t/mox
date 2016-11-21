@@ -31,6 +31,7 @@ class MoxEffectWatcher(object):
 
     sleeper_thread = None
     session = None
+    closing = False
 
     def __init__(self):
 
@@ -58,45 +59,47 @@ class MoxEffectWatcher(object):
         self.db = sqlalchemy.create_engine('sqlite:///effects.db')
 
     def start(self):
-        self.db.connect()
+        try:
+            self.db.connect()
 
-        self.sessionclass = sqlalchemy.orm.sessionmaker(bind=self.db)
+            self.sessionclass = sqlalchemy.orm.sessionmaker(bind=self.db)
 
-        self.begin_session()
-        Base.metadata.create_all(self.db)
+            self.begin_session()
+            Base.metadata.create_all(self.db)
 
-        lastsync = self.session.query(Synchronization).filter_by(host=self.lora.host).order_by(sqlalchemy.desc(Synchronization.time)).first()
-        if lastsync:
-            print "Last synchronization with %s was %s" % (self.lora.host, lastsync.time.strftime('%Y-%m-%d %H:%M:%S'))
-            print "Getting latest changes from REST server"
-        else:
-            print "Has never synchronized before"
-            print "Getting all objects from REST server"
+            lastsync = self.session.query(Synchronization).filter_by(host=self.lora.host).order_by(sqlalchemy.desc(Synchronization.time)).first()
+            if lastsync:
+                print "Last synchronization with %s was %s" % (self.lora.host, lastsync.time.strftime('%Y-%m-%d %H:%M:%S'))
+                print "Getting latest changes from REST server"
+            else:
+                print "Has never synchronized before"
+                print "Getting all objects from REST server"
 
-        uuids = {}
-        newsync = datetime.now(pytz.utc)
-        # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
-        for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
-            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
-        for entity_class, type_uuids in uuids.items():
-            for uuid in type_uuids:
-                item = self.lora.get_object(uuid, entity_class)
-                self.update(item)
+            uuids = {}
+            newsync = datetime.now(pytz.utc)
+            # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
+            for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
+                uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
+            for entity_class, type_uuids in uuids.items():
+                for uuid in type_uuids:
+                    item = self.lora.get_object(uuid, entity_class)
+                    self.update(item)
 
-        self.session.add(Synchronization(host=self.lora.host, time=newsync))
+            self.session.add(Synchronization(host=self.lora.host, time=newsync))
+            self.session.commit()
 
-        self.wait_for_next()
-        self.end_session()
+            self.wait_for_next()
+            self.end_session()
 
-        if self.notification_listener:
-            try:
+            if self.notification_listener:
                 self.notification_listener.run()
-            except KeyboardInterrupt:
-                try:
-                    self.sleeper_thread.cancel()
-                except:
-                    pass
-        print "end of program"
+        except KeyboardInterrupt:
+            self.closing = True
+            self.end_session()
+            try:
+                self.sleeper_thread.cancel()
+            except:
+                pass
 
     def begin_session(self):
         if self.session is None:
@@ -221,13 +224,16 @@ class MoxEffectWatcher(object):
     # A 'sleeper thread' runs, waiting for a specified time before emitting a notification and then exiting
     # Then the thread is recreated, waiting for another timespan, and so forth
     def wait_for_next(self):
-        effectborders = self.get_next_borders()
-        if len(effectborders) > 0:
-            time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
-            timediff = time - datetime.now(pytz.utc)
-            print "Next event occurs in %d seconds" % timediff.total_seconds()
-            self.sleeper_thread = threading.Timer(timediff.total_seconds(), self.emit_message)
-        self.sleeper_thread.start()
+        if self.sleeper_thread and self.sleeper_thread != threading.current_thread():
+            self.sleeper_thread.cancel()
+        if not self.closing:
+            effectborders = self.get_next_borders()
+            if len(effectborders) > 0:
+                time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
+                timediff = time - datetime.now(pytz.utc)
+                print "Next event occurs in %d seconds" % timediff.total_seconds()
+                self.sleeper_thread = threading.Timer(timediff.total_seconds(), self.emit_message)
+                self.sleeper_thread.start()
 
     # The thread waits until it's time to send a notification about an effect border
     # Then the sleeper thread is restarted
