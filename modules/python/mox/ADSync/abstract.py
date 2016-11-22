@@ -86,7 +86,7 @@ class Item(object):
         if not self.moxtype:
             raise NotImplementedError
 
-        lora.import_object(self.uuid, self.moxtype, json=self.data())
+        lora.write_object(self.moxtype, self.uuid, json=self.data())
 
     def data(self):
         raise NotImplementedError

@@ -58,9 +58,6 @@ class Domain(orgunit.OrgUnit):
     def user_search_base(self):
         return 'CN=Users,' + self.search_base
 
-    def save_to(self, lora):
-        lora.import_object(self.uuid, self.moxtype, json=self.data())
-
     def all_units(self):
         yield self
 

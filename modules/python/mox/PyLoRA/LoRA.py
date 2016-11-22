@@ -155,39 +155,31 @@ class Lora(object):
             return item
         self.log("Object %s not found" % uuid)
 
-    def import_object(self, uuid, objecttype, **kwargs):
-        '''import an object with the given UUID into the database
+    def write_object(self, objecttype, uuid=None, **kwargs):
+        '''write an object with the given UUID into the database
         '''
         self.__check_uuid(uuid)
 
         objcls = self.object_map[objecttype]
-        path = '/'.join((objcls.basepath, uuid))
 
-        self.log('Import {}'.format(path))
+        if uuid:
+            path = '/'.join((objcls.basepath, uuid))
+            method = 'PUT'
+        else:
+            path = '/' + objcls.basepath
+            method = 'POST'
 
-        response = self.request(self.host + path, method='PUT', **kwargs)
+        self.log('{} {}'.format('Import' if uuid else 'Create', path))
 
-        self.__check_response(response)
-
-        # always invalidate the cache
-        try:
-            del self.all_items[uuid]
-        except KeyError:
-            pass
-
-        return response.json()['uuid']
-
-    def create_object(self, objecttype, **kwargs):
-        '''import an object with the given UUID into the database
-        '''
-
-        objcls = self.object_map[objecttype]
-        path = '/' + objcls.basepath
-
-        self.log('Create {}'.format(path))
-
-        response = self.request(self.host + path, method='POST', **kwargs)
+        response = self.request(self.host + path, method=method, **kwargs)
 
         self.__check_response(response)
+
+        if uuid:
+            # always invalidate the cache
+            try:
+                del self.all_items[uuid]
+            except KeyError:
+                pass
 
         return response.json()['uuid']
