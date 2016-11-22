@@ -121,9 +121,6 @@ class OIOEntity(object):
         if index > -1 and index < len(self.registreringer) - 1:
             return self.registreringer[index + 1]
 
-    def changed_since(self, time):
-        return self.current.from_time > time
-
 @OIOEntity.registrering_class
 class OIORegistrering(object):
 

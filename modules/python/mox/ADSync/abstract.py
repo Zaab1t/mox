@@ -60,9 +60,24 @@ class Item(object):
         ''''''
         obj = lora.get_object(self.uuid, self.moxtype)
 
-        return (not obj or
-                obj.current.livscykluskode == 'Slettet' or
-                not obj.changed_since(self.entry.whenChanged.value))
+        if not obj or obj.current.livscykluskode == 'Slettet':
+            return True
+
+        assert len(obj.current.egenskaber) == 1
+
+        whenChanged = self.entry.whenChanged.value
+
+        for reg in reversed(obj.registreringer):
+            if reg.from_time < whenChanged:
+                # this registration predates our change
+                continue
+
+            for attr in reg.egenskaber:
+                if attr.virkning.from_time == whenChanged:
+                    # this change has been written to LoRA!
+                    return False
+
+        return True
 
     def load_from(self, lora):
         return lora.get_object(self.uuid, self.moxtype)
