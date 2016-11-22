@@ -153,10 +153,14 @@ class OIORegistrering(object):
             self.gyldigheder = OIOGyldighedContainer.from_json(
                 self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
             )
+        else:
+            self.gyldigheder = None
         if self.entity.PUBLICERET_KEY:
             self.publiceringer = OIOPubliceretContainer.from_json(
                 self, self.json['tilstande'][self.entity.PUBLICERET_KEY]
             )
+        else:
+            self.publiceringer = None
         self._relationer = OIORelationContainer.from_json(
             self, self.json.get('relationer', [])
         )
