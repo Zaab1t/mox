@@ -2,7 +2,6 @@
 
 from __future__ import print_function, absolute_import, unicode_literals
 
-import itertools
 import json
 import os
 
@@ -22,20 +21,15 @@ moxcfg = cfg['config']['mox']
 lora = PyLoRA.LoRA.Lora(moxcfg['host'], moxcfg['user'], moxcfg['password'],
                         cfg.get('verbose', False))
 
-
-print('fetch token...')
-lora.obtain_token()
-
 print('making domain...')
 domain = domain.Domain(adcfg['domain'], adcfg['host'],
                        adcfg['user'], adcfg['password'])
 
-for unit in domain.all_units():
-    for obj in itertools.chain([unit], unit.groups(), unit.users()):
-        print('checking {}...'.format(obj))
+for obj in domain.objects():
+    print('checking {}...'.format(obj))
 
-        if obj.dirty(lora):
-            obj.save_to(lora)
-            print('saved!')
-        else:
-            print('up-to-date!')
+    if obj.dirty(lora):
+        obj.save_to(lora)
+        print('saved!')
+    else:
+        print('up-to-date!')

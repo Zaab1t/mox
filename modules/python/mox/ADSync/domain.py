@@ -1,5 +1,6 @@
 from __future__ import print_function, absolute_import, unicode_literals
 
+import itertools
 import operator
 
 import ldap3
@@ -58,11 +59,12 @@ class Domain(orgunit.OrgUnit):
     def user_search_base(self):
         return 'CN=Users,' + self.search_base
 
-    def all_units(self):
-        yield self
+    @property
+    def computer_search_base(self):
+        return 'CN=Computers,' + self.search_base
 
-        for unit in self.units(recurse=True):
-            yield unit
+    def objects(self):
+        return itertools.chain((self,), self.children(recurse=True))
 
     def data(self):
         entry = self.entry

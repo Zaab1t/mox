@@ -4,25 +4,24 @@ from . import abstract
 from . import util
 
 __all__ = (
-    'User',
+    'Computer',
 )
 
 
-class User(abstract.Item):
+class Computer(abstract.Item):
     __slots__ = (
     )
 
-    moxtype = 'Bruger'
+    moxtype = 'Itsystem'
 
     USED_LDAP_ATTRS = (
-        'accountExpires',
         'cn',
         'description',
-        'displayName',
         'name',
         'objectGuid',
+        'operatingSystem',
+        'sAMAccountName',
         'userAccountControl',
-        'userPrincipalName',
         'whenChanged',
     )
 
@@ -38,42 +37,41 @@ class User(abstract.Item):
 
         return {
             'note': self.entry.description.value,
+
             'attributter': {
-                'brugeregenskaber': [
+                'itsystemegenskaber': [
                     {
-                        'brugernavn':
-                            self.entry.displayName.value,
+                        'itsystemnavn':
+                            self.entry.cn.value,
+                        'itsystemtype': self.entry.operatingSystem.value,
                         'brugervendtnoegle':
-                            self.entry.userPrincipalName.value,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                            self.entry.cn.value,
+                        'virkning': util.virkning(self.entry.whenChanged),
                     },
                 ],
             },
+
             'tilstande': {
-                'brugergyldighed': [
+                'itsystemgyldighed': [
                     {
                         'gyldighed': 'Aktiv' if not disabled else 'Inaktiv',
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'virkning': util.virkning(self.entry.whenChanged),
                     },
                 ],
             },
+
             'relationer': {
-                'tilknyttedefunktioner': [
+                'tilhoerer': [
                     {
-                        'uuid': group.uuid,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'uuid': self.domain.uuid,
+                        'virkning': util.virkning(self.entry.whenChanged),
                     }
-                    for group in self.domain.groups()
                 ],
 
                 parent_relation: [
                     {
                         'uuid': self.parent.uuid,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'virkning': util.virkning(self.entry.whenChanged),
                     }
                 ],
             },
