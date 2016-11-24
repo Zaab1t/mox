@@ -72,7 +72,7 @@ class MoxEffectWatcher(object):
         except:
             try:
                 if self.emitter:
-                    self.emitter.stop()
+                    self.emitter.close()
             except:
                 pass
             raise
@@ -233,7 +233,7 @@ class Emitter:
         else:
             print "Emitting %d EffectUpdateMessages" % len(messages)
         for message in messages:
-            self.notification_sender.send(message)
+            self.notification_sender.send(message, replyCallback=self.cb)
 
     def run(self, initialrun=False):
         if self.running:
@@ -263,6 +263,9 @@ class Emitter:
         if self.sleeper is None:
             self.run()
 
+    def cb(self, channel, method, properties, body):
+        print "response"
+
     def stop(self):
         if self.sleeper:
             self.sleeper.cancel()
@@ -276,6 +279,10 @@ class Emitter:
     def restart(self):
         self.stop()
         self.run()
+
+    def close(self):
+        self.stop()
+        self.notification_sender.close()
 
 
 
