@@ -57,7 +57,7 @@ class MoxWiki(object):
         self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
 
         try:
-            self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True})
+            self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue, queue_parameters={'durable': True, 'exclusive': False})
             self.notification_listener.callback = self.callback
         except [CannotConnectException, InvalidCredentialsException] as e:
             print "Warning: %s" % e
