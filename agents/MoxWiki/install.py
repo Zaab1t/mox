@@ -13,6 +13,7 @@ MOXDIR = os.path.abspath(DIR + "/../..")
 
 defaults = {
     'amqp_host': domain,
+    'amqp_exchange': 'mox.notifications',
     'rest_host': "https://%s" % domain,
     'wiki_host': "https://%s" % domain
 }
@@ -29,7 +30,7 @@ parser.add_argument('--wiki-pass', action='store')
 parser.add_argument('--amqp-host', action='store')
 parser.add_argument('--amqp-user', action='store')
 parser.add_argument('--amqp-pass', action='store')
-parser.add_argument('--amqp-queue', action='store')
+parser.add_argument('--amqp-exchange', action='store')
 
 parser.add_argument('--rest-host', action='store')
 parser.add_argument('--rest-user', action='store')
@@ -61,7 +62,7 @@ config_map = [
     ('amqp_host', 'moxwiki.amqp.host'),
     ('amqp_user', 'moxwiki.amqp.username'),
     ('amqp_pass', 'moxwiki.amqp.password'),
-    ('amqp_queue', 'moxwiki.amqp.queue'),
+    ('amqp_exchange', 'moxwiki.amqp.exchange'),
     ('rest_host', 'moxwiki.rest.host'),
     ('rest_user', 'moxwiki.rest.username'),
     ('rest_pass', 'moxwiki.rest.password')
