@@ -39,8 +39,8 @@ class MoxEffectWatcher(object):
             amqp_host = config['moxeffectwatcher.amqp.host']
             amqp_username = config['moxeffectwatcher.amqp.username']
             amqp_password = config['moxeffectwatcher.amqp.password']
-            amqp_queue_in = config['moxeffectwatcher.amqp.queue_in']
-            amqp_queue_out = config['moxeffectwatcher.amqp.queue_out']
+            amqp_exchange_in = config['moxeffectwatcher.amqp.exchange_in']
+            amqp_exchange_out = config['moxeffectwatcher.amqp.exchange_out']
 
             rest_host = config['moxeffectwatcher.rest.host']
             rest_username = config['moxeffectwatcher.rest.username']
@@ -51,10 +51,10 @@ class MoxEffectWatcher(object):
 
         self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion' ,'klasse', 'klassifikation', 'facet']
 
-        self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_queue_in, queue_parameters={'durable': True, 'exclusive': False})
+        self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange_in, queue_name='moxeffectwatcher', queue_parameters={'durable': True, 'exclusive': False})
         self.notification_listener.callback = self.handle_message
 
-        self.notification_sender = MessageSender(amqp_username, amqp_password, amqp_host, amqp_queue_out, queue_parameters={'durable': True, 'exclusive': False})
+        self.notification_sender = MessageSender(amqp_username, amqp_password, amqp_host, amqp_exchange_out)
 
         self.lora = Lora(rest_host, rest_username, rest_password)
 
@@ -113,10 +113,10 @@ class MoxEffectWatcher(object):
                 try:
                     item = self.lora.get_object(message.objectid, message.objecttype, force_refresh=True)
                     if message.lifecyclecode == 'Slettet':
-                        print "lifecyclecode is '%s', performing delete" % message.lifecyclecode
+                        print "Lifecyclecode is '%s', performing delete" % message.lifecyclecode
                         self.delete(item)
                     else:
-                        print "lifecyclecode is '%s', performing update" % message.lifecyclecode
+                        print "Lifecyclecode is '%s', performing update" % message.lifecyclecode
                         self.update(item)
                 except InvalidOIOException as e:
                     print e
@@ -253,7 +253,7 @@ class Emitter:
             elif seconds == 0:
                 self.handle_effectborders(effectborders, session)
             else:
-                print "waiting for %d seconds" % seconds
+                print "Waiting for %d seconds, until %s updates at %s" % (seconds, next_effectborder.uuid, unicode(time))
                 self.sleeper = threading.Timer(seconds, self.run)
                 self.sleeper.start()
         session.commit()
