@@ -59,7 +59,7 @@ class MoxWiki(object):
         try:
             self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange, queue_name='moxwiki', queue_parameters={'durable': True, 'exclusive': False})
             self.notification_listener.callback = self.callback
-        except [CannotConnectException, InvalidCredentialsException] as e:
+        except (CannotConnectException, InvalidCredentialsException) as e:
             print "Warning: %s" % e
             print "Not listening to AMQP messages on this channel"
             self.notification_listener = None
