@@ -256,7 +256,6 @@ class Emitter:
                 print "waiting for %d seconds" % seconds
                 self.sleeper = threading.Timer(seconds, self.run)
                 self.sleeper.start()
-                print "Started sleeper thread %d" % self.sleeper.ident
         session.commit()
         session.close()
         self.running.set()
