@@ -1,8 +1,11 @@
 from __future__ import print_function, absolute_import, unicode_literals
 
+import collections
 import uuid
 
 from . import abstract
+from . import computer
+from . import user
 from . import util
 
 __all__ = (
@@ -12,7 +15,7 @@ __all__ = (
 
 class Group(abstract.Item):
     __slots__ = (
-        '_class_id',
+        '_classobj',
     )
 
     moxtype = 'OrganisationFunktion'
@@ -20,47 +23,73 @@ class Group(abstract.Item):
     USED_LDAP_ATTRS = (
         'cn',
         'description',
+        'managedBy',
+        'member',
+        'memberOf',
         'name',
         'objectGuid',
         'sAMAccountName',
         'whenChanged',
+        'whenCreated',
     )
 
-    def get_class(self, lora):
-        if not getattr(self, '_class_id', None):
-            self.load_from(lora)
+    _CLASS_NAMESPACE_ID = uuid.UUID('21CEAFDD-7B95-47CB-8749-BAA21E209D0D')
 
-        return GroupClass(self.parent, self.entry, self._class_id)
+    def __init__(self, *args, **kwargs):
+        super(Group, self).__init__(*args, **kwargs)
 
-    def load_from(self, lora):
-        orgfunktion = super(Group, self).load_from(lora)
-        opgaver = orgfunktion and orgfunktion.current.relationer.get('opgaver')
+        self._classobj = GroupClass(self, self.entry, self.classid)
 
-        if orgfunktion and opgaver:
-            assert len(opgaver) == 1
-            self._class_id = opgaver[0].item.id
-        else:
-            self._class_id = str(uuid.uuid4())
+    @staticmethod
+    def skip(entry):
+        return abstract.Item.skip(entry) or entry.isCriticalSystemObject.value
 
-        return orgfunktion
+    @property
+    def classid(self):
+        return str(uuid.uuid5(self._CLASS_NAMESPACE_ID, self.uuid))
 
-    def save_to(self, lora):
-        self.get_class(lora).save_to(lora)
-        super(Group, self).save_to(lora)
+    @property
+    def nested_objects(self):
+        r = super(Group, self).nested_objects
+        r.append(self._classobj)
+        return r
 
-    def dirty(self, lora):
-        return (super(Group, self).dirty(lora) or
-                self.get_class(lora).dirty(lora))
+    def _relations(self):
+        relations = collections.defaultdict(list, opgaver=[
+            {
+                'uuid': self.classid,
+                'virkning': util.virkning(self.entry.whenChanged),
+            },
+        ])
+
+        typemap = {
+            user.User: 'tilknyttedebrugere',
+            computer.Computer: 'tilknyttedeitsystemer',
+        }
+
+        for member_edn in self.entry.member:
+            info = util.unpack_extended_dn(member_edn)
+            obj = self.domain.get_object(info.guid)
+            relname = typemap.get(type(obj))
+            if relname:
+                relations[relname].append({
+                    'uuid': obj.uuid,
+                    'virkning': util.virkning(self.entry.whenChanged),
+                })
+            elif obj:
+                print('unhandled group member {}'.format(
+                    obj
+                ))
+
+        return relations
 
     def data(self):
-        assert getattr(self, '_class_id', None), 'class id undetermined!'
-
         return {
             'attributter': {
                 'organisationfunktionegenskaber': [
                     {
                         'funktionsnavn': "Active Directory gruppemedlem",
-                        'brugervendtnoegle': self.entry.entry_dn,
+                        'brugervendtnoegle': self.dn,
                         'virkning': util.virkning(self.entry.whenChanged),
                     },
                 ]
@@ -73,22 +102,7 @@ class Group(abstract.Item):
                     },
                 ]
             },
-            'relationer': {
-                'tilknyttedebrugere': [
-                    {
-                        'uuid': member.objectGuid.value,
-                        'virkning': util.virkning(self.entry.whenChanged),
-                    }
-                    for member in self.entry.members
-                    # if member
-                ] if 'members' in self.entry else [],
-                'opgaver': [
-                    {
-                        'uuid': self._class_id,
-                        'virkning': util.virkning(self.entry.whenChanged),
-                    },
-                ]
-            },
+            'relationer': self._relations(),
         }
 
 
@@ -104,8 +118,8 @@ class GroupClass(abstract.Item):
             'attributter': {
                 'klasseegenskaber': [
                     {
-                        'klassetitel': self.entry.name.value,
-                        'brugervendtnoegle': self.entry.entry_dn,
+                        'titel': self.entry.name.value,
+                        'brugervendtnoegle': self.dn,
                         'virkning': util.virkning(self.entry.whenChanged),
                     },
                 ],
@@ -121,10 +135,10 @@ class GroupClass(abstract.Item):
             'relationer': {
                 'ansvarlig': [
                     {
-                        'uuid': manager.objectGuid.value,
+                        'uuid': util.unpack_extended_dn(manager).guid,
                         'virkning': util.virkning(self.entry.whenChanged),
                     }
-                    for manager in self.entry.managers
-                ] if 'manager' in self.entry else [],
+                    for manager in (self.entry.managedBy or [])
+                ],
             },
         }

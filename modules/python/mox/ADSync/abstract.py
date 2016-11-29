@@ -1,5 +1,10 @@
 from __future__ import print_function, absolute_import, unicode_literals
 
+import uuid
+import weakref
+
+from . import util
+
 __all__ = (
     'Item',
 )
@@ -7,6 +12,8 @@ __all__ = (
 
 class Item(object):
     __slots__ = (
+        '__weakref__',
+        '_children',
         '_entry',
         '_parent',
         '_uuid',
@@ -16,10 +23,18 @@ class Item(object):
 
     USED_LDAP_ATTRS = None
 
-    def __init__(self, parent, entry, uuid=None):
-        self._parent = parent
+    __objects = dict()
+
+    def __init__(self, parent, entry, uuid):
+        self._parent = parent and weakref.ref(parent)
+        self._children = set()
         self._entry = entry
         self._uuid = uuid
+
+        self.__objects[uuid] = self
+
+        if parent:
+            parent._children.add(self)
 
     def __str__(self):
         return "{} {!r} <{}>".format(
@@ -32,21 +47,47 @@ class Item(object):
     def entry(self):
         return self._entry
 
+    @staticmethod
+    def get_object(id):
+        try:
+            uuid.UUID(id)
+        except ValueError:
+            id = util.unpack_extended_dn(id).guid
+
+        return Item.__objects.get(id)
+
+    @staticmethod
+    def skip(entry):
+        return ('showInAdvancedViewOnly' in entry and
+                entry.showInAdvancedViewOnly.value)
+
+    @property
+    def nested_objects(self):
+        return []
+
+    @property
+    def dn(self):
+        return util.unpack_extended_dn(self._entry.entry_dn).dn
+
+    def get_children(self, objcls):
+        for child in self._children:
+            if isinstance(child, objcls):
+                yield child
+
+    def __iter__(self):
+        return iter(self._children)
+
     @property
     def name(self):
         return self._entry.name.value or self._entry.description.value
 
     @property
     def parent(self):
-        return self._parent
-
-    @property
-    def search_base(self):
-        return self._parent.search_base
+        return self._parent and self._parent()
 
     @property
     def connection(self):
-        return self._parent.connection
+        return self.parent.connection
 
     @property
     def uuid(self):
@@ -54,30 +95,18 @@ class Item(object):
 
     @property
     def domain(self):
-        return self._parent.domain
+        return self.parent.domain
 
     def dirty(self, lora):
-        ''''''
         obj = lora.get_object(self.uuid, self.moxtype)
+
+        if 'isDeleted' in self.entry and self.entry.isDeleted:
+            return obj and obj.current.livscykluskode != 'Slettet'
 
         if not obj or obj.current.livscykluskode == 'Slettet':
             return True
 
-        assert len(obj.current.egenskaber) == 1
-
-        whenChanged = self.entry.whenChanged.value
-
-        for reg in reversed(obj.registreringer):
-            if reg.from_time < whenChanged:
-                # this registration predates our change
-                continue
-
-            for attr in reg.egenskaber:
-                if attr.virkning.from_time == whenChanged:
-                    # this change has been written to LoRA!
-                    return False
-
-        return True
+        return not obj.current.equivalent_to(self.data())
 
     def load_from(self, lora):
         return lora.get_object(self.uuid, self.moxtype)
@@ -86,7 +115,17 @@ class Item(object):
         if not self.moxtype:
             raise NotImplementedError
 
-        lora.write_object(self.moxtype, self.uuid, json=self.data())
+        if 'isDeleted' in self.entry and self.entry.isDeleted:
+            lora.write_object(self.moxtype, self.uuid, method='DELETE')
+        else:
+            lora.write_object(self.moxtype, self.uuid, json=self.data())
+
+        for child in self.nested_objects:
+            child.save_to(lora)
+
+    @property
+    def definition(self):
+        raise NotImplementedError
 
     def data(self):
         raise NotImplementedError

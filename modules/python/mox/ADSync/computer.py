@@ -20,7 +20,7 @@ class Computer(abstract.Item):
         'name',
         'objectGuid',
         'operatingSystem',
-        'sAMAccountName',
+        'dNSHostName',
         'userAccountControl',
         'whenChanged',
     )
@@ -33,7 +33,7 @@ class Computer(abstract.Item):
         parent_relation = {
             'DC': 'tilknyttedeorganisationer',
             'OU': 'tilknyttedeenheder',
-        }[self.parent.entry.entry_dn.split('=', 1)[0].upper()]
+        }[self.parent.dn.split('=', 1)[0].upper()]
 
         return {
             'note': self.entry.description.value,
@@ -42,7 +42,7 @@ class Computer(abstract.Item):
                 'itsystemegenskaber': [
                     {
                         'itsystemnavn':
-                            self.entry.cn.value,
+                            self.entry.dNSHostName.value,
                         'itsystemtype': self.entry.operatingSystem.value,
                         'brugervendtnoegle':
                             self.entry.cn.value,

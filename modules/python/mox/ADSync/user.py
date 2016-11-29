@@ -19,12 +19,19 @@ class User(abstract.Item):
         'cn',
         'description',
         'displayName',
+        'distinguishedName',
+        'isCriticalSystemObject',
+        'isDeleted',
         'name',
         'objectGuid',
         'userAccountControl',
         'userPrincipalName',
         'whenChanged',
     )
+
+    @staticmethod
+    def skip(entry):
+        return abstract.Item.skip(entry) or entry.isCriticalSystemObject.value
 
     def data(self):
         # userAccountControl is a bitfield, containing the 'account is
@@ -34,7 +41,7 @@ class User(abstract.Item):
         parent_relation = {
             'DC': 'tilknyttedeorganisationer',
             'OU': 'tilknyttedeenheder',
-        }[self.parent.entry.entry_dn.split('=', 1)[0].upper()]
+        }[self.parent.dn.split('=', 1)[0].upper()]
 
         return {
             'note': self.entry.description.value,
@@ -62,11 +69,11 @@ class User(abstract.Item):
             'relationer': {
                 'tilknyttedefunktioner': [
                     {
-                        'uuid': group.uuid,
+                        'uuid': util.unpack_extended_dn(group_dn).guid,
                         'virkning': util.virkning(self.entry.whenChanged,
                                                   self.entry.accountExpires),
                     }
-                    for group in self.domain.groups()
+                    for group_dn in self.entry.memberOf or []
                 ],
 
                 parent_relation: [
