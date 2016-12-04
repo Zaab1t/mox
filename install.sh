@@ -138,6 +138,9 @@ $DIR/agents/MoxTabel/install.sh
 $DIR/agents/MoxRestFrontend/install.sh
 $DIR/agents/MoxTest/install.sh
 
+$DIR/agents/MoxEffectWatcher/install.py
+$DIR/agents/MoxEffectWatcher/configure.py --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange-in "mox.notifications" --amqp-exchange-out "mox.notifications" --rest-host "$REST_HOST" --rest-user "$REST_USER" --rest-pass "$REST_PASS"
+
 JAVA_HOME="$OLD_JAVA_HOME"
 
 sudo chown -R mox:mox $DIR
