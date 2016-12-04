@@ -145,9 +145,12 @@ echo "Installing Agents"
 $DIR/agents/MoxTabel/install.sh
 $DIR/agents/MoxRestFrontend/install.sh
 $DIR/agents/MoxTest/install.sh
-$DIR/agents/MoxWiki/install.py --wiki-host "http://$DOMAIN" --wiki-user "SeMaWi" --wiki-pass "SeMaWiSeMaWi" --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-queue "notifications" --rest-host "$REST_HOST" --rest-user "$REST_USER" --rest-pass "$REST_PASS"
+$DIR/agents/MoxDocumentDownload/install.sh
+$DIR/agents/MoxDocumentUpload/install.sh
+$DIR/agents/MoxTest/install.sh
 
-JAVA_HOME="$OLD_JAVA_HOME"
+$DIR/agents/MoxWiki/install.py
+$DIR/agents/MoxWiki/configure.py --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange "mox.notifications" --rest-host "$REST_HOST" --rest-user "$REST_USER" --rest-pass "$REST_PASS"
 
 sudo chown -R mox:mox $DIR
 sudo service apache2 reload
