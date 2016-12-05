@@ -7,6 +7,7 @@ class Item(object):
 
     def __init__(self, registrering, data):
         self.registrering = registrering
+
         self.virkning = Virkning(data['virkning'])
         self._data = data
 
