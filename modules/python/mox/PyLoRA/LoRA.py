@@ -17,6 +17,9 @@ class Lora(object):
                                        vars(klassifikation).itervalues())
         if isinstance(val, type) and issubclass(val, OIOEntity)
     )
+    object_map = {
+        cls.ENTITY_CLASS: cls for cls in objecttypes
+    }
 
     def __init__(self, host, username, password, verbose=False):
         """ Args:
@@ -32,9 +35,6 @@ class Lora(object):
         self.session = requests.Session()
         self.obtain_token()
         self._verbose = verbose
-        self.object_map = {
-            cls.ENTITY_CLASS: cls for cls in self.objecttypes
-        }
         self.all_items = pylru.lrucache(10000)
 
     def __repr__(self):
