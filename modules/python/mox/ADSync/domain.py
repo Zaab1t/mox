@@ -18,19 +18,20 @@ __all__ = (
 class Domain(orgunit.OrgUnit):
     __slots__ = (
         '_conn',
+        '_dirsync',
         '_domain',
         '_base',
+        '_parents',
     )
 
     moxtype = 'Organisation'
 
     USED_LDAP_ATTRS = (
         'description',
-        'distinguishedName',
         'name',
         'objectClass',
-        'objectGuid',
-        'whenChanged',
+        'objectGUID',
+        'parentGUID',
     )
 
     def __init__(self, domain, host, user, password):
@@ -41,56 +42,20 @@ class Domain(orgunit.OrgUnit):
         # the search base is the domain, reformatted
         self._base = ','.join('dc=' + d for d in domain.split('.'))
         self._domain = domain
+        self._parents = dict()
 
-        if not self.connection.search(self._base, '(objectClass=domain)',
-                                      ldap3.BASE,
-                                      attributes=self.USED_LDAP_ATTRS,
-                                      controls=_LDAP_CONTROLS):
+        if not self.connection.search(
+                self._base, '(objectClass=domain)',
+                ldap3.BASE, attributes=self.USED_LDAP_ATTRS,
+                controls=(
+                    ldap3.protocol.microsoft.extended_dn_control(True),
+                    ldap3.protocol.microsoft.show_deleted_control(True),
+                )
+        ):
             raise Exception('search failed!')
 
         entry = self.connection.entries[0]
 
-        print(self._base, entry.objectGuid.value)
-        super(Domain, self).__init__(None, entry, entry.objectGuid.value)
-
-    @property
-    def connection(self):
-        return self._conn
-
-    @property
-    def uuid(self):
-        return self.entry.objectGuid.value
-
-    @property
-    def domain(self):
-        return self
-
-    def data(self):
-        entry = self.entry
-        data = super(Domain, self).data()
-
-        data['attributter'] = {
-            'organisationegenskaber': [
-                {
-                    'organisationsnavn': entry.description.value,
-                    'brugervendtnoegle': self._domain,
-                    'virkning': util.virkning(entry.whenChanged),
-                },
-            ],
-        }
-
-        data['tilstande'] = {
-            'organisationgyldighed': [
-                {
-                    'gyldighed': 'Aktiv',
-                    'virkning': util.virkning(entry.whenChanged),
-                },
-            ],
-        }
-
-        return data
-
-    def objects(self):
         query = '(&(|{})(!(showInAdvancedViewOnly=TRUE)))'.format(
             ''.join('(objectClass={})'.format(cls)
                     for cls in ('domain', 'group', 'organizationalUnit',
@@ -102,58 +67,111 @@ class Domain(orgunit.OrgUnit):
             for objcls in _LDAP_OBJECT_TYPES.values()
         )))
 
-        entries_by_dn = {
-            self.dn: self.entry,
-        }
+        self._dirsync = self.connection.extend.microsoft.dir_sync(
+            self._base,
+            query,
+            attributes=attributes,
+            object_security=True,
+            incremental_values=False,
+        )
 
-        if not self.connection.search(self._base, query,
-                                      attributes=attributes,
-                                      controls=_LDAP_CONTROLS):
-            raise Exception('search failed!')
+        super(Domain, self).__init__(None, entry.entry_dn,
+                                     entry.entry_attributes_as_dict)
 
-        for entry in self.connection.entries:
-            if entry is None:
-                continue
+    @property
+    def connection(self):
+        return self._conn
 
-            dn = util.unpack_extended_dn(entry.entry_dn)
-            entries_by_dn[dn.dn] = entry
+    @property
+    def uuid(self):
+        return self['objectGUID']
 
+    @property
+    def domain(self):
+        return self
+
+    @property
+    def manager(self):
+        return None
+
+    @staticmethod
+    def skip(entry):
+        return True
+
+    def _get_parent(self, attrs):
+        if not attrs.get('parentGUID', None):
+            return None
+
+        parent_id = util.to_uuid(attrs['parentGUID'])
+
+        while parent_id not in self._objects:
+            parent_id = self._parents[parent_id]
+
+        return self._objects[parent_id]
+
+    def _process_item(self, item):
         def get_class(entry):
-            for objcls in reversed(entry.objectClass.values):
+            for objcls in reversed(entry['objectClass']):
                 if objcls in _LDAP_OBJECT_TYPES:
                     return _LDAP_OBJECT_TYPES[objcls]
 
             return None
 
-        def get_object(dn):
-            entry = entries_by_dn[dn]
+        dn = item['dn']
+        attrs = item['attributes']
 
-            obj = self.get_object(entry.objectGuid.value)
+        if attrs['parentGUID']:
+            self._parents[attrs['objectGUID']] = \
+                util.to_uuid(attrs['parentGUID'])
 
-            if obj:
-                return obj
+        obj = self.get_object(dn)
 
-            parent_dn = util.get_parent_dn(dn)
-            parent = get_object(parent_dn) if parent_dn != dn else None
+        if obj:
+            return obj.update(item, self._get_parent(attrs))
 
-            objtype = get_class(entry)
-            return objtype(parent, entry, entry.objectGuid.value)
+        objtype = get_class(attrs)
 
+        if not objtype or objtype.skip(attrs):
+            return []
+
+        obj = objtype(self._get_parent(attrs), dn, attrs)
+        return [obj] + obj.nested_objects
+
+    def poll(self):
         seen = []
 
-        for dn, entry in entries_by_dn.items():
-            if not get_class(entry) or get_class(entry).skip(entry):
-                continue
-            obj = get_object(dn)
-            seen.append(obj)
-            seen.extend(obj.nested_objects)
+        for item in self._dirsync.loop():
+            seen += self._process_item(item)
+
+        while self._dirsync.more_results:
+            for item in self._dirsync.loop():
+                seen += self._process_item(item)
 
         return seen
 
-_LDAP_CONTROLS = (
-    ldap3.protocol.microsoft.extended_dn_control(criticality=True),
-    ldap3.protocol.microsoft.show_deleted_control(criticality=True),
-)
+    def data(self):
+        data = super(Domain, self).data()
+
+        data['attributter'] = {
+            'organisationegenskaber': [
+                {
+                    'organisationsnavn': self['description'],
+                    'brugervendtnoegle': self._domain,
+                    'virkning': self.virkning,
+                },
+            ],
+        }
+
+        data['tilstande'] = {
+            'organisationgyldighed': [
+                {
+                    'gyldighed': 'Aktiv',
+                    'virkning': self.virkning,
+                },
+            ],
+        }
+
+        return data
 
 _LDAP_OBJECT_TYPES = {
     'computer': computer.Computer,

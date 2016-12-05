@@ -1,16 +1,15 @@
 {
-  "config": {
+    "interval": 300,
+    "logfile": "-",
     "active-directory": {
-      "host": "domain-controller.example.com",
-      "password": "k0d30rd",
-      "domain": "example.local",
-      "user": "admin"
-    },
-    "mox": {
-      "host": "https://moxdev.magenta-aps.dk",
-      "password": "k0d30rd",
-      "user": "admin@example.local"
+        "host": "domain-controller.example.com",
+        "password": "k0d30rd",
+        "domain": "example.local",
+        "user": "admin"
     }
-  },
-  "verbose": false
+    "mox": {
+        "host": "https://moxdev.magenta-aps.dk",
+        "password": "k0d30rd",
+        "user": "admin@example.local"
+    }
 }

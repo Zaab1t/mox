@@ -15,21 +15,17 @@ __all__ = (
 
 class Group(abstract.Item):
     __slots__ = (
-        '_classobj',
     )
 
     moxtype = 'OrganisationFunktion'
 
     USED_LDAP_ATTRS = (
-        'cn',
         'description',
         'managedBy',
         'member',
-        'memberOf',
         'name',
-        'objectGuid',
+        'objectGUID',
         'sAMAccountName',
-        'whenChanged',
         'whenCreated',
     )
 
@@ -38,27 +34,21 @@ class Group(abstract.Item):
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)
 
-        self._classobj = GroupClass(self, self.entry, self.classid)
+        self.nest(GroupClass)
 
     @staticmethod
     def skip(entry):
-        return abstract.Item.skip(entry) or entry.isCriticalSystemObject.value
+        return abstract.Item.skip(entry) or entry['isCriticalSystemObject']
 
     @property
     def classid(self):
         return str(uuid.uuid5(self._CLASS_NAMESPACE_ID, self.uuid))
 
-    @property
-    def nested_objects(self):
-        r = super(Group, self).nested_objects
-        r.append(self._classobj)
-        return r
-
     def _relations(self):
         relations = collections.defaultdict(list, opgaver=[
             {
                 'uuid': self.classid,
-                'virkning': util.virkning(self.entry.whenChanged),
+                'virkning': self.virkning,
             },
         ])
 
@@ -67,19 +57,22 @@ class Group(abstract.Item):
             computer.Computer: 'tilknyttedeitsystemer',
         }
 
-        for member_edn in self.entry.member:
+        for member_edn in self.entry.get('member', []):
             info = util.unpack_extended_dn(member_edn)
             obj = self.domain.get_object(info.guid)
             relname = typemap.get(type(obj))
             if relname:
                 relations[relname].append({
                     'uuid': obj.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 })
             elif obj:
                 print('unhandled group member {}'.format(
                     obj
                 ))
+
+        for relname in typemap.values():
+            relations.setdefault(relname, self.null_relation)
 
         return relations
 
@@ -90,7 +83,7 @@ class Group(abstract.Item):
                     {
                         'funktionsnavn': "Active Directory gruppemedlem",
                         'brugervendtnoegle': self.dn,
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ]
             },
@@ -98,7 +91,7 @@ class Group(abstract.Item):
                 'organisationfunktiongyldighed': [
                     {
                         'gyldighed': 'Aktiv',
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ]
             },
@@ -112,15 +105,29 @@ class GroupClass(abstract.Item):
 
     moxtype = 'Klasse'
 
+    @property
+    def uuid(self):
+        return self.parent.classid
+
     def data(self):
+        relations = {
+            'ansvarlig': []
+        }
+
+        if self.manager:
+            relations['ansvarlig'].append({
+                'uuid': self.manager,
+                'virkning': self.virkning,
+            })
+
         return {
-            'note': self.entry.description.value,
+            'note': self['description'],
             'attributter': {
                 'klasseegenskaber': [
                     {
-                        'titel': self.entry.name.value,
+                        'titel': self['name'],
                         'brugervendtnoegle': self.dn,
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ],
             },
@@ -128,17 +135,9 @@ class GroupClass(abstract.Item):
                 'klassepubliceret': [
                     {
                         'publiceret': 'Publiceret',
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ]
             },
-            'relationer': {
-                'ansvarlig': [
-                    {
-                        'uuid': util.unpack_extended_dn(manager).guid,
-                        'virkning': util.virkning(self.entry.whenChanged),
-                    }
-                    for manager in (self.entry.managedBy or [])
-                ],
-            },
+            'relationer': relations,
         }

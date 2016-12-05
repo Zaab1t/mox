@@ -3,8 +3,14 @@ from __future__ import print_function, absolute_import, unicode_literals
 import collections
 import datetime
 import itertools
+import uuid
 
 import ldap3
+import tzlocal
+
+
+def now():
+    return datetime.datetime.now(tzlocal.get_localzone())
 
 
 def _dt2str(dt):
@@ -14,11 +20,14 @@ def _dt2str(dt):
 
     '''
 
-    if not dt or dt.year >= 9000 or dt.year < 1900:
-        return 'infinity'
     assert isinstance(dt, datetime.datetime)
 
-    return dt.isoformat()
+    if dt.year >= 9000:
+        return 'infinity'
+    elif dt.year < 1900:
+        return '-infinity'
+
+    return dt.astimezone(tzlocal.get_localzone()).isoformat()
 
 
 def virkning(from_=None, to=None):
@@ -29,15 +38,26 @@ def virkning(from_=None, to=None):
     'infinity' for any unspecified or out-of-bounds values.
 
     '''
+
     if isinstance(from_, ldap3.Attribute):
         from_ = from_.value
     if isinstance(to, ldap3.Attribute):
         to = to.value
 
     return {
-        'from': _dt2str(from_),
-        'to': _dt2str(to),
+        'from': _dt2str(from_ or now()),
+        'to': _dt2str(to or datetime.datetime.max),
     }
+
+
+def to_uuid(s):
+    assert isinstance(s, basestring), 'expected string, not {!r}'.format(s)
+    if len(s) == 16:
+        return str(uuid.UUID(bytes_le=s))
+    elif len(s) == 36:
+        return str(uuid.UUID(hex=s))
+    else:
+        raise ValueError(s)
 
 
 def unpack_binary_dn(attr, values):
@@ -56,6 +76,7 @@ _nulldn = _extended_dn(None, None, None)
 def unpack_extended_dn(value):
     r = dict()
 
+    assert len(value) > 1, repr(value)
     while value[0] == '<':
         part, value = value.split(';', 1)
 
@@ -76,6 +97,9 @@ def unpack_extended_dns(attr, values):
 
 
 def get_parent_dn(dn):
+    if dn[0] == '<':
+        dn = unpack_extended_dn(dn).dn
+
     if dn.startswith('OU='):
         dn = ','.join(ldap3.utils.dn.to_dn(dn)[1:])
 

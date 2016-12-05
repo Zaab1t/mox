@@ -3,7 +3,6 @@ from __future__ import print_function, absolute_import, unicode_literals
 from . import abstract
 from . import group
 from . import user
-from . import util
 
 __all__ = (
     'OrgUnit',
@@ -14,50 +13,41 @@ class OrgUnit(abstract.Item):
     moxtype = 'OrganisationEnhed'
 
     USED_LDAP_ATTRS = (
-        'cn',
         'description',
         'name',
-        'objectGuid',
-        'whenChanged',
+        'objectGUID',
     )
-
-    def _is_user_group(self, dn):
-        return (dn not in self.domain.entry.wellKnownObjects.values and
-                dn not in self.domain.entry.otherWellKnownObjects)
-
-    def _validate_group(self, attrname, group_dns):
-        return filter(self._is_user_group, group_dns)
 
     def data(self):
         relations = {
             'tilknyttedeenheder': [
                 {
                     'uuid': subunit.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 }
                 for subunit in self.get_children(OrgUnit)
-            ],
+            ] or self.null_relation,
             'tilknyttedefunktioner': [
                 {
                     'uuid': contained_group.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 }
                 for contained_group in self.get_children(group.Group)
-            ],
+            ] or self.null_relation,
             'tilknyttedebrugere': [
                 {
                     'uuid': contained_user.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 }
                 for contained_user in self.get_children(user.User)
-            ],
+            ] or self.null_relation,
         }
 
         if self.domain != self:
             relations['tilhoerer'] = [
                 {
                     'uuid': self.domain.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 },
             ]
 
@@ -65,19 +55,18 @@ class OrgUnit(abstract.Item):
             relations['overordnet'] = [
                 {
                     'uuid': self.parent.uuid,
-                    'virkning': util.virkning(self.entry.whenChanged),
+                    'virkning': self.virkning,
                 },
             ]
 
         return {
-            'note': (self.entry.description.value
-                     if 'description' in self.entry else None),
+            'note': self['description'],
             'attributter': {
                 'organisationenhedegenskaber': [
                     {
                         'enhedsnavn': self.name,
                         'brugervendtnoegle': self.name,
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ],
             },
@@ -85,7 +74,7 @@ class OrgUnit(abstract.Item):
                 'organisationenhedgyldighed': [
                     {
                         'gyldighed': 'Aktiv',
-                        'virkning': util.virkning(self.entry.whenChanged),
+                        'virkning': self.virkning,
                     },
                 ],
             },

@@ -1,5 +1,7 @@
 from __future__ import print_function, absolute_import, unicode_literals
 
+import datetime
+
 from . import abstract
 from . import util
 
@@ -16,44 +18,46 @@ class User(abstract.Item):
 
     USED_LDAP_ATTRS = (
         'accountExpires',
-        'cn',
         'description',
         'displayName',
-        'distinguishedName',
         'isCriticalSystemObject',
         'isDeleted',
+        'manager',
         'name',
-        'objectGuid',
+        'objectGUID',
         'userAccountControl',
         'userPrincipalName',
-        'whenChanged',
+        'whenCreated',
     )
 
     @staticmethod
     def skip(entry):
-        return abstract.Item.skip(entry) or entry.isCriticalSystemObject.value
+        return abstract.Item.skip(entry) or entry['isCriticalSystemObject']
+
+    @property
+    def virkning(self):
+        expires = self['accountExpires']
+
+        # why yes, AD, an early expiry can indeed mean never -- which
+        # makes zero sense...
+        if expires.year <= 1900:
+            expires = datetime.datetime.max
+
+        return util.virkning(to=expires)
 
     def data(self):
         # userAccountControl is a bitfield, containing the 'account is
         # disabled' field, among others
-        disabled = bool(self.entry.userAccountControl.value & 2)
-
-        parent_relation = {
-            'DC': 'tilknyttedeorganisationer',
-            'OU': 'tilknyttedeenheder',
-        }[self.parent.dn.split('=', 1)[0].upper()]
+        disabled = bool(self['userAccountControl'] & 2)
 
         return {
-            'note': self.entry.description.value,
+            'note': self['description'],
             'attributter': {
                 'brugeregenskaber': [
                     {
-                        'brugernavn':
-                            self.entry.displayName.value,
-                        'brugervendtnoegle':
-                            self.entry.userPrincipalName.value,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'brugernavn': self['displayName'],
+                        'brugervendtnoegle': self['userPrincipalName'],
+                        'virkning': self.virkning,
                     },
                 ],
             },
@@ -61,26 +65,32 @@ class User(abstract.Item):
                 'brugergyldighed': [
                     {
                         'gyldighed': 'Aktiv' if not disabled else 'Inaktiv',
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'virkning': self.virkning,
                     },
                 ],
             },
             'relationer': {
                 'tilknyttedefunktioner': [
                     {
-                        'uuid': util.unpack_extended_dn(group_dn).guid,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'uuid': group_id,
+                        'virkning': self.virkning,
                     }
-                    for group_dn in self.entry.memberOf or []
+                    for group_id in self.groups
+                ] or self.null_relation,
+
+                'tilknyttedeorganisationer': [
+                    {
+                        'uuid': (self.parent.uuid if self.parent == self.domain
+                                 else ''),
+                        'virkning': self.virkning,
+                    }
                 ],
 
-                parent_relation: [
+                'tilknyttedeenheder': [
                     {
-                        'uuid': self.parent.uuid,
-                        'virkning': util.virkning(self.entry.whenChanged,
-                                                  self.entry.accountExpires),
+                        'uuid': (self.parent.uuid if self.parent != self.domain
+                                 else ''),
+                        'virkning': self.virkning,
                     }
                 ],
             },
