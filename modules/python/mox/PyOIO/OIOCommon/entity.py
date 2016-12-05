@@ -76,7 +76,7 @@ class OIOEntity(object):
         elif response.status_code == 404:
             raise ItemNotFoundException(self.id, self.ENTITY_CLASS, self.path)
         else:
-            reponse.raise_for_status()
+            response.raise_for_status()
 
     def parse_json(self):
         if len(self.json.get('registreringer', [])) == 0:
