@@ -20,6 +20,12 @@ class OIOPubliceret(Item):
     def from_json(registrering, json):
         return OIOPubliceret(registrering, json)
 
+    def to_json(self):
+        return {
+            'publiceret': self.publiceret,
+            'virkning': self.virkning.to_json(),
+        }
+
 class OIOPubliceretContainer(ItemContainer):
 
     @staticmethod

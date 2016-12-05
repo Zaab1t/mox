@@ -19,6 +19,13 @@ class OIORelationContainer(object):
                         relationcontainer.add(type, OIORelation.from_json(registrering, relation, type))
         return relationcontainer
 
+    def to_json(self):
+        return {
+            key: self.items[key].to_json()
+            for key in self.registrering.entity.relation_keys
+            if key in self
+        } if self.items else None
+
     def add(self, type, item):
         if not type in self.items:
             self.items[type] = ItemContainer()
@@ -138,6 +145,19 @@ class OIORelation(Item):
     @staticmethod
     def from_json(registrering, json, type):
         return OIORelation(registrering, json, type)
+
+    def to_json(self):
+        r = {
+            'virkning': self.virkning.to_json(),
+        }
+
+        if self.uuid is not None:
+            r['uuid'] = self.uuid
+
+        if self.urn is not None:
+            r['urn'] = self.urn
+
+        return r
 
     def __str__(self):
         return "Relation from %s to %s (%s)" % (self.registrering.entity, self.uuid, self.virkning)

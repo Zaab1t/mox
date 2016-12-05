@@ -1,4 +1,4 @@
-from .util import parse_time
+from .util import parse_time, unparse_time
 
 class Virkning(object):
     """ Virkning is a fairly broadly used class. Its purpose when attached to
@@ -26,6 +26,14 @@ class Virkning(object):
 
     def in_effect(self, time):
         return self.from_time < time and time < self.to_time
+
+    def to_json(self):
+        return {
+            'from': unparse_time(self.from_time),
+            'from_included': self.from_included,
+            'to': unparse_time(self.to_time),
+            'to_included': self.to_included,
+        }
 
     def __repr__(self):
         return 'Virkning(%s, %s)' % (self.from_time, self.to_time)

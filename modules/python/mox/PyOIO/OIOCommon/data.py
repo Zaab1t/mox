@@ -14,6 +14,9 @@ class Item(object):
     def get(self, name, default=None):
         return self._data.get(name, default)
 
+    def to_json(self):
+        raise NotImplementedError
+
 
 class ItemContainer(list):
 
@@ -23,3 +26,8 @@ class ItemContainer(list):
     @property
     def current(self):
         return self.at(datetime.now(pytz.utc))
+
+    def to_json(self):
+        return [
+            child.to_json() for child in self
+        ]

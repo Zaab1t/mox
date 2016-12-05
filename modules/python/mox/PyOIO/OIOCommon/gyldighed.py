@@ -16,6 +16,12 @@ class OIOGyldighed(Item):
     def from_json(registrering, json):
         return OIOGyldighed(registrering, json)
 
+    def to_json(self):
+        return {
+            'gyldighed': self.gyldighed,
+            'virkning': self.virkning.to_json(),
+        }
+
 class OIOGyldighedContainer(ItemContainer):
 
     @staticmethod

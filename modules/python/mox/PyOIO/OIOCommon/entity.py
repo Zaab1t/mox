@@ -1,3 +1,4 @@
+import difflib
 import requests
 import json
 import pytz
@@ -236,3 +237,70 @@ class OIORegistrering(object):
             return getattr(self._relationer, name)
         if name in self.entity.egenskaber_keys:
             return self.get_egenskab(name)
+
+    def to_json(self):
+        entity = self.entity
+        tilstande = {}
+
+        if entity.GYLDIGHED_KEY:
+            tilstande[entity.GYLDIGHED_KEY] = \
+                self.gyldigheder.to_json()
+
+        if entity.PUBLICERET_KEY:
+            tilstande[entity.PUBLICERET_KEY] = \
+                self.publiceringer.to_json()
+
+        return {
+            'note': self.note,
+            'attributter': {
+                entity.EGENSKABER_KEY: self.egenskaber.to_json()
+            },
+            'tilstande': tilstande,
+            'relationer': self.relationer.to_json(),
+        }
+
+    _NOOP_KEYS = (
+        'tiltidspunkt', 'fratidspunkt',
+        'from_included', 'from', 'to_included',
+        'brugerref', 'livscykluskode', 'note',
+    )
+
+    @staticmethod
+    def _cmp_filter(data):
+        if isinstance(data, dict):
+            d = dict(
+                (k, v) for k, v in zip(
+                    data.keys(),
+                    map(OIORegistrering._cmp_filter, data.values()),
+                ) if v and k not in OIORegistrering._NOOP_KEYS
+            )
+            return d
+        elif isinstance(data, list):
+            return sorted([OIORegistrering._cmp_filter(v) for v in data if v])
+        else:
+            return data
+
+    def equivalent_to(self, other, cb=None):
+        mydata = self.to_json()
+
+        if isinstance(other, dict):
+            otherdata = other
+        elif isinstance(other, OIORegistrering):
+            otherdata = other.to_json
+        else:
+            return False
+
+        def to_s(data):
+            return json.dumps(self._cmp_filter(data),
+                              indent=2, sort_keys=True).splitlines(True)
+
+        r = self._cmp_filter(mydata) == self._cmp_filter(otherdata)
+
+        if not r:
+            print(''.join(difflib.unified_diff(
+                to_s(mydata), to_s(otherdata),
+                'stored %s (%s)' % (self.entity.ENTITY_CLASS, self.entity.id),
+                'new %s (%s)' % (self.entity.ENTITY_CLASS, self.entity.id),
+            )))
+
+        return r

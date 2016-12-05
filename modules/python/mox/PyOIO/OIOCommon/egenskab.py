@@ -19,7 +19,16 @@ class OIOEgenskab(Item):
         if name in self.registrering.entity.egenskaber_keys:
             return self.get(name, u'')
 
+    def to_json(self):
+        r = {
+            key: self[key]
+            for key in self.registrering.entity.egenskaber_keys
+            if self[key]
+        }
 
+        r['virkning'] = self.virkning.to_json()
+
+        return r
 class OIOEgenskabContainer(ItemContainer):
 
     @staticmethod
