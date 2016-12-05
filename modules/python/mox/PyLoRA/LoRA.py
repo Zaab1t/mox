@@ -172,9 +172,11 @@ class Lora(object):
             path = '/' + objcls.basepath
             method = 'POST'
 
-        self.log('{} {}'.format('Import' if uuid else 'Create', path))
+        kwargs.setdefault('method', method)
 
-        response = self.request(self.host + path, method=method, **kwargs)
+        self.log('{} {}'.format(kwargs['method'], path))
+
+        response = self.request(self.host + path, **kwargs)
 
         self.__check_response(response)
 
