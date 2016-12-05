@@ -67,6 +67,9 @@ class Lora(object):
         if isinstance(msg, unicode):
             msg = msg.encode("utf-8")
 
+        if response.status_code == requests.codes.not_found:
+            raise KeyError(msg)
+
         raise RestAccessException(msg)
 
     def log(self, *args):
