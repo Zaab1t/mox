@@ -11,8 +11,8 @@ class Klasse(OIOEntity):
     PUBLICERET_KEY = 'klassepubliceret'
     basepath = '/klassifikation/klasse'
 
-    egenskaber_keys = OIOEntity.egenskaber_keys + ['klassebeskrivelse', 'klassetitel', 'klasseeksempel', 'klasseomfang', 'aendringsnotat', 'retskilde', 'soegeord']
-    name_key = 'klassetitel'
+    egenskaber_keys = OIOEntity.egenskaber_keys + ['klassebeskrivelse', 'titel', 'klasseeksempel', 'klasseomfang', 'aendringsnotat', 'retskilde', 'soegeord']
+    name_key = 'titel'
 
     relation_keys = [
         'ansvarlig', 'ejer', 'erstatter', 'facet', 'lovligekombinationer'
