@@ -3,7 +3,7 @@ from data import Item, ItemContainer
 class OIOEgenskab(Item):
     def __init__(self, registrering, data):
         super(OIOEgenskab, self).__init__(registrering, data)
-        self.brugervendtnoegle = data['brugervendtnoegle']
+        self.brugervendtnoegle = data.get('brugervendtnoegle', '')
 
     @property
     def name(self):

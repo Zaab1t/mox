@@ -1,6 +1,7 @@
 import requests
 import json
 import pytz
+import weakref
 from datetime import datetime
 from PyOIO.OIOCommon import OIORelation
 from PyOIO.OIOCommon.util import parse_time
@@ -131,7 +132,7 @@ class OIORegistrering(object):
     to_time = None
 
     def __init__(self, entity, data, registrering_number):
-        self.entity = entity
+        self._entity = weakref.ref(entity)
         self.json = data
         self.registrering_number = registrering_number
         self.attributter = {}
@@ -148,7 +149,7 @@ class OIORegistrering(object):
 
         if self.entity.GYLDIGHED_KEY:
             self.gyldigheder = OIOGyldighedContainer.from_json(
-                self, self.json['tilstande'][self.entity.GYLDIGHED_KEY]
+                self, self.json['tilstande'].get(self.entity.GYLDIGHED_KEY)
             )
         else:
             self.gyldigheder = None
@@ -177,6 +178,10 @@ class OIORegistrering(object):
     @property
     def lora(self):
         return self.entity.lora
+
+    @property
+    def entity(self):
+        return self._entity()
 
     def in_effect(self, time):
         return self.from_time < time and time < self.to_time
@@ -227,7 +232,7 @@ class OIORegistrering(object):
         return self.entity.after(self)
 
     def __getattr__(self, name):
-        if name in self.entity.relation_keys:
-            return getattr(self._relationer, name, [])
+        if name in self.entity.relation_map:
+            return getattr(self._relationer, name)
         if name in self.entity.egenskaber_keys:
             return self.get_egenskab(name)

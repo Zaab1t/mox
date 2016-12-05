@@ -47,6 +47,8 @@ class OIORelationContainer(object):
     def __getattr__(self, name):
         return self.get(name, [])
 
+    def __contains__(self, name):
+        return name in self.items
 
 class OIORelation(Item):
 
