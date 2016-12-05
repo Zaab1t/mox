@@ -22,20 +22,20 @@ class Lora(object):
         cls.ENTITY_CLASS: cls for cls in objecttypes
     }
 
-    def __init__(self, host, username, password, verbose=False):
+    def __init__(self, host, username, password, log=None):
         """ Args:
         host:   string - the hostname of the LoRa instance
         username:   string - the username to authenticate as
         password:   string - the corresponding password
-        verbose:   boolean - set to true to enable logging
+        log:        string - path of the log file, '-' for stdout
         """
         self.host = host
 
         self.username = username
         self.password = password
         self.session = requests.Session()
+        self.logfile = log
         self.obtain_token()
-        self._verbose = verbose
         self.all_items = pylru.lrucache(10000)
 
     def __repr__(self):
@@ -73,12 +73,26 @@ class Lora(object):
 
         raise RestAccessException(msg)
 
+    @property
+    def verbose(self):
+        '''True when logging is enabled.'''
+        return bool(self.logfile)
+
     def log(self, *args):
-        if self._verbose:
+        if not self.logfile:
+            pass
+        elif self.logfile == '-':
             print(*args)
+        else:
+            with open(self.logfile, 'a') as fp:
+                print(*args, file=fp)
+                fp.flush()
 
     def log_error(self, *args):
-        print(*args)
+        self.log('ERROR:', *args)
+
+        if self.logfile != '-':
+            print('ERROR:', *args)
 
     def obtain_token(self):
         response = self.session.post(
