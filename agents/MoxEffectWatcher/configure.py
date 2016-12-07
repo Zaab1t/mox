@@ -31,7 +31,7 @@ parser.add_argument('--rest-pass', action='store')
 
 args = parser.parse_args()
 
-configfile = DIR + "/moxeffectwatcher/settings.conf"
+configfile = DIR + "/moxeffectwatcher/moxeffectwatcher.conf"
 
 config_map = [
     ('amqp_host', 'moxeffectwatcher.amqp.host'),

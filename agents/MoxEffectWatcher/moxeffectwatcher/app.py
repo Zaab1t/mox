@@ -18,8 +18,8 @@ import threading
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
-configfile = DIR + "/settings.conf"
-config = read_properties_files("/srv/mox/mox.conf", configfile)
+configfile = DIR + "/moxeffectwatcher.conf"
+config = read_properties_files(configfile)
 
 class MoxEffectWatcher(object):
 
