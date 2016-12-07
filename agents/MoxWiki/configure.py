@@ -33,7 +33,7 @@ parser.add_argument('--rest-pass', action='store')
 
 args = parser.parse_args()
 
-configfile = DIR + "/moxwiki/settings.conf"
+configfile = DIR + "/moxwiki/moxwiki.conf"
 
 config_map = [
     ('wiki_host', 'moxwiki.wiki.host'),

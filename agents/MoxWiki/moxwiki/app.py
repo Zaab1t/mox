@@ -22,9 +22,9 @@ from moxwiki.exceptions import TemplateNotFoundException
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
-configfile = DIR + "/settings.conf"
+configfile = DIR + "/moxwiki.conf"
 statefile = DIR + "/state.json"
-config = read_properties_files("/srv/mox/mox.conf", configfile)
+config = read_properties_files(configfile)
 template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'), undefined=SilentUndefined, trim_blocks=True, lstrip_blocks=True)
 
 class MoxWiki(object):
