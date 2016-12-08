@@ -137,15 +137,23 @@ class Domain(orgunit.OrgUnit):
         obj = objtype(self._get_parent(attrs), dn, attrs)
         return [obj] + obj.nested_objects
 
-    def poll(self):
-        seen = []
-
+    def _fetch_changes(self):
+        # TODO: handle LDAPSocketReceiveError -- but in a way that
+        # avoids the possibility of dropping changes. for now, we
+        # let the process fail so we can restart the
+        # synchronisation
         for item in self._dirsync.loop():
-            seen += self._process_item(item)
+            yield item
 
         while self._dirsync.more_results:
             for item in self._dirsync.loop():
-                seen += self._process_item(item)
+                yield item
+
+    def poll(self):
+        seen = []
+
+        for item in self._fetch_changes():
+            seen += self._process_item(item)
 
         return seen
 
