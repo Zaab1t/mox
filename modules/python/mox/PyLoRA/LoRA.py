@@ -22,21 +22,21 @@ class Lora(object):
         cls.ENTITY_CLASS: cls for cls in objecttypes
     }
 
-    def __init__(self, host, username, password, log=None):
+    def __init__(self, host, auth=None, log=None):
         """ Args:
         host:   string - the hostname of the LoRa instance
-        username:   string - the username to authenticate as
+        auth:   AuthBase - authenticator for the LoRa server
         password:   string - the corresponding password
         log:        string - path of the log file, '-' for stdout
         """
         self.host = host
-
-        self.username = username
-        self.password = password
-        self.session = requests.Session()
         self.logfile = log
-        self.obtain_token()
+
+        self.session = requests.Session()
         self.all_items = pylru.lrucache(10000)
+
+        if auth:
+            self.session.auth = auth
 
     def __repr__(self):
         return 'Lora("%s")' % (self.host)
@@ -94,33 +94,12 @@ class Lora(object):
         if self.logfile != '-':
             print('ERROR:', *args)
 
-    def obtain_token(self):
-        response = self.session.post(
-            self.host + "/get-token",
-            data={
-                'username': self.username,
-                'password': self.password,
-                'sts': self.host + ":9443/services/wso2carbon-sts?wsdl"
-            }
-        )
-        if not response.text.startswith("saml-gzipped"):
-            try:
-                errormessage = json.loads(response.text)['message']
-            except ValueError:
-                errormessage = response.text
-            raise TokenException(errormessage)
-        self.session.headers['Authorization'] = response.text
-
     def request(self, url, method='GET', **kwargs):
         method = method.upper()
         response = self.session.request(method, url, **kwargs)
-        if response.status_code == 401:
+        if not response.ok:
             # Token may be expired. Get a new one and try again
-            self.obtain_token()
-            response = self.session.request(method, url, **kwargs)
-            if response.status_code == 401:
-                # Failed with a new token. Bail
-                raise RestAccessException(response.text)
+            raise RestAccessException(response.text)
         return response
 
     def get_uuids_of_type(self, objecttype):
