@@ -150,14 +150,16 @@ class OIORegistrering(object):
 
         if self.entity.GYLDIGHED_KEY:
             self.gyldigheder = OIOGyldighedContainer.from_json(
-                self, self.json['tilstande'].get(self.entity.GYLDIGHED_KEY)
+                self,
+                self.json.get('tilstande', {}).get(self.entity.GYLDIGHED_KEY),
             )
         else:
             self.gyldigheder = None
 
         if self.entity.PUBLICERET_KEY:
             self.publiceringer = OIOPubliceretContainer.from_json(
-                self, self.json['tilstande'][self.entity.PUBLICERET_KEY]
+                self,
+                self.json.get('tilstande', {}).get(self.entity.PUBLICERET_KEY),
             )
         else:
             self.publiceringer = None
