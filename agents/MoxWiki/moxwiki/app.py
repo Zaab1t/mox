@@ -54,7 +54,7 @@ class MoxWiki(object):
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion']
+        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion', 'klasse', 'klassifikation', 'facet']
 
         try:
             self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange, queue_name='moxwiki', queue_parameters={'durable': True, 'exclusive': False})
@@ -121,7 +121,7 @@ class MoxWiki(object):
         message = NotificationMessage.parse(properties.headers, body)
         if message:
             print "Got a notification"
-            if message.objecttype in self.accepted_object_types:
+            if message.objecttype.lower() in self.accepted_object_types:
                 print "Object type '%s' accepted" % message.objecttype
                 try:
                     if message.lifecyclecode == 'Slettet':
@@ -137,7 +137,7 @@ class MoxWiki(object):
         message = EffectUpdateMessage.parse(properties.headers, body)
         if message:
             print "Got an effect update"
-            if message.objecttype in self.accepted_object_types:
+            if message.objecttype.lower() in self.accepted_object_types:
                 print "Object type '%s' accepted" % message.objecttype
                 try:
                     self.update(message.objecttype, message.objectid)
