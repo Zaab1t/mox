@@ -298,8 +298,8 @@ class OIORegistrering(object):
 
         r = self._cmp_filter(mydata) == self._cmp_filter(otherdata)
 
-        if not r:
-            print(''.join(difflib.unified_diff(
+        if not r and self.lora.verbose:
+            self.lora.log(''.join(difflib.unified_diff(
                 to_s(mydata), to_s(otherdata),
                 'stored %s (%s)' % (self.entity.ENTITY_CLASS, self.entity.id),
                 'new %s (%s)' % (self.entity.ENTITY_CLASS, self.entity.id),
