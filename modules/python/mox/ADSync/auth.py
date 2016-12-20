@@ -21,7 +21,6 @@ class SAMLTokenAuth(requests.auth.AuthBase):
         self.idp_url = 'https://%s/adfs/services/trust/13/UsernameMixed' % (
             host,
         )
-        endpoint = endpoint
 
         with open(os.path.join(os.path.dirname(__file__),
                                'soap-request.xml.in'), 'r') as fp:
