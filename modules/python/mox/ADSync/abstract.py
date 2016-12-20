@@ -205,7 +205,7 @@ class Item(object):
                 touched_ids.add(id)
 
         # update parent
-        if parent != self.parent:
+        if parent and parent != self.parent:
             touched_ids.update((parent.uuid, self.parent.uuid))
             self.parent = parent
 
