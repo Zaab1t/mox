@@ -40,8 +40,10 @@ class User(abstract.Item):
 
         # why yes, AD, an early expiry can indeed mean never -- which
         # makes zero sense...
-        if expires.year <= 1900:
+        if expires.year <= 1900 or expires.year >= 9000:
             expires = datetime.datetime.max
+        elif expires <= util.now():
+            return super(User, self).virkning
 
         return util.virkning(to=expires)
 
