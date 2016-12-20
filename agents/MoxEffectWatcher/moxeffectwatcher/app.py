@@ -49,7 +49,7 @@ class MoxEffectWatcher(object):
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion' ,'klasse', 'klassifikation', 'facet']
+        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion', 'klasse', 'klassifikation', 'facet']
 
         self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange_in, queue_name='moxeffectwatcher', queue_parameters={'durable': True, 'exclusive': False})
         self.notification_listener.callback = self.handle_message
@@ -240,9 +240,12 @@ class Emitter:
             raise Exception("Already running")
         self.running = threading.Event()
         self.sleeper = None
+        run_again = False
         session = self.sessionclass()
         next_effectborder = session.query(EffectBorder).order_by(EffectBorder.time).first()
-        effectborders = session.query(EffectBorder).filter_by(time=next_effectborder.time).all()
+        effectborders = []
+        if next_effectborder:
+            effectborders = session.query(EffectBorder).filter_by(time=next_effectborder.time).all()
 
         if len(effectborders) > 0:
             time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
@@ -250,8 +253,10 @@ class Emitter:
             seconds = timediff.total_seconds()
             if seconds < 0:
                 self.handle_effectborders(effectborders, session, not initialrun or self.notify_unsynced)
+                run_again = True
             elif seconds == 0:
                 self.handle_effectborders(effectborders, session)
+                run_again = True
             else:
                 print "Waiting for %d seconds, until %s updates at %s" % (seconds, next_effectborder.uuid, unicode(time))
                 self.sleeper = threading.Timer(seconds, self.run)
@@ -260,7 +265,7 @@ class Emitter:
         session.close()
         self.running.set()
         self.running = None
-        if self.sleeper is None:
+        if run_again:
             self.run()
 
     def cb(self, channel, method, properties, body):
@@ -270,7 +275,7 @@ class Emitter:
         if self.sleeper:
             self.sleeper.cancel()
             self.running = None
-        else:
+        elif self.running is not None:
             self.running.wait()
 
     def start(self, initial=True):
