@@ -163,9 +163,6 @@ $DIR/agents/MoxDocumentUpload/install.py
 $DIR/agents/MoxDocumentUpload/configure.py --rest-host "$REST_HOST" --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange "mox.documentconvert"
 
 $DIR/agents/MoxTest/install.sh
-$DIR/agents/MoxDocumentDownload/install.sh
-$DIR/agents/MoxDocumentUpload/install.sh
-$DIR/agents/MoxTest/install.sh
 
 $DIR/agents/MoxDocumentDownload/install.py
 $DIR/agents/MoxDocumentDownload/configure.py --rest-host "$REST_HOST"
