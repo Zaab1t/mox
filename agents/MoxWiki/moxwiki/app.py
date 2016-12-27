@@ -29,7 +29,6 @@ template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'),
 
 class MoxWiki(object):
 
-    statefile = DIR + "/state.json"
     state = None
     state_changed = False
 
