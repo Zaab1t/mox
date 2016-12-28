@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 import subprocess
-from installutils import VirtualEnv, File
+from installutils import VirtualEnv, LogFile
 
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 MOXDIR = os.path.abspath(DIR + "/../..")
@@ -32,9 +32,7 @@ if created:
 
 subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/']).wait()
 
-program_log = File('/var/log/mox/moxwiki.log')
-program_log.touch()
-program_log.chown('mox')
-program_log.chmod('644')
+program_log = LogFile('/var/log/mox/moxwiki.log')
+program_log.create()
 
 subprocess.Popen(['sudo', 'service', "%moxwiki", 'restart']).wait()
