@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, SmallInteger, String, DateTime
 
 Base = declarative_base()
+
 
 class EffectBorder(Base):
     __tablename__ = 'effectborder'
@@ -13,7 +16,14 @@ class EffectBorder(Base):
     object_type = Column(String)
 
     def __repr__(self):
-        return "<EffectBorder(objecttype='%s', uuid='%s', time='%s', type=%d)>" % (self.object_type, self.uuid, unicode(self.time), self.effect_type)
+        return u"<EffectBorder" \
+               u"(objecttype='%s', uuid='%s', time='%s', type=%d)>" % (
+                    self.object_type,
+                    self.uuid,
+                    unicode(self.time),
+                    self.effect_type
+                )
+
 
 class Synchronization(Base):
     __tablename__ = 'synchronization'
@@ -22,4 +32,6 @@ class Synchronization(Base):
     time = Column(DateTime)
 
     def __repr__(self):
-        return "<Synchronization(host='%s', time='%s')>" % (self.host, unicode(self.time))
+        return "<Synchronization(host='%s', time='%s')>" % (
+            self.host, unicode(self.time)
+        )

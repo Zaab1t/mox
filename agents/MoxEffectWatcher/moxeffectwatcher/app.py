@@ -6,7 +6,9 @@ from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from PyLoRA import Lora
 from PyOIO.OIOCommon.exceptions import InvalidOIOException
-from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion
+from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem
+from PyOIO.organisation import Organisation, OrganisationEnhed
+from PyOIO.organisation import OrganisationFunktion
 from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 from datetime import datetime
 import pytz
@@ -21,6 +23,7 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 configfile = DIR + "/moxeffectwatcher.conf"
 config = read_properties_files(configfile)
 
+
 class MoxEffectWatcher(object):
 
     EFFECT_START = EffectUpdateMessage.TYPE_BEGIN
@@ -31,7 +34,10 @@ class MoxEffectWatcher(object):
     emitter = None
     session = None
     closing = False
-    notify_unsynced = False # When we start up, do we emit messages that should have been sent while we were down?
+
+    # When we start up, do we emit messages that
+    # should have been sent while we were down?
+    notify_unsynced = False
 
     def __init__(self):
 
@@ -49,12 +55,22 @@ class MoxEffectWatcher(object):
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion', 'klasse', 'klassifikation', 'facet']
+        self.accepted_object_types = [
+            'bruger', 'interessefaellesskab', 'itsystem',
+            'organisation', 'organisationenhed', 'organisationfunktion',
+            'klasse', 'klassifikation', 'facet'
+        ]
 
-        self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange_in, queue_name='moxeffectwatcher', queue_parameters={'durable': True, 'exclusive': False})
+        self.notification_listener = MessageListener(
+            amqp_username, amqp_password, amqp_host,
+            amqp_exchange_in, queue_name='moxeffectwatcher',
+            queue_parameters={'durable': True, 'exclusive': False}
+        )
         self.notification_listener.callback = self.handle_message
 
-        self.notification_sender = MessageSender(amqp_username, amqp_password, amqp_host, amqp_exchange_out)
+        self.notification_sender = MessageSender(
+            amqp_username, amqp_password, amqp_host, amqp_exchange_out
+        )
 
         self.lora = Lora(rest_host, rest_username, rest_password)
 
@@ -81,9 +97,15 @@ class MoxEffectWatcher(object):
         session = self.sessionclass()
         Base.metadata.create_all(self.db)
 
-        lastsync = session.query(Synchronization).filter_by(host=self.lora.host).order_by(sqlalchemy.desc(Synchronization.time)).first()
+        lastsync = session.query(Synchronization).filter_by(
+            host=self.lora.host
+        ).order_by(
+            sqlalchemy.desc(Synchronization.time)
+        ).first()
         if lastsync:
-            print "Last synchronization with %s was %s" % (self.lora.host, lastsync.time.strftime('%Y-%m-%d %H:%M:%S'))
+            print "Last synchronization with %s was %s" % (
+                self.lora.host, lastsync.time.strftime('%Y-%m-%d %H:%M:%S')
+            )
             print "Getting latest changes from REST server"
         else:
             print "Has never synchronized before"
@@ -91,18 +113,24 @@ class MoxEffectWatcher(object):
 
         uuids = {}
         newsync = datetime.now(pytz.utc)
-        for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
-            # for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion]:
-            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync.time if lastsync else None)
+        for type in [
+            Bruger, Interessefaellesskab, ItSystem,
+            Organisation, OrganisationEnhed, OrganisationFunktion,
+            Facet, Klasse, Klassifikation
+        ]:
+            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(
+                type, lastsync.time if lastsync else None
+            )
         for entity_class, type_uuids in uuids.items():
             for uuid in type_uuids:
-                item = self.lora.get_object(uuid, entity_class, force_refresh=True)
+                item = self.lora.get_object(
+                    uuid, entity_class, force_refresh=True
+                )
                 self.update(item)
 
         session.add(Synchronization(host=self.lora.host, time=newsync))
         session.commit()
         session.close()
-
 
     def handle_message(self, channel, method, properties, body):
         message = NotificationMessage.parse(properties.headers, body)
@@ -111,12 +139,18 @@ class MoxEffectWatcher(object):
             if message.objecttype.lower() in self.accepted_object_types:
                 print "Object type '%s' accepted" % message.objecttype
                 try:
-                    item = self.lora.get_object(message.objectid, message.objecttype, force_refresh=True)
+                    item = self.lora.get_object(
+                        message.objectid,
+                        message.objecttype,
+                        force_refresh=True
+                    )
                     if message.lifecyclecode == 'Slettet':
-                        print "Lifecyclecode is '%s', performing delete" % message.lifecyclecode
+                        print "Lifecyclecode is '%s', performing delete" % \
+                              message.lifecyclecode
                         self.delete(item)
                     else:
-                        print "Lifecyclecode is '%s', performing update" % message.lifecyclecode
+                        print "Lifecyclecode is '%s', performing update" % \
+                              message.lifecyclecode
                         self.update(item)
                 except InvalidOIOException as e:
                     print e
@@ -134,16 +168,28 @@ class MoxEffectWatcher(object):
         changed = False
         object_type = item.ENTITY_CLASS
         session = self.sessionclass()
-        # session.query(EffectBorder).filter_by(object_type=object_type, uuid=item.id).delete()
-        db_objects = session.query(EffectBorder).filter_by(object_type=object_type, uuid=item.id).all()
+        # session.query(EffectBorder).filter_by(
+        #   object_type=object_type, uuid=item.id
+        # ).delete()
+        db_objects = session.query(EffectBorder).filter_by(
+            object_type=object_type, uuid=item.id
+        ).all()
         if len(db_objects) > 0:
             for db_object in db_objects:
                 session.delete(db_object)
             changed = True
 
         effects = self.get_effects(item)
-        start_times = [effect.from_time for effect in effects if self.accept_time(effect.from_time)]
-        end_times = [effect.to_time for effect in effects if self.accept_time(effect.to_time)]
+        start_times = [
+            effect.from_time
+            for effect in effects
+            if self.accept_time(effect.from_time)
+        ]
+        end_times = [
+            effect.to_time
+            for effect in effects
+            if self.accept_time(effect.to_time)
+        ]
         for time in start_times:
             effect_type = self.EFFECT_START
             if time in end_times:
@@ -153,7 +199,9 @@ class MoxEffectWatcher(object):
         for time in end_times:
             if time in start_times:
                 continue
-            if self.store(session, object_type, item.id, time, self.EFFECT_END):
+            if self.store(
+                    session, object_type, item.id, time, self.EFFECT_END
+            ):
                 changed = True
         if changed:
             session.commit()
@@ -163,31 +211,41 @@ class MoxEffectWatcher(object):
     def store(self, session, objecttype, uuid, time, effect_type):
         time = time.astimezone(pytz.utc)
         print "%s %s updates at %s" % (objecttype, uuid, time)
-        obj = session.query(EffectBorder).filter_by(object_type=objecttype, uuid=uuid, time=time).first()
+        obj = session.query(EffectBorder).filter_by(
+            object_type=objecttype, uuid=uuid, time=time
+        ).first()
         if obj:
             if obj.effect_type != effect_type:
                 obj.effect_type = effect_type
                 session.add(obj)
                 return True
         else:
-            obj = EffectBorder(object_type=objecttype, uuid=uuid, time=time, effect_type=effect_type)
+            obj = EffectBorder(
+                object_type=objecttype,
+                uuid=uuid,
+                time=time,
+                effect_type=effect_type
+            )
             session.add(obj)
             return True
 
     def get_effects(self, item, merge=True):
         effects = []
         for registrering in item.registreringer:
-            if hasattr(registrering, 'gyldigheder') and registrering.gyldigheder:
+            if hasattr(registrering, 'gyldigheder') and \
+                    registrering.gyldigheder:
                 for gyldighed in registrering.gyldigheder:
                     effects.append(gyldighed.virkning)
-            if hasattr(registrering, 'publiceringer') and registrering.publiceringer:
+            if hasattr(registrering, 'publiceringer') and \
+                    registrering.publiceringer:
                 for publicering in registrering.publiceringer:
                     effects.append(publicering.virkning)
             if registrering.egenskaber:
                 for egenskab in registrering.egenskaber:
                     effects.append(egenskab.virkning)
             if registrering.relationer:
-                for type,relations in registrering.relationer.items.iteritems():
+                for type, relations in \
+                        registrering.relationer.items.iteritems():
                     for relation in relations:
                         effects.append(relation.virkning)
         if merge and len(effects) > 1:
@@ -217,7 +275,8 @@ class Emitter:
     running = None
     sleeper = None
 
-    def __init__(self, sessionclass, notification_sender, notify_unsynced=False):
+    def __init__(self, sessionclass,
+                 notification_sender, notify_unsynced=False):
         self.sessionclass = sessionclass
         self.notification_sender = notification_sender
         self.notify_unsynced = notify_unsynced
@@ -226,7 +285,14 @@ class Emitter:
         messages = []
         for effectborder in effectborders:
             if send:
-                messages.append(EffectUpdateMessage(effectborder.uuid, effectborder.object_type, effectborder.effect_type, effectborder.time))
+                messages.append(
+                    EffectUpdateMessage(
+                        effectborder.uuid,
+                        effectborder.object_type,
+                        effectborder.effect_type,
+                        effectborder.time
+                    )
+                )
             session.delete(effectborder)
         if len(messages) == 1:
             print "Emitting an EffectUpdateMessage"
@@ -242,23 +308,37 @@ class Emitter:
         self.sleeper = None
         run_again = False
         session = self.sessionclass()
-        next_effectborder = session.query(EffectBorder).order_by(EffectBorder.time).first()
+        next_effectborder = session.query(
+            EffectBorder
+        ).order_by(
+            EffectBorder.time
+        ).first()
         effectborders = []
         if next_effectborder:
-            effectborders = session.query(EffectBorder).filter_by(time=next_effectborder.time).all()
+            effectborders = session.query(
+                EffectBorder
+            ).filter_by(
+                time=next_effectborder.time
+            ).all()
 
         if len(effectborders) > 0:
-            time = pytz.utc.localize(effectborders[0].time).astimezone(pytz.utc)
+            time = pytz.utc.localize(effectborders[0].time).\
+                astimezone(pytz.utc)
             timediff = time - datetime.now(pytz.utc)
             seconds = timediff.total_seconds()
             if seconds < 0:
-                self.handle_effectborders(effectborders, session, not initialrun or self.notify_unsynced)
+                self.handle_effectborders(
+                    effectborders,
+                    session,
+                    not initialrun or self.notify_unsynced
+                )
                 run_again = True
             elif seconds == 0:
                 self.handle_effectborders(effectborders, session)
                 run_again = True
             else:
-                print "Waiting for %d seconds, until %s updates at %s" % (seconds, next_effectborder.uuid, unicode(time))
+                print "Waiting for %d seconds, until %s updates at %s" % \
+                      (seconds, next_effectborder.uuid, unicode(time))
                 self.sleeper = threading.Timer(seconds, self.run)
                 self.sleeper.start()
         session.commit()
@@ -290,6 +370,6 @@ class Emitter:
         self.notification_sender.close()
 
 
-
-main = MoxEffectWatcher()
-main.start()
+if __name__ == '__main__':
+    main = MoxEffectWatcher()
+    main.start()
