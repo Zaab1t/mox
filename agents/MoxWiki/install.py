@@ -18,8 +18,8 @@ args = parser.parse_args()
 
 # ------------------------------------------------------------------------------
 
-install_log = File("%s/install.log" % DIR)
-install_log.touch()
+install_log = LogFile("%s/install.log" % DIR)
+install_log.create()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
 created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename)
@@ -35,4 +35,4 @@ subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/']).wa
 program_log = LogFile('/var/log/mox/moxwiki.log')
 program_log.create()
 
-subprocess.Popen(['sudo', 'service', "%moxwiki", 'restart']).wait()
+subprocess.Popen(['sudo', 'service', "moxwiki", 'restart']).wait()
