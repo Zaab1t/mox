@@ -3,6 +3,7 @@
 import os
 import json
 import pytz
+
 from datetime import datetime
 from dateutil import parser as dateparser
 
@@ -16,9 +17,9 @@ from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem, Organisat
 from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 
 from jinja2 import Environment, PackageLoader
-from moxwiki.jinja2_override.silentundefined import SilentUndefined
 
-from moxwiki.exceptions import TemplateNotFoundException
+from .jinja2_override.silentundefined import SilentUndefined
+from .exceptions import TemplateNotFoundException
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -177,6 +178,7 @@ class MoxWiki(object):
         page.delete(reason="Deleted in LoRa instance %s" % self.lora.host)
 
 
-main = MoxWiki()
-main.sync()
-main.listen()
+if __name__ == '__main__':
+    main = MoxWiki()
+    main.sync()
+    main.listen()
