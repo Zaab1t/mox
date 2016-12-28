@@ -5,7 +5,8 @@ import json
 from uuid import UUID
 from PyOIO.OIOCommon.entity import OIOEntity
 from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem
-from PyOIO.organisation Organisation, OrganisationEnhed, OrganisationFunktion
+from PyOIO.organisation import Organisation, OrganisationEnhed
+from PyOIO.organisation import OrganisationFunktion
 from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 from PyOIO.OIOCommon.exceptions import InvalidUUIDException
 from PyOIO.OIOCommon.exceptions import InvalidObjectTypeException
