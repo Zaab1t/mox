@@ -5,7 +5,7 @@ import os
 import sys
 import subprocess
 import socket
-from installutils import VirtualEnv
+from installutils import VirtualEnv, File, LogFile
 
 domain = socket.getfqdn(socket.gethostname())
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -20,18 +20,23 @@ args = parser.parse_args()
 
 # ------------------------------------------------------------------------------
 
-logfilename = "%s/install.log" % DIR
-fp = open(logfilename, 'w')
-fp.close()
+install_log = File("%s/install.log" % DIR)
+install_log.touch()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
-created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, logfilename)
+created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename)
 if created:
     print "Running setup.py"
-    virtualenv.run(logfilename, "python " + DIR + "/setup.py develop")
+    virtualenv.run(install_log.filename, "python " + DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer(MOXDIR)
 
 # ------------------------------------------------------------------------------
 
-proc = subprocess.Popen(['sudo', 'cp', "%s/setup/moxeffectwatcher.conf" % DIR, '/etc/init/'])
-proc.wait()
+subprocess.Popen(['sudo', 'cp', "%s/setup/moxeffectwatcher.conf" % DIR, '/etc/init/']).wait()
+
+# ------------------------------------------------------------------------------
+
+program_log = LogFile('/var/log/mox/moxwiki.log')
+program_log.create()
+
+subprocess.Popen(['sudo', 'service', "moxeffectwatcher", 'restart']).wait()
