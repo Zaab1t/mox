@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 import subprocess
-from installutils import VirtualEnv
+from installutils import VirtualEnv, File
 
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 MOXDIR = os.path.abspath(DIR + "/../..")
@@ -18,22 +18,23 @@ args = parser.parse_args()
 
 # ------------------------------------------------------------------------------
 
-logfilename = "%s/install.log" % DIR
-fp = open(logfilename, 'w')
-fp.close()
+install_log = File("%s/install.log" % DIR)
+install_log.touch()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
-created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, logfilename)
+created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename)
 if created:
     print "Running setup.py"
-    virtualenv.run(logfilename, "python " + DIR + "/setup.py develop")
+    virtualenv.run(install_log.filename, "python " + DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer(MOXDIR)
 
 # ------------------------------------------------------------------------------
 
 subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/']).wait()
 
-fp = open("/var/log/mox/moxwiki.log", 'w')
-fp.close()
+program_log = File('/var/log/mox/moxwiki.log')
+program_log.touch()
+program_log.chown('mox')
+program_log.chmod('644')
 
 subprocess.Popen(['sudo', 'service', "%moxwiki", 'restart']).wait()
