@@ -17,12 +17,12 @@ class EffectBorder(Base):
 
     def __repr__(self):
         return u"<EffectBorder" \
-               u"(objecttype='%s', uuid='%s', time='%s', type=%d)>" % (
-                    self.object_type,
-                    self.uuid,
-                    unicode(self.time),
-                    self.effect_type
-                )
+            u"(objecttype='%s', uuid='%s', time='%s', type=%d)>" % (
+                self.object_type,
+                self.uuid,
+                unicode(self.time),
+                self.effect_type
+            )
 
 
 class Synchronization(Base):

@@ -18,7 +18,7 @@ parser.add_argument('-n', '--keep-virtualenv', action='store_true')
 
 args = parser.parse_args()
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 install_log = LogFile("%s/install.log" % DIR)
 install_log.create()
@@ -32,13 +32,13 @@ if created:
     virtualenv.run(install_log.filename, "python " + DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer(MOXDIR)
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 subprocess.Popen(
     ['sudo', 'cp', "%s/setup/moxeffectwatcher.conf" % DIR, '/etc/init/']
 ).wait()
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 program_log = LogFile('/var/log/mox/moxwiki.log')
 program_log.create()
