@@ -19,14 +19,12 @@ setup(
     zip_safe=False,
     install_requires=[
         # -*- Extra requirements: -*-
-        'promise==0.4.2',
-        'pika==0.10.0',
-        'python-dateutil==2.5.3',
-        'pytz==2016.7',
-        'pylru',
+        'promise>=0.4.2',
+        'pika>=0.10.0',
+        'python-dateutil>=2.5.3',
+        'pytz>=2016.7',
         'requests',
         'SQLAlchemy',
-        'pytz',
 
         # These are to satisfy the requests module with SSL support
         'pyOpenSSL',
