@@ -5,7 +5,7 @@ import os
 import sys
 import subprocess
 import socket
-from installutils import VirtualEnv, File, LogFile
+from installutils import VirtualEnv, LogFile
 
 domain = socket.getfqdn(socket.gethostname())
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -20,8 +20,8 @@ args = parser.parse_args()
 
 # ------------------------------------------------------------------------------
 
-install_log = File("%s/install.log" % DIR)
-install_log.touch()
+install_log = LogFile("%s/install.log" % DIR)
+install_log.create()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
 created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename)
