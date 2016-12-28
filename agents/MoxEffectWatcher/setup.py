@@ -23,6 +23,7 @@ setup(
         'pika>=0.10.0',
         'python-dateutil>=2.5.3',
         'pytz>=2016.7',
+        'pylru',
         'requests',
         'SQLAlchemy',
 
