@@ -16,21 +16,27 @@ parser.add_argument('-n', '--keep-virtualenv', action='store_true')
 
 args = parser.parse_args()
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 install_log = LogFile("%s/install.log" % DIR)
 install_log.create()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
-created = virtualenv.create(args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename)
+created = virtualenv.create(
+    args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename
+)
 if created:
     print "Running setup.py"
     virtualenv.run(install_log.filename, "python " + DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer(MOXDIR)
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/']).wait()
+subprocess.Popen(
+    [
+        'sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/'
+    ]
+).wait()
 
 program_log = LogFile('/var/log/mox/moxwiki.log')
 program_log.create()

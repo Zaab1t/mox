@@ -7,13 +7,17 @@ import pytz
 from datetime import datetime
 from dateutil import parser as dateparser
 
-from agent.amqpclient import MessageListener, CannotConnectException, InvalidCredentialsException
+from agent.amqpclient import MessageListener
+from agent.amqpclient import CannotConnectException
+from agent.amqpclient import InvalidCredentialsException
 from agent.message import NotificationMessage, EffectUpdateMessage
 from agent.config import read_properties_files, MissingConfigKeyError
 from SeMaWi import Semawi
 from PyLoRA import Lora
 from PyOIO.OIOCommon.exceptions import InvalidOIOException
-from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion
+from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem
+from PyOIO.organisation import Organisation, OrganisationEnhed
+from PyOIO.organisation import OrganisationFunktion
 from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 
 from jinja2 import Environment, PackageLoader
@@ -26,7 +30,13 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 configfile = DIR + "/moxwiki.conf"
 statefile = DIR + "/state.json"
 config = read_properties_files(configfile)
-template_environment = Environment(loader=PackageLoader('moxwiki', 'templates'), undefined=SilentUndefined, trim_blocks=True, lstrip_blocks=True)
+template_environment = Environment(
+    loader=PackageLoader('moxwiki', 'templates'),
+    undefined=SilentUndefined,
+    trim_blocks=True,
+    lstrip_blocks=True
+)
+
 
 class MoxWiki(object):
 
@@ -54,10 +64,21 @@ class MoxWiki(object):
         except KeyError as e:
             raise MissingConfigKeyError(str(e))
 
-        self.accepted_object_types = ['bruger', 'interessefaellesskab', 'itsystem', 'organisation', 'organisationenhed', 'organisationfunktion', 'klasse', 'klassifikation', 'facet']
+        self.accepted_object_types = [
+            'bruger', 'interessefaellesskab', 'itsystem',
+            'organisation', 'organisationenhed', 'organisationfunktion',
+            'klasse', 'klassifikation', 'facet'
+        ]
 
         try:
-            self.notification_listener = MessageListener(amqp_username, amqp_password, amqp_host, amqp_exchange, queue_name='moxwiki', queue_parameters={'durable': True, 'exclusive': False})
+            self.notification_listener = MessageListener(
+                amqp_username,
+                amqp_password,
+                amqp_host,
+                amqp_exchange,
+                queue_name='moxwiki',
+                queue_parameters={'durable': True, 'exclusive': False}
+            )
             self.notification_listener.callback = self.callback
         except (CannotConnectException, InvalidCredentialsException) as e:
             print "Warning: %s" % e
@@ -86,8 +107,12 @@ class MoxWiki(object):
     def sync(self):
 
         try:
-            lastsync = dateparser.parse(self.state['sync'][self.lora.host]['lastsync'])
-            print "Last synchronization with %s was %s" % (self.lora.host, lastsync.strftime('%Y-%m-%d %H:%M:%S'))
+            lastsync = dateparser.parse(
+                self.state['sync'][self.lora.host]['lastsync']
+            )
+            print "Last synchronization with %s was %s" % (
+                self.lora.host, lastsync.strftime('%Y-%m-%d %H:%M:%S')
+            )
             print "Getting latest changes from REST server"
         except:
             print "Has never synchronized before"
@@ -96,16 +121,21 @@ class MoxWiki(object):
 
         uuids = {}
         newsync = datetime.now(pytz.utc)
-        for type in [Bruger, Interessefaellesskab, ItSystem, Organisation, OrganisationEnhed, OrganisationFunktion, Facet, Klasse, Klassifikation]:
-            uuids[type.ENTITY_CLASS] = self.lora.get_uuids_of_type(type, lastsync)
+        for type in [
+            Bruger, Interessefaellesskab, ItSystem,
+            Organisation, OrganisationEnhed, OrganisationFunktion,
+            Facet, Klasse, Klassifikation
+        ]:
+            uuids[type.ENTITY_CLASS] = \
+                self.lora.get_uuids_of_type(type, lastsync)
         for entity_class, type_uuids in uuids.items():
             for uuid in type_uuids:
                 item = self.lora.get_object(uuid, entity_class)
                 self.update(item.ENTITY_CLASS, uuid, True)
 
-        if not 'sync' in self.state:
+        if 'sync' not in self.state:
             self.state['sync'] = {}
-        if not self.lora.host in self.state['sync']:
+        if self.lora.host not in self.state['sync']:
             self.state['sync'][self.lora.host] = {}
         self.state['sync'][self.lora.host]['lastsync'] = newsync.isoformat()
         self.state_changed = True
@@ -125,10 +155,12 @@ class MoxWiki(object):
                 print "Object type '%s' accepted" % message.objecttype
                 try:
                     if message.lifecyclecode == 'Slettet':
-                        print "lifecyclecode is '%s', performing delete" % message.lifecyclecode
+                        print "lifecyclecode is '%s', performing delete" % \
+                              message.lifecyclecode
                         self.delete(message.objecttype, message.objectid)
                     else:
-                        print "lifecyclecode is '%s', performing update" % message.lifecyclecode
+                        print "lifecyclecode is '%s', performing update" % \
+                              message.lifecyclecode
                         self.update(message.objecttype, message.objectid)
                 except InvalidOIOException as e:
                     print e
@@ -147,7 +179,9 @@ class MoxWiki(object):
                 print "Object type '%s' rejected" % message.objecttype
 
     def update(self, objecttype, objectid, accept_cached=False):
-        instance = self.lora.get_object(objectid, objecttype, not accept_cached)
+        instance = self.lora.get_object(
+            objectid, objecttype, not accept_cached
+        )
         title = instance.current.brugervendtnoegle
         pagename = "%s_%s" % (title, objectid)
 
@@ -160,16 +194,27 @@ class MoxWiki(object):
                 old_pagename = "%s_%s" % (old_title, objectid)
                 old_page = self.semawi.site.Pages[old_pagename]
                 if old_page.exists:
-                    print "Moving wiki page %s to %s" % (old_pagename, pagename)
-                    old_page.move(pagename, reason="LoRa object %s has changed name from %s to %s" % (objectid, old_title, title))
+                    print "Moving wiki page %s to %s" % \
+                          (old_pagename, pagename)
+                    old_page.move(
+                        pagename,
+                        reason="LoRa object %s has changed "
+                               "name from %s to %s" %
+                               (objectid, old_title, title)
+                    )
 
         template = template_environment.get_template("%s.txt" % objecttype)
         if template is None:
             raise TemplateNotFoundException("%s.txt" % objecttype)
-        pagetext = template.render({'object': instance, 'begin': '{{', 'end': '}}'})
+        pagetext = template.render(
+            {'object': instance, 'begin': '{{', 'end': '}}'}
+        )
 
         if pagetext != page.text():
-            page.save(pagetext, summary="Imported from LoRA instance %s" % self.lora.host)
+            page.save(
+                pagetext,
+                summary="Imported from LoRA instance %s" % self.lora.host
+            )
 
     def delete(self, objecttype, objectid):
         instance = self.lora.get_object(objectid, objecttype)
