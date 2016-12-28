@@ -29,8 +29,11 @@ if created:
     virtualenv.run(logfilename, "python " + DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer(MOXDIR)
 
-
 # ------------------------------------------------------------------------------
 
-proc = subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/'])
-proc.wait()
+subprocess.Popen(['sudo', 'cp', "%s/setup/moxwiki.conf" % DIR, '/etc/init/']).wait()
+
+fp = open("/var/log/mox/moxwiki.log", 'w')
+fp.close()
+
+subprocess.Popen(['sudo', 'service', "%moxwiki", 'restart']).wait()
