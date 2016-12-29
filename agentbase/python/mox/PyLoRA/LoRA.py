@@ -60,7 +60,6 @@ class Lora(object):
             data={
                 'username': self.username,
                 'password': self.password,
-                'sts': self.host + ":9443/services/wso2carbon-sts?wsdl"
             }
         )
         if not response.text.startswith("saml-gzipped"):
