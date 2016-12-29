@@ -101,7 +101,10 @@ class Lora(object):
             )
         response = self.request(url, headers=self.get_headers())
         data = json.loads(response.text)
-        return data['results'][0]
+        if 'results' in data:
+            return data['results'][0]
+        else:
+            raise RestAccessException(data)
 
     def load_all_of_type(self, objecttype):
         if issubclass(objecttype, OIOEntity):
