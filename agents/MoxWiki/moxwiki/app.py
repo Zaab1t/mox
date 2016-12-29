@@ -182,8 +182,9 @@ class MoxWiki(object):
         instance = self.lora.get_object(
             objectid, objecttype, not accept_cached
         )
+        oio_class_name = instance.oio_class_name
         title = instance.current.brugervendtnoegle
-        pagename = "%s_%s" % (title, objectid)
+        pagename = "%s_%s_%s" % (oio_class_name, title, objectid)
 
         page = self.semawi.site.Pages[pagename]
 
@@ -191,17 +192,22 @@ class MoxWiki(object):
             previous_registrering = instance.current.before
             if previous_registrering:
                 old_title = previous_registrering.brugervendtnoegle
-                old_pagename = "%s_%s" % (old_title, objectid)
-                old_page = self.semawi.site.Pages[old_pagename]
-                if old_page.exists:
-                    print "Moving wiki page %s to %s" % \
-                          (old_pagename, pagename)
-                    old_page.move(
-                        pagename,
-                        reason="LoRa object %s has changed "
-                               "name from %s to %s" %
-                               (objectid, old_title, title)
-                    )
+                old_pagenames = [
+                    "%s_%s" % (old_title, objectid),
+                    "%s_%s_%s" % (oio_class_name, old_title, objectid)
+                ]
+                for old_pagename in old_pagenames:
+                    old_page = self.semawi.site.Pages[old_pagename]
+                    if old_page.exists:
+                        print "Moving wiki page %s to %s" % \
+                              (old_pagename, pagename)
+                        old_page.move(
+                            pagename,
+                            reason="LoRa object %s has changed "
+                                   "name from %s to %s" %
+                                   (objectid, old_title, title)
+                        )
+                        page = self.semawi.site.Pages[pagename]
 
         template = template_environment.get_template("%s.txt" % objecttype)
         if template is None:

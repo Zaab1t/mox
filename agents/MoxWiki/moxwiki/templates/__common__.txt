@@ -3,7 +3,7 @@
     {% set comma=joiner(",") %}
     {% for item in list.current %}
         {% if item.uuid and item.current.brugervendtnoegle -%}
-             {{ comma() }}{{ item.current.brugervendtnoegle }}_{{ item.id }}
+             {{ comma() }}{{ item.oio_class_name }}{{ item.current.brugervendtnoegle }}_{{ item.id }}
         {%- elif item.urn -%}
             {{ comma() }}{{ item.urn }}
         {%- endif %}

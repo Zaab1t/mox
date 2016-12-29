@@ -146,6 +146,14 @@ class OIOEntity(object):
         if index > -1 and index < len(self.registreringer) - 1:
             return self.registreringer[index + 1]
 
+    @property
+    def oio_class_name(self):
+        prefix = "OIO"
+        name = self.ENTITY_CLASS
+        if not name.startswith(prefix):
+            name = prefix + name
+        return name
+
 
 @OIOEntity.registrering_class
 class OIORegistrering(object):
