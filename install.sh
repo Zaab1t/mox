@@ -159,7 +159,7 @@ $DIR/agents/MoxTest/install.sh
 $DIR/agents/MoxDocumentDownload/install.py $REINSTALL_VIRTUALENVS
 $DIR/agents/MoxDocumentDownload/configure.py --rest-host "$REST_HOST"
 
-$DIR/agents/MoxEffectWatcher/install.py
+$DIR/agents/MoxEffectWatcher/install.py $REINSTALL_VIRTUALENVS
 $DIR/agents/MoxEffectWatcher/configure.py --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange-in "mox.notifications" --amqp-exchange-out "mox.notifications" --rest-host "$REST_HOST" --rest-user "$REST_USER" --rest-pass "$REST_PASS"
 
 JAVA_HOME="$OLD_JAVA_HOME"
