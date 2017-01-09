@@ -75,7 +75,7 @@ class UploadedDocumentMessage(AuthorizedMessage):
         operation = headers[Message.HEADER_OPERATION]
         if operation == UploadedDocumentMessage.OPERATION:
             authorization = headers.get(Message.HEADER_AUTHORIZATION)
-            uuid = data.get(UploadedDocumentMessage.KEY_UUID)
+            uuid = headers.get(Message.HEADER_OBJECTREFERENCE)
             if authorization is not None and uuid is not None:
                 return UploadedDocumentMessage(uuid, authorization)
 
