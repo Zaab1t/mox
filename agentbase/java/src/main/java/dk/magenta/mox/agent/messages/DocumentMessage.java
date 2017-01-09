@@ -5,7 +5,7 @@ import dk.magenta.mox.agent.json.JSONObject;
 /**
  * Created by lars on 25-01-16.
  */
-public abstract class DocumentMessage extends Message {
+public abstract class DocumentMessage extends AuthorizedMessage {
 
     public static final String OPERATION_CREATE = "create";
     public static final String OPERATION_READ = "read";

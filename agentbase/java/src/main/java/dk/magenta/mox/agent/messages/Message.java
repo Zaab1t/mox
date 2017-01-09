@@ -26,12 +26,8 @@ public abstract class Message {
 
     public static final long version = 1L;
 
-    private String authorization;
-
-    public Message(String authorization) {
-        this.authorization = authorization;
+    public Message() {
     }
-
 
     public JSONObject getJSON() {
         JSONObject object = new JSONObject();
@@ -39,7 +35,6 @@ public abstract class Message {
     }
     public Headers getHeaders() {
         Headers headers = new Headers();
-        headers.put(HEADER_AUTHORIZATION, this.authorization);
         headers.put(HEADER_MESSAGEID, UUID.randomUUID().toString());
         headers.put(HEADER_MESSAGEVERSION, version);
         return headers;
