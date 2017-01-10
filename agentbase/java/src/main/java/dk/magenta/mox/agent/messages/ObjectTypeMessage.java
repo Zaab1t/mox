@@ -12,15 +12,6 @@ public abstract class ObjectTypeMessage extends Message {
     public static final String HEADER_OPERATION = "operation";
     public static final String HEADER_QUERY = "query";
 
-
-    public static final String OPERATION_CREATE = "create";
-    public static final String OPERATION_READ = "read";
-    public static final String OPERATION_SEARCH = "search";
-    public static final String OPERATION_LIST = "list";
-    public static final String OPERATION_UPDATE = "update";
-    public static final String OPERATION_PASSIVATE = "passivate";
-    public static final String OPERATION_DELETE = "delete";
-
     public String getOperationName() {
         return null;
     }

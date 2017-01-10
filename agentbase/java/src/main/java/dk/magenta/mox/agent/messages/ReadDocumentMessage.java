@@ -12,7 +12,7 @@ public class ReadDocumentMessage extends ObjectInstanceMessage {
 
     public static final String messageType = "ReadDocumentMessage";
 
-    public static final String OPERATION = "read";
+    private static final String OPERATION = "read";
 
     public ReadDocumentMessage(String authorization, String objectType, UUID uuid) {
         super(authorization, objectType, uuid);

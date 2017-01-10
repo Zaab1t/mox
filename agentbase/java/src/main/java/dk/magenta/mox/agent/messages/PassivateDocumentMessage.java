@@ -14,7 +14,7 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
 
     protected String note = "";
 
-    public static final String OPERATION = "passivate";
+    private static final String OPERATION = "passivate";
 
     public PassivateDocumentMessage(String authorization, String objectType, UUID uuid, String note) {
         super(authorization, objectType, uuid);
