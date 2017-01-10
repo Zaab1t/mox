@@ -12,6 +12,9 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
 
     public static final String messageType = "PassivateDocumentMessage";
 
+    public static final String KEY_NOTE = "Note";
+    public static final String KEY_LIFECYCLE = "livscyklus";
+
     protected String note = "";
 
     private static final String OPERATION = "passivate";
@@ -49,8 +52,8 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
     @Override
     public JSONObject getJSON() {
         JSONObject object = super.getJSON();
-        object.put("Note", this.note);
-        object.put("livscyklus", "Passiv");
+        object.put(PassivateDocumentMessage.KEY_NOTE, this.note);
+        object.put(PassivateDocumentMessage.KEY_LIFECYCLE, "Passiv");
         return object;
     }
 
@@ -68,7 +71,7 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
                     headers.getString(Message.HEADER_AUTHORIZATION),
                     headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE),
                     headers.getString(ObjectInstanceMessage.HEADER_OBJECTID),
-                    data.optString("livscyklus")
+                    data.optString(PassivateDocumentMessage.KEY_NOTE)
             );
         }
         return null;

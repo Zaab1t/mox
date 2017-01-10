@@ -12,6 +12,8 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
 
     public static final String messageType = "DeleteDocumentMessage";
 
+    public static final String KEY_NOTE = "Note";
+
     private String note = null;
 
     private static final String OPERATION = "delete";
@@ -46,7 +48,7 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
     @Override
     public JSONObject getJSON() {
         JSONObject object = super.getJSON();
-        object.put("Note", this.note);
+        object.put(DeleteDocumentMessage.KEY_NOTE, this.note);
         return object;
     }
 
@@ -64,7 +66,7 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
                     headers.getString(Message.HEADER_AUTHORIZATION),
                     headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE),
                     headers.getString(ObjectInstanceMessage.HEADER_OBJECTID),
-                    data.optString("Note")
+                    data.optString(DeleteDocumentMessage.KEY_NOTE)
             );
         }
         return null;

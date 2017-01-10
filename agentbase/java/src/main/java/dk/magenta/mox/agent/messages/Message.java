@@ -18,11 +18,6 @@ public abstract class Message {
     public static final String HEADER_MESSAGETYPE = "beskedtype";
     public static final String HEADER_TYPE = "type";
 
-    public static final String HEADER_TYPE_VALUE_MANUAL = "Manuel";
-
-    public static final String HEADER_OBJECTTYPE_VALUE_DOCUMENT = "dokument";
-
-
     public static final long version = 1L;
 
     private String authorization = null;
