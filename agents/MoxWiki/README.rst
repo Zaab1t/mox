@@ -42,7 +42,7 @@ update method is again run as above.
 Configuration
 -------------
 
-The MoxWiki service reads the following configuration values:
+The MoxWiki agent reads the following configuration values:
 
 :moxwiki.wiki.host:
     Address of the MediaWiki server, e.g. https://en.wikipedia.org
