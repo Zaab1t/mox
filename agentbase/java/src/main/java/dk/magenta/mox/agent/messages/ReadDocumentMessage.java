@@ -20,15 +20,15 @@ public class ReadDocumentMessage extends InstanceDocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_READ;
     }
 
     public static ReadDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (ReadDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             String uuid = headers.optString(Message.HEADER_OBJECTID);
             if (uuid != null && objectType != null) {
                 return new ReadDocumentMessage(authorization, objectType, uuid);

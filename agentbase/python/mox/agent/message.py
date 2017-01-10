@@ -1,6 +1,7 @@
 from datetime import datetime
 from dateutil import parser as dateparser
 import uuid
+import json
 
 
 class Message(object):
@@ -12,6 +13,7 @@ class Message(object):
     HEADER_OBJECTREFERENCE = "objektreference"
     HEADER_OBJECTTYPE = "objekttype"
     HEADER_OBJECTTYPE_VALUE_DOCUMENT = "dokument"
+    HEADER_QUERY = "query"
 
     HEADER_TYPE = "type"
     HEADER_TYPE_VALUE_MANUAL = "Manuel"
@@ -21,34 +23,26 @@ class Message(object):
 
     version = 1
     operation = ""
+    authorization = None
 
-    def __init__(self):
-        pass
+    def __init__(self, authorization=None):
+        self.authorization = authorization
 
     def getData(self):
         return {}
 
     def getHeaders(self):
-        return {
+        headers = {
             Message.HEADER_MESSAGEID: str(uuid.uuid4()),
             Message.HEADER_MESSAGEVERSION: self.version,
             Message.HEADER_OPERATION: self.operation
         }
+        if self.authorization is not None:
+            headers[Message.HEADER_AUTHORIZATION] = self.authorization
+        return headers
 
 
-class AuthorizedMessage(Message):
-
-    def __init__(self, authorization):
-        super(AuthorizedMessage, self).__init__()
-        self.authorization = authorization
-
-    def getHeaders(self):
-        object = super(AuthorizedMessage, self).getHeaders()
-        object[Message.HEADER_AUTHORIZATION] = self.authorization
-        return object
-
-
-class UploadedDocumentMessage(AuthorizedMessage):
+class UploadedDocumentMessage(Message):
 
     KEY_UUID = "uuid"
     operation = "upload"
@@ -80,23 +74,110 @@ class UploadedDocumentMessage(AuthorizedMessage):
                 return UploadedDocumentMessage(uuid, authorization)
 
 
-# A message pertaining to an object
-class ObjectMessage(Message):
+class ObjectTypeMessage(Message):
 
-    def __init__(self, objectid, objecttype):
-        super(ObjectMessage, self).__init__()
-        self.objectid = objectid
+    operation = None
+
+    def __init__(self, objecttype, authorization=None):
+        super(ObjectTypeMessage, self).__init__(authorization)
         self.objecttype = objecttype
 
     def getHeaders(self):
-        headers = super(ObjectMessage, self).getHeaders()
-        headers[self.HEADER_OBJECTID] = self.objectid
+        headers = super(ObjectTypeMessage, self).getHeaders()
         headers[self.HEADER_OBJECTTYPE] = self.objecttype
+        if self.operation is not None:
+            headers[self.HEADER_OPERATION] = self.operation
         return headers
 
 
+# A message pertaining to an object
+class ObjectInstanceMessage(ObjectTypeMessage):
+
+    def __init__(self, objectid, objecttype, authorization=None):
+        super(ObjectInstanceMessage, self).__init__(objecttype, authorization)
+        self.objectid = objectid
+
+    def getHeaders(self):
+        headers = super(ObjectInstanceMessage, self).getHeaders()
+        headers[self.HEADER_OBJECTID] = self.objectid
+        return headers
+
+
+class ListDocumentMessage(ObjectTypeMessage):
+
+    operation = 'list'
+
+    def __init__(self, objecttype, uuids, authorization):
+        super(ListDocumentMessage, self).__init__(objecttype, authorization)
+        if not type(uuids) == list:
+            uuids = [uuids]
+        self.uuids = uuids
+
+    def getHeaders(self):
+        headers = super(ListDocumentMessage, self).getHeaders()
+        headers[self.HEADER_QUERY] = json.dumps({'uuid': self.uuids})
+        return headers
+
+
+class CreateDocumentMessage(ObjectTypeMessage):
+
+    operation = 'create'
+
+    def __init__(self, objecttype, uuids, data, authorization):
+        super(CreateDocumentMessage, self).__init__(objecttype, authorization)
+        self.data = data
+
+    def getData(self):
+        return self.data
+
+
+class SearchDocumentMessage(ObjectTypeMessage):
+
+    operation = 'search'
+
+    def __init__(self, objecttype, authorization):
+        super(SearchDocumentMessage, self).__init__(objecttype, authorization)
+        self.queryDict = {}
+
+    def addQueryParam(self, key, value):
+        if key not in self.queryDict:
+            self.queryDict[key] = []
+        self.queryDict[key].append(value)
+
+    def getHeaders(self):
+        headers = super(SearchDocumentMessage, self).getHeaders()
+        headers[self.HEADER_QUERY] = json.dumps(self.queryDict)
+        return headers
+
+
+class PassivateDocumentMessage(ObjectInstanceMessage):
+
+    operation = 'passivate'
+
+    def __init__(self, objectid, objecttype, authorization, note=None):
+        super(PassivateDocumentMessage, self).__init__(objectid, objecttype, authorization)
+        self.note = note
+
+    def getData(self):
+        return {'Note': self.note, 'livscyklus': 'Passiv'}
+
+
+class DeleteDocumentMessage(ObjectInstanceMessage):
+
+    operation = 'delete'
+
+    def __init__(self, objectid, objecttype, authorization, note=None):
+        super(DeleteDocumentMessage, self).__init__(objectid, objecttype, authorization)
+        self.note = note
+
+    def getData(self):
+        if self.note is not None:
+            return {'Note': self.note}
+        return {}
+
+
 # A message saying that an object has been updated in the database
-class NotificationMessage(ObjectMessage):
+class NotificationMessage(ObjectInstanceMessage):
 
     HEADER_LIFECYCLE_CODE = "livscykluskode"
     MESSAGE_TYPE = 'notification'
@@ -127,7 +208,7 @@ class NotificationMessage(ObjectMessage):
 
 
 # A message saying that an object's effective period has begun or ended
-class EffectUpdateMessage(ObjectMessage):
+class EffectUpdateMessage(ObjectInstanceMessage):
 
     TYPE_BEGIN = 1
     TYPE_END = 2
@@ -191,3 +272,20 @@ class EffectUpdateMessage(ObjectMessage):
                 )
             except:
                 pass
+
+
+class ReadDocumentMessage(ObjectInstanceMessage):
+
+    operation = 'read'
+
+
+class UpdateDocumentMessage(ObjectTypeMessage):
+
+    operation = 'update'
+
+    def __init__(self, objecttype, data, authorization):
+        super(UpdateDocumentMessage, self).__init__(objecttype, authorization)
+        self.data = data
+
+    def getData(self):
+        return self.data

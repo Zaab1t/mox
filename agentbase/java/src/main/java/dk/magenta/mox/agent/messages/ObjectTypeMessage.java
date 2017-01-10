@@ -5,7 +5,10 @@ import dk.magenta.mox.agent.json.JSONObject;
 /**
  * Created by lars on 25-01-16.
  */
-public abstract class DocumentMessage extends AuthorizedMessage {
+public abstract class ObjectTypeMessage extends Message {
+
+    public static final String HEADER_OBJECTTYPE = "objekttype";
+    public static final String HEADER_OPERATION = "operation";
 
     public static final String OPERATION_CREATE = "create";
     public static final String OPERATION_READ = "read";
@@ -15,11 +18,19 @@ public abstract class DocumentMessage extends AuthorizedMessage {
     public static final String OPERATION_PASSIVATE = "passivate";
     public static final String OPERATION_DELETE = "delete";
 
-    protected abstract String getOperationName();
+    protected static String getOperationName() {
+        return null;
+    }
 
     protected String objectType = null;
 
-    public DocumentMessage(String authorization, String objectType) {
+    public ObjectTypeMessage(String objectType) {
+        if (objectType != null) {
+            this.objectType = objectType.trim().toLowerCase();
+        }
+    }
+
+    public ObjectTypeMessage(String authorization, String objectType) {
         super(authorization);
         if (objectType != null) {
             this.objectType = objectType.trim().toLowerCase();
@@ -29,7 +40,10 @@ public abstract class DocumentMessage extends AuthorizedMessage {
     public Headers getHeaders() {
         Headers headers = super.getHeaders();
         headers.put(Message.HEADER_OBJECTTYPE, this.objectType);
-        headers.put(Message.HEADER_OPERATION, this.getOperationName());
+        String operation = this.getOperationName();
+        if (operation != null) {
+            headers.put(Message.HEADER_OPERATION, operation);
+        }
         return headers;
     }
 

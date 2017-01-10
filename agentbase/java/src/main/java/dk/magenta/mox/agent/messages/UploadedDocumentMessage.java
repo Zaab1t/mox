@@ -10,6 +10,8 @@ import java.util.UUID;
  */
 public class UploadedDocumentMessage extends Message {
 
+    public static final String HEADER_OBJECTREFERENCE = "objektreference";
+
     public static final String KEY_UUID = "uuid";
 
     public static final String OPERATION = "upload";
@@ -36,7 +38,7 @@ public class UploadedDocumentMessage extends Message {
         if (UploadedDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
             if (data != null) {
-                String retrievalUUID = data.optString(KEY_UUID);
+                String retrievalUUID = headers.optString(UploadedDocumentMessage.HEADER_OBJECTREFERENCE);
                 if (retrievalUUID != null) {
                     try {
                         return new UploadedDocumentMessage(retrievalUUID, authorization);
@@ -54,7 +56,7 @@ public class UploadedDocumentMessage extends Message {
         headers.put(Message.HEADER_OBJECTTYPE, HEADER_OBJECTTYPE_VALUE_DOCUMENT);
         headers.put(Message.HEADER_OPERATION, OPERATION);
         headers.put(Message.HEADER_TYPE, Message.HEADER_TYPE_VALUE_MANUAL);
-        headers.put(Message.HEADER_OBJECTREFERENCE, this.retrievalUUID.toString());
+        headers.put(UploadedDocumentMessage.HEADER_OBJECTREFERENCE, this.retrievalUUID.toString());
         return headers;
     }
 }

@@ -6,9 +6,18 @@ import java.util.UUID;
 /**
  * Created by lars on 15-02-16.
  */
-public abstract class InstanceDocumentMessage extends DocumentMessage {
+public abstract class InstanceDocumentMessage extends ObjectTypeMessage {
 
     protected UUID uuid;
+
+    public InstanceDocumentMessage(String objectType, UUID uuid) {
+        super(objectType);
+        this.uuid = uuid;
+    }
+
+    public InstanceDocumentMessage(String objectType, String uuid) throws IllegalArgumentException {
+        this(objectType, UUID.fromString(uuid));
+    }
 
     public InstanceDocumentMessage(String authorization, String objectType, UUID uuid) {
         super(authorization, objectType);

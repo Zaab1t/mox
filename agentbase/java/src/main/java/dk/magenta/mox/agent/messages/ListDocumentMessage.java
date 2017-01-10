@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Created by lars on 15-02-16.
  */
-public class ListDocumentMessage extends DocumentMessage {
+public class ListDocumentMessage extends ObjectTypeMessage {
 
     protected ArrayList<UUID> uuids;
 
@@ -41,15 +41,15 @@ public class ListDocumentMessage extends DocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_LIST;
     }
 
     public static ListDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (ListDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (objectType != null) {
                 ArrayList<UUID> uuids = new ArrayList<>();
                 if (data != null) {

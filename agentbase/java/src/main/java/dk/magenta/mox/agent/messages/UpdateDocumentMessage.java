@@ -41,16 +41,16 @@ public class UpdateDocumentMessage extends CreateDocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_UPDATE;
     }
 
     public static UpdateDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (UpdateDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
             String uuid = headers.optString(Message.HEADER_MESSAGEID);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (uuid != null && objectType != null) {
                 return new UpdateDocumentMessage(authorization, objectType, uuid, data);
             }

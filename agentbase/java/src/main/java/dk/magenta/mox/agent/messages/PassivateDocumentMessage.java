@@ -42,16 +42,16 @@ public class PassivateDocumentMessage extends InstanceDocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_PASSIVATE;
     }
 
     public static PassivateDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (PassivateDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
             String uuid = headers.optString(Message.HEADER_MESSAGEID);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (uuid != null && objectType != null) {
                 String note = null;
                 if (data != null) {

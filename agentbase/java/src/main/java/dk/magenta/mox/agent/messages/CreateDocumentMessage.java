@@ -5,7 +5,7 @@ import dk.magenta.mox.agent.json.JSONObject;
 /**
  * Created by lars on 15-02-16.
  */
-public class CreateDocumentMessage extends DocumentMessage {
+public class CreateDocumentMessage extends ObjectTypeMessage {
 
     protected JSONObject data;
 
@@ -27,15 +27,15 @@ public class CreateDocumentMessage extends DocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_CREATE;
     }
 
     public static CreateDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (CreateDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (objectType != null) {
                 return new CreateDocumentMessage(authorization, objectType, data);
             }

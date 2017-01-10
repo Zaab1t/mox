@@ -6,7 +6,7 @@ import dk.magenta.mox.agent.json.JSONObject;
 /**
  * Created by lars on 15-02-16.
  */
-public class SearchDocumentMessage extends DocumentMessage {
+public class SearchDocumentMessage extends ObjectTypeMessage {
 
     protected ParameterMap<String, String> query;
 
@@ -25,15 +25,15 @@ public class SearchDocumentMessage extends DocumentMessage {
     }
 
     @Override
-    protected String getOperationName() {
+    protected static String getOperationName() {
         return DocumentMessage.OPERATION_SEARCH;
     }
 
     public static SearchDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (SearchDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
+            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (objectType != null) {
                 ParameterMap<String, String> query = new ParameterMap<>();
                 query.populateFromJSON(data);
