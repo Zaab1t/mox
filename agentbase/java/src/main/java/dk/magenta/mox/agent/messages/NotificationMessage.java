@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * Created by lars on 09-01-17.
  */
-public class NotificationMessage extends InstanceDocumentMessage {
+public class NotificationMessage extends ObjectInstanceMessage {
 
     public static final String HEADER_LIFECYCLECODE = "livscykluskode";
 

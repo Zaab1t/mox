@@ -6,7 +6,7 @@ import java.util.DateTime;
 /**
  * Created by lars on 09-01-17.
  */
-public class EffectUpdateMessage extends InstanceDocumentMessage {
+public class EffectUpdateMessage extends ObjectInstanceMessage {
 
     public static final String HEADER_UPDATETYPE = "updatetype";
     public static final String HEADER_EFFECTTIME = "effecttime";

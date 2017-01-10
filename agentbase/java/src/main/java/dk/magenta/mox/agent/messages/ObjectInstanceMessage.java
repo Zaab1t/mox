@@ -6,7 +6,9 @@ import java.util.UUID;
 /**
  * Created by lars on 15-02-16.
  */
-public abstract class InstanceDocumentMessage extends ObjectTypeMessage {
+public abstract class ObjectInstanceMessage extends ObjectTypeMessage {
+
+    public static final String HEADER_OBJECTID = "objektID";
 
     protected UUID uuid;
 
@@ -24,13 +26,13 @@ public abstract class InstanceDocumentMessage extends ObjectTypeMessage {
         this.uuid = uuid;
     }
 
-    public InstanceDocumentMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
+    public ObjectMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
         this(authorization, objectType, UUID.fromString(uuid));
     }
 
     public Headers getHeaders() {
         Headers headers = super.getHeaders();
-        headers.put(Message.HEADER_OBJECTID, this.uuid.toString());
+        headers.put(ObjectInstanceMessage.HEADER_OBJECTID, this.uuid.toString());
         return headers;
     }
 }

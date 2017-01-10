@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Created by lars on 15-02-16.
  */
-public class DeleteDocumentMessage extends PassivateDocumentMessage {
+public class DeleteDocumentMessage extends ObjectInstanceMessage {
 
     protected String note = "";
 
@@ -45,7 +45,7 @@ public class DeleteDocumentMessage extends PassivateDocumentMessage {
         String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if ("delete".equalsIgnoreCase(operationName)) {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String uuid = headers.optString(Message.HEADER_MESSAGEID);
+            String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
             String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (uuid != null && objectType != null) {
                 String note = null;
