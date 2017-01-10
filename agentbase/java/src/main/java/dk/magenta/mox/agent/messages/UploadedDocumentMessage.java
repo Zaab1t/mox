@@ -1,5 +1,6 @@
 package dk.magenta.mox.agent.messages;
 
+import dk.magenta.mox.agent.exceptions.MissingHeaderException;
 import dk.magenta.mox.agent.json.JSONObject;
 
 import java.lang.IllegalArgumentException;
@@ -9,6 +10,8 @@ import java.util.UUID;
  * Created by lars on 22-01-16.
  */
 public class UploadedDocumentMessage extends Message {
+
+    public static final String messageType = "UploadedDocumentMessage";
 
     public static final String HEADER_OBJECTREFERENCE = "objektreference";
 
@@ -25,36 +28,42 @@ public class UploadedDocumentMessage extends Message {
         this(UUID.fromString(retrievalUUID), authorization);
     }
 
+    @Override
+    public String getMessageType() {
+        return UploadedDocumentMessage.messageType;
+    }
+
+    @Override
+    public Headers getHeaders() {
+        Headers headers = super.getHeaders();
+//        headers.put(Message.HEADER_OBJECTTYPE, HEADER_OBJECTTYPE_VALUE_DOCUMENT);
+//        headers.put(Message.HEADER_OPERATION, OPERATION);
+        headers.put(Message.HEADER_TYPE, Message.HEADER_TYPE_VALUE_MANUAL);
+        headers.put(UploadedDocumentMessage.HEADER_OBJECTREFERENCE, this.retrievalUUID.toString());
+        return headers;
+    }
+
     public JSONObject getJSON() {
         JSONObject object = super.getJSON();
         object.put(KEY_UUID, this.retrievalUUID.toString());
         return object;
     }
 
-    public static UploadedDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
-        if (UploadedDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
-            String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            if (data != null) {
-                String retrievalUUID = headers.optString(UploadedDocumentMessage.HEADER_OBJECTREFERENCE);
-                if (retrievalUUID != null) {
-                    try {
-                        return new UploadedDocumentMessage(retrievalUUID, authorization);
-                    } catch (IllegalArgumentException e) {
-                    }
-                }
-            }
+    public static boolean matchType(Headers headers) {
+        try {
+            return UploadedDocumentMessage.messageType.equals(headers.getString(Message.HEADER_MESSAGETYPE));
+        } catch (MissingHeaderException e) {
+            return false;
         }
-        return null;
     }
 
-    @Override
-    public Headers getHeaders() {
-        Headers headers = super.getHeaders();
-        headers.put(Message.HEADER_OBJECTTYPE, HEADER_OBJECTTYPE_VALUE_DOCUMENT);
-        headers.put(Message.HEADER_OPERATION, OPERATION);
-        headers.put(Message.HEADER_TYPE, Message.HEADER_TYPE_VALUE_MANUAL);
-        headers.put(UploadedDocumentMessage.HEADER_OBJECTREFERENCE, this.retrievalUUID.toString());
-        return headers;
+    public static UploadedDocumentMessage parse(Headers headers, JSONObject data) throws MissingHeaderException {
+        if (UploadedDocumentMessage.matchType(headers)) {
+            return new UploadedDocumentMessage(
+                    headers.getString(UploadedDocumentMessage.HEADER_OBJECTREFERENCE),
+                    headers.getString(Message.HEADER_AUTHORIZATION)
+            );
+        }
+        return null;
     }
 }

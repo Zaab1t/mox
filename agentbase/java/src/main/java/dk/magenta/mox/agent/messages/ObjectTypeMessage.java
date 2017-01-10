@@ -1,5 +1,6 @@
 package dk.magenta.mox.agent.messages;
 
+import dk.magenta.mox.agent.exceptions.MissingHeaderException;
 import dk.magenta.mox.agent.json.JSONObject;
 
 /**
@@ -9,6 +10,8 @@ public abstract class ObjectTypeMessage extends Message {
 
     public static final String HEADER_OBJECTTYPE = "objekttype";
     public static final String HEADER_OPERATION = "operation";
+    public static final String HEADER_QUERY = "query";
+
 
     public static final String OPERATION_CREATE = "create";
     public static final String OPERATION_READ = "read";
@@ -51,31 +54,25 @@ public abstract class ObjectTypeMessage extends Message {
         return objectType;
     }
 
-    public static ObjectTypeMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
-        if (operationName != null) {
-            operationName = operationName.trim().toLowerCase();
-            if (operationName.equals(OPERATION_READ)) {
-                return ReadDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_LIST)) {
-                return ListDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_SEARCH)) {
-                return SearchDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_CREATE)) {
-                return CreateDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_UPDATE)) {
-                return UpdateDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_PASSIVATE)) {
-                return PassivateDocumentMessage.parse(headers, data);
-            }
-            if (operationName.equals(OPERATION_DELETE)) {
-                return PassivateDocumentMessage.parse(headers, data);
-            }
+    public static boolean matchType(Headers headers) {
+        return (
+                ListDocumentMessage.matchType(headers) || SearchDocumentMessage.matchType(headers) ||
+                CreateDocumentMessage.matchType(headers) || ObjectInstanceMessage.matchType(headers)
+        );
+    }
+
+    public static ObjectTypeMessage parse(Headers headers, JSONObject data) throws MissingHeaderException {
+        if (ListDocumentMessage.matchType(headers)) {
+            return ListDocumentMessage.parse(headers, data);
+        }
+        if (SearchDocumentMessage.matchType(headers)) {
+            return SearchDocumentMessage.parse(headers, data);
+        }
+        if (CreateDocumentMessage.matchType(headers)) {
+            return CreateDocumentMessage.parse(headers, data);
+        }
+        if (ObjectInstanceMessage.matchType(headers)) {
+            return ObjectInstanceMessage.parse(headers, data);
         }
         return null;
     }

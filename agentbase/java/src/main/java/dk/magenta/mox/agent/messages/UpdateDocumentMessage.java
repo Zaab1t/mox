@@ -1,5 +1,6 @@
 package dk.magenta.mox.agent.messages;
 
+import dk.magenta.mox.agent.exceptions.MissingHeaderException;
 import dk.magenta.mox.agent.json.JSONObject;
 
 import java.util.UUID;
@@ -8,6 +9,8 @@ import java.util.UUID;
  * Created by lars on 15-02-16.
  */
 public class UpdateDocumentMessage extends ObjectInstanceMessage {
+
+    public static final String messageType = "UpdateDocumentMessage";
 
     protected UUID uuid;
 
@@ -33,6 +36,11 @@ public class UpdateDocumentMessage extends ObjectInstanceMessage {
         this(authorization, objectType, UUID.fromString(uuid), data);
     }
 
+    @Override
+    public String getMessageType() {
+        return UpdateDocumentMessage.messageType;
+    }
+
     public JSONObject getJSON() {
         return this.data;
     }
@@ -42,15 +50,22 @@ public class UpdateDocumentMessage extends ObjectInstanceMessage {
         return UpdateDocumentMessage.OPERATION;
     }
 
-    public static UpdateDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
-        if (UpdateDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
-            String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
-            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
-            if (uuid != null && objectType != null) {
-                return new UpdateDocumentMessage(authorization, objectType, uuid, data);
-            }
+    public static boolean matchType(Headers headers) {
+        try {
+            return UpdateDocumentMessage.messageType.equals(headers.getString(Message.HEADER_MESSAGETYPE)) && UpdateDocumentMessage.OPERATION.equalsIgnoreCase(headers.getString(ObjectTypeMessage.HEADER_OPERATION));
+        } catch (MissingHeaderException e) {
+            return false;
+        }
+    }
+
+    public static UpdateDocumentMessage parse(Headers headers, JSONObject data) throws MissingHeaderException {
+        if (UpdateDocumentMessage.matchType(headers)) {
+            return new UpdateDocumentMessage(
+                    headers.getString(Message.HEADER_AUTHORIZATION),
+                    headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE),
+                    headers.getString(ObjectInstanceMessage.HEADER_OBJECTID),
+                    data
+            );
         }
         return null;
     }

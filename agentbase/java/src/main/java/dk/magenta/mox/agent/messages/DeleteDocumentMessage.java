@@ -1,5 +1,6 @@
 package dk.magenta.mox.agent.messages;
 
+import dk.magenta.mox.agent.exceptions.MissingHeaderException;
 import dk.magenta.mox.agent.json.JSONObject;
 
 import java.util.UUID;
@@ -8,6 +9,8 @@ import java.util.UUID;
  * Created by lars on 15-02-16.
  */
 public class DeleteDocumentMessage extends ObjectInstanceMessage {
+
+    public static final String messageType = "DeleteDocumentMessage";
 
     protected String note = null;
 
@@ -32,7 +35,7 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
 
     @Override
     public String getMessageType() {
-        return "";
+        return DeleteDocumentMessage.messageType;
     }
 
     @Override
@@ -47,21 +50,22 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
         return object;
     }
 
+    public static boolean matchType(Headers headers) {
+        try {
+            return DeleteDocumentMessage.messageType.equals(headers.getString(Message.HEADER_MESSAGETYPE)) && DeleteDocumentMessage.OPERATION.equalsIgnoreCase(headers.getString(ObjectTypeMessage.HEADER_OPERATION));
+        } catch (MissingHeaderException e) {
+            return false;
+        }
+    }
 
-    public static DeleteDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {
-        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
-        if ("delete".equalsIgnoreCase(operationName)) {
-            String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
-            String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
-            if (uuid != null && objectType != null) {
-                String note = null;
-                if (data != null) {
-                    JSONObject jsonObject = new JSONObject(data);
-                    note = jsonObject.optString("Note");
-                }
-                return new DeleteDocumentMessage(authorization, objectType, uuid, note);
-            }
+    public static DeleteDocumentMessage parse(Headers headers, JSONObject data) throws MissingHeaderException {
+        if (DeleteDocumentMessage.matchType(headers)) {
+            return new DeleteDocumentMessage(
+                    headers.getString(Message.HEADER_AUTHORIZATION),
+                    headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE),
+                    headers.getString(ObjectInstanceMessage.HEADER_OBJECTID),
+                    data.optString("Note")
+            );
         }
         return null;
     }
