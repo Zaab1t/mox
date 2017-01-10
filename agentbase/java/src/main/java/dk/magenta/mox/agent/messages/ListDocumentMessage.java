@@ -18,13 +18,23 @@ public class ListDocumentMessage extends ObjectTypeMessage {
 
     public ListDocumentMessage(String authorization, String objectType, List<UUID> uuids) {
         super(authorization, objectType);
-        this.uuids = new ArrayList<>(uuids);
+        this.uuids = new ArrayList<UUID>(uuids);
     }
 
     public ListDocumentMessage(String authorization, String objectType, UUID uuid) {
         super(authorization, objectType);
-        this.uuids = new ArrayList<>();
+        this.uuids = new ArrayList<UUID>();
         this.uuids.add(uuid);
+    }
+
+    @Override
+    public String getMessageType() {
+        return "";
+    }
+
+    @Override
+    public String getOperationName() {
+        return ListDocumentMessage.OPERATION;
     }
 
     @Override
@@ -38,11 +48,6 @@ public class ListDocumentMessage extends ObjectTypeMessage {
         object.put("uuid", uuidList);
         headers.put(Message.HEADER_QUERY, object.toString());
         return headers;
-    }
-
-    @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_LIST;
     }
 
     public static ListDocumentMessage parse(Headers headers, JSONObject data) {

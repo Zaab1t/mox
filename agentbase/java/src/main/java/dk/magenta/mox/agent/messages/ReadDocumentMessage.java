@@ -20,8 +20,8 @@ public class ReadDocumentMessage extends ObjectInstanceMessage {
     }
 
     @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_READ;
+    public String getOperationName() {
+        return ReadDocumentMessage.OPERATION;
     }
 
     public static ReadDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {

@@ -109,40 +109,5 @@ public class JSONObject extends org.json.JSONObject {
             return null;
         }
     }
-/*
-    public Keytype type(String key) {
-        if (!this.has(key)) {
-            return Keytype.DOESNT_EXIST;
-        }
-        try {
-            this.getBoolean(key);
-            return Keytype.BOOLEAN;
-        } catch (JSONException e) {}
-        try {
-            this.getInt(key);
-            return Keytype.INT;
-        } catch (JSONException e) {}
-        try {
-            this.getDouble(key);
-            return Keytype.DOUBLE;
-        } catch (JSONException e) {}
-        try {
-            this.getLong(key);
-            return Keytype.LONG;
-        } catch (JSONException e) {}
-        try {
-            this.getString(key);
-            return Keytype.STRING;
-        } catch (JSONException e) {}
-        try {
-            this.getJSONArray(key);
-            return Keytype.ARRAY;
-        } catch (JSONException e) {}
-        try {
-            this.getJSONObject(key);
-            return Keytype.OBJECT;
-        } catch (JSONException e) {}
-
-    }*/
 
 }

@@ -17,8 +17,7 @@ public class CreateDocumentMessage extends ObjectTypeMessage {
     }
 
     public CreateDocumentMessage(String authorization, String objectType, org.json.JSONObject data) {
-        super(authorization, objectType);
-        this.data = new JSONObject(data);
+        this(authorization, objectType, new JSONObject(data));
     }
 
     @Override
@@ -27,8 +26,8 @@ public class CreateDocumentMessage extends ObjectTypeMessage {
     }
 
     @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_CREATE;
+    public String getOperationName() {
+        return CreateDocumentMessage.OPERATION;
     }
 
     public static CreateDocumentMessage parse(Headers headers, JSONObject data) {

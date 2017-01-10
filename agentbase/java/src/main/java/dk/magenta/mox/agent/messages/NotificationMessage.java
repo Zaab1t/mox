@@ -17,8 +17,7 @@ public class NotificationMessage extends ObjectInstanceMessage {
     }
 
     public NotificationMessage(String objectType, String uuid, String lifecycleCode) {
-        super(objectType, uuid);
-        this.lifecycleCode = lifecycleCode;
+        this(objectType, UUID.fromString(uuid), lifecycleCode);
     }
 
     @Override

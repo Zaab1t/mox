@@ -18,7 +18,7 @@ public abstract class ObjectTypeMessage extends Message {
     public static final String OPERATION_PASSIVATE = "passivate";
     public static final String OPERATION_DELETE = "delete";
 
-    protected static String getOperationName() {
+    public String getOperationName() {
         return null;
     }
 
@@ -39,10 +39,10 @@ public abstract class ObjectTypeMessage extends Message {
 
     public Headers getHeaders() {
         Headers headers = super.getHeaders();
-        headers.put(Message.HEADER_OBJECTTYPE, this.objectType);
+        headers.put(ObjectTypeMessage.HEADER_OBJECTTYPE, this.objectType);
         String operation = this.getOperationName();
         if (operation != null) {
-            headers.put(Message.HEADER_OPERATION, operation);
+            headers.put(ObjectTypeMessage.HEADER_OPERATION, operation);
         }
         return headers;
     }
@@ -51,30 +51,32 @@ public abstract class ObjectTypeMessage extends Message {
         return objectType;
     }
 
-    public static DocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
+    public static ObjectTypeMessage parse(Headers headers, JSONObject data) {
+        String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);
         if (operationName != null) {
-            switch (operationName.trim().toLowerCase()) {
-                case OPERATION_READ:
-                    return ReadDocumentMessage.parse(headers, data);
-                case OPERATION_LIST:
-                    return ListDocumentMessage.parse(headers, data);
-                case OPERATION_SEARCH:
-                    return SearchDocumentMessage.parse(headers, data);
-                case OPERATION_CREATE:
-                    return CreateDocumentMessage.parse(headers, data);
-                case OPERATION_UPDATE:
-                    return UpdateDocumentMessage.parse(headers, data);
-                case OPERATION_PASSIVATE:
-                    return PassivateDocumentMessage.parse(headers, data);
-                case OPERATION_DELETE:
-                    return PassivateDocumentMessage.parse(headers, data);
+            operationName = operationName.trim().toLowerCase();
+            if (operationName.equals(OPERATION_READ)) {
+                return ReadDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_LIST)) {
+                return ListDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_SEARCH)) {
+                return SearchDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_CREATE)) {
+                return CreateDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_UPDATE)) {
+                return UpdateDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_PASSIVATE)) {
+                return PassivateDocumentMessage.parse(headers, data);
+            }
+            if (operationName.equals(OPERATION_DELETE)) {
+                return PassivateDocumentMessage.parse(headers, data);
             }
         }
         return null;
-    }
-
-    public static DocumentMessage parse(Headers headers, org.json.JSONObject data) {
-        return DocumentMessage.parse(headers, new JSONObject(data));
     }
 }

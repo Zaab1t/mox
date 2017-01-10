@@ -12,21 +12,21 @@ public abstract class ObjectInstanceMessage extends ObjectTypeMessage {
 
     protected UUID uuid;
 
-    public InstanceDocumentMessage(String objectType, UUID uuid) {
+    public ObjectInstanceMessage(String objectType, UUID uuid) {
         super(objectType);
         this.uuid = uuid;
     }
 
-    public InstanceDocumentMessage(String objectType, String uuid) throws IllegalArgumentException {
+    public ObjectInstanceMessage(String objectType, String uuid) throws IllegalArgumentException {
         this(objectType, UUID.fromString(uuid));
     }
 
-    public InstanceDocumentMessage(String authorization, String objectType, UUID uuid) {
+    public ObjectInstanceMessage(String authorization, String objectType, UUID uuid) {
         super(authorization, objectType);
         this.uuid = uuid;
     }
 
-    public ObjectMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
+    public ObjectInstanceMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
         this(authorization, objectType, UUID.fromString(uuid));
     }
 

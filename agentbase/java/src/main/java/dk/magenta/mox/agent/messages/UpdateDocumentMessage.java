@@ -38,8 +38,8 @@ public class UpdateDocumentMessage extends ObjectInstanceMessage {
     }
 
     @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_UPDATE;
+    public String getOperationName() {
+        return UpdateDocumentMessage.OPERATION;
     }
 
     public static UpdateDocumentMessage parse(Headers headers, JSONObject data) {

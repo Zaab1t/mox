@@ -25,8 +25,8 @@ public class SearchDocumentMessage extends ObjectTypeMessage {
     }
 
     @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_SEARCH;
+    public String getOperationName() {
+        return SearchDocumentMessage.OPERATION;
     }
 
     public static SearchDocumentMessage parse(Headers headers, JSONObject data) {
@@ -35,7 +35,7 @@ public class SearchDocumentMessage extends ObjectTypeMessage {
             String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
             String objectType = headers.optString(ObjectTypeMessage.HEADER_OBJECTTYPE);
             if (objectType != null) {
-                ParameterMap<String, String> query = new ParameterMap<>();
+                ParameterMap<String, String> query = new ParameterMap<String, String>();
                 query.populateFromJSON(data);
                 return new SearchDocumentMessage(authorization, objectType, query);
             }

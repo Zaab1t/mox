@@ -9,12 +9,13 @@ import java.util.UUID;
  */
 public class DeleteDocumentMessage extends ObjectInstanceMessage {
 
-    protected String note = "";
+    protected String note = null;
 
     public static final String OPERATION = "delete";
 
     public DeleteDocumentMessage(String authorization, String objectType, UUID uuid, String note) {
-        super(authorization, objectType, uuid, note);
+        super(authorization, objectType, uuid);
+        this.note = note;
     }
 
     public DeleteDocumentMessage(String authorization, String objectType, String uuid, String note) throws IllegalArgumentException {
@@ -22,11 +23,21 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
     }
 
     public DeleteDocumentMessage(String authorization, String objectType, UUID uuid) {
-        super(authorization, objectType, uuid);
+        this(authorization, objectType, uuid, null);
     }
 
     public DeleteDocumentMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
-        super(authorization, objectType, uuid);
+        this(authorization, objectType, uuid, null);
+    }
+
+    @Override
+    public String getMessageType() {
+        return "";
+    }
+
+    @Override
+    public String getOperationName() {
+        return DeleteDocumentMessage.OPERATION;
     }
 
     @Override
@@ -36,10 +47,6 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
         return object;
     }
 
-    @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_DELETE;
-    }
 
     public static DeleteDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {
         String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);

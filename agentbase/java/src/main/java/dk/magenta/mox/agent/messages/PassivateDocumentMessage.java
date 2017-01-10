@@ -26,11 +26,21 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
     }
 
     public PassivateDocumentMessage(String authorization, String objectType, UUID uuid) {
-        super(authorization, objectType, uuid);
+        this(authorization, objectType, uuid, null);
     }
 
     public PassivateDocumentMessage(String authorization, String objectType, String uuid) throws IllegalArgumentException {
-        super(authorization, objectType, uuid);
+        this(authorization, objectType, uuid, null);
+    }
+
+    @Override
+    public String getMessageType() {
+        return "";
+    }
+
+    @Override
+    public String getOperationName() {
+        return PassivateDocumentMessage.OPERATION;
     }
 
     @Override
@@ -41,10 +51,6 @@ public class PassivateDocumentMessage extends ObjectInstanceMessage {
         return object;
     }
 
-    @Override
-    protected static String getOperationName() {
-        return DocumentMessage.OPERATION_PASSIVATE;
-    }
 
     public static PassivateDocumentMessage parse(Headers headers, JSONObject data) throws IllegalArgumentException {
         String operationName = headers.optString(ObjectTypeMessage.HEADER_OPERATION);

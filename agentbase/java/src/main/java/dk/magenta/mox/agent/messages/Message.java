@@ -12,13 +12,14 @@ public abstract class Message {
     public static final String HEADER_AUTHORIZATION = "autorisation";
     public static final String HEADER_MESSAGEID = "beskedID";
     public static final String HEADER_MESSAGEVERSION = "beskedversion";
-
+    public static final String HEADER_MESSAGETYPE = "beskedtype";
     public static final String HEADER_TYPE = "type";
+    public static final String HEADER_QUERY = "query";
+
     public static final String HEADER_TYPE_VALUE_MANUAL = "Manuel";
 
     public static final String HEADER_OBJECTTYPE_VALUE_DOCUMENT = "dokument";
 
-    public static final String HEADER_QUERY = "query";
 
     public static final long version = 1L;
 
@@ -31,17 +32,22 @@ public abstract class Message {
         this.authorization = authorization;
     }
 
-    public JSONObject getJSON() {
-        JSONObject object = new JSONObject();
-        return object;
+    public String getMessageType() {
+        return null;
     }
+
     public Headers getHeaders() {
         Headers headers = new Headers();
         headers.put(HEADER_MESSAGEID, UUID.randomUUID().toString());
         headers.put(HEADER_MESSAGEVERSION, version);
+        headers.put(HEADER_MESSAGETYPE, this.getMessageType());
         if (this.authorization != null) {
             headers.put(HEADER_AUTHORIZATION, this.authorization);
         }
         return headers;
+    }
+
+    public JSONObject getJSON() {
+        return new JSONObject();
     }
 }

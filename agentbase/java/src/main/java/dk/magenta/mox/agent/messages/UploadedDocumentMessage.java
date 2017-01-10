@@ -14,8 +14,6 @@ public class UploadedDocumentMessage extends Message {
 
     public static final String KEY_UUID = "uuid";
 
-    public static final String OPERATION = "upload";
-
     private UUID retrievalUUID;
 
     public UploadedDocumentMessage(UUID retrievalUUID, String authorization) {
