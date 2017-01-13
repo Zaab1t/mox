@@ -25,12 +25,11 @@ install_log.create()
 
 virtualenv = VirtualEnv(DIR + "/python-env")
 created = virtualenv.create(
-    args.overwrite_virtualenv, args.keep_virtualenv, install_log.filename
-)
+    args.overwrite_virtualenv, args.keep_virtualenv)
 if created:
     print "Running setup.py"
     virtualenv.run(install_log.filename, "python " + DIR + "/setup.py develop")
-    virtualenv.add_moxlib_pointer(MOXDIR)
+    virtualenv.add_moxlib_pointer()
 
 # -----------------------------------------------------------------------------
 
