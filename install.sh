@@ -31,14 +31,12 @@ AMQP_USER="guest"
 AMQP_PASS="guest"
 
 REST_HOST="https://$DOMAIN"
-REST_USER="admin"
-REST_PASS="admin"
 
 # Add system user if none exists
 if ! getent passwd mox > /dev/null
 then
 	echo "Creating system user 'mox'"
-	sudo useradd mox
+	sudo useradd --system -s /usr/sbin/nologin -d /srv/mox mox
 fi
 
 # Create log dir
@@ -61,6 +59,10 @@ cp --remove-destination "$APACHE_CONFIG.base" "$APACHE_CONFIG"
 
 # Setup common config
 sed -i -e s/$\{domain\}/${DOMAIN//\//\\/}/ "$MOX_CONFIG"
+
+echo "Installing Python"
+sudo apt-get -qq update
+sudo apt-get -qq install python python-pip python-virtualenv python-jinja2
 
 # Setup apache virtualhost
 echo "Setting up Apache virtualhost"
@@ -91,51 +93,11 @@ echo "Installing database"
 echo "$DIR/db/install.sh"
 $DIR/db/install.sh
 
-
-JAVA_HIGHEST_VERSION=0
-JAVA_VERSION_NEEDED=8
-JAVA_HIGHEST_VERSION_DIR=""
-regex=".*/java-([0-9]+).*"
-files=`find /usr/lib -wholename '*/bin/javac' -perm -a=x -type f`
-for f in $files; do
-	if [[ $f =~ $regex ]]; then
-		version="${BASH_REMATCH[1]}"
-		if [[ $version > $JAVA_HIGHEST_VERSION ]]; then
-			JAVA_HIGHEST_VERSION=$version
-			JAVA_HIGHEST_VERSION_DIR=$(readlink -m "$f/../..")
-		fi
-    fi
-done
-if [ $JAVA_HIGHEST_VERSION -ge $JAVA_VERSION_NEEDED ]; then
-	echo "Java is installed in version $JAVA_HIGHEST_VERSION"
-else
-	echo "Installing java in version $JAVA_VERSION_NEEDED"
-	if ! apt-cache show "openjdk-$JAVA_VERSION_NEEDED-jdk" > /dev/null 2>&1
-	then
-		# openjdk is not available in the version we want
-		sudo apt-get -qqy install software-properties-common
-		sudo add-apt-repository -ys ppa:openjdk-r/ppa
-		sudo apt-get -qq update
-	fi
-	sudo apt-get --yes --quiet install "openjdk-$JAVA_VERSION_NEEDED-jdk"
-	JAVA_HIGHEST_VERSION_DIR="/usr/lib/jvm/java-$JAVA_VERSION_NEEDED-openjdk-amd64"
-fi
-if [[ "x$JAVA_HIGHEST_VERSION_DIR" != "x" ]]; then
-	sed -r -e "s|^CMD_JAVA=.*$|CMD_JAVA=$JAVA_HIGHEST_VERSION_DIR/bin/java|" \
-       -e "s|^CMD_JAVAC=.*$|CMD_JAVAC=$JAVA_HIGHEST_VERSION_DIR/bin/javac|" \
-       ${SHELL_CONFIG} > ${SHELL_CONFIG}.$$
-fi
-if [[ -f ${SHELL_CONFIG}.$$ ]]; then
-	/bin/mv ${SHELL_CONFIG}.$$ ${SHELL_CONFIG}
-fi
-
-OLD_JAVA_HOME="$JAVA_HOME"
-JAVA_HOME="$JAVA_HIGHEST_VERSION_DIR"
-export JAVA_HOME
+$DIR/install/install_java.sh 8
 
 # Install Maven
 echo "Installing Maven"
-sudo apt-get -y install maven
+sudo apt-get -qq install maven
 
 # Compile modules
 echo "Installing java modules"
@@ -145,10 +107,10 @@ echo "$DIR/agentbase/python/mox" > "$DIR/agentbase/python/mox/mox.pth"
 
 # Compile agents
 echo "Installing Agents"
-$DIR/agents/MoxTabel/install.sh
+$DIR/agents/MoxTabel/install.py
 $DIR/agents/MoxTabel/configure.py --rest-host "$REST_HOST" --amqp-incoming-host "$DOMAIN" --amqp-incoming-user "$AMQP_USER" --amqp-incoming-pass "$AMQP_PASS" --amqp-incoming-exchange "mox.documentconvert" --amqp-outgoing-host "$DOMAIN" --amqp-outgoing-user "$AMQP_USER" --amqp-outgoing-pass "$AMQP_PASS" --amqp-outgoing-exchange "mox.rest"
 
-$DIR/agents/MoxRestFrontend/install.sh
+$DIR/agents/MoxRestFrontend/install.py
 $DIR/agents/MoxRestFrontend/configure.py --rest-host "$REST_HOST" --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange "mox.rest"
 
 $DIR/agents/MoxDocumentUpload/install.py $REINSTALL_VIRTUALENVS
@@ -162,9 +124,6 @@ $DIR/agents/MoxDocumentDownload/configure.py --rest-host "$REST_HOST"
 $DIR/agents/MoxWiki/install.py $REINSTALL_VIRTUALENVS
 $DIR/agents/MoxWiki/configure.py --amqp-host "$DOMAIN" --amqp-user "$AMQP_USER" --amqp-pass "$AMQP_PASS" --amqp-exchange "mox.notifications" --rest-host "$REST_HOST" --rest-user "$REST_USER" --rest-pass "$REST_PASS"
 
-JAVA_HOME="$OLD_JAVA_HOME"
-
-sudo chown -R mox:mox $DIR
 sudo service apache2 reload
 
 echo
