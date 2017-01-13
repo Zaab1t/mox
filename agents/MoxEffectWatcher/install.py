@@ -28,7 +28,7 @@ created = virtualenv.create(
     args.overwrite_virtualenv, args.keep_virtualenv)
 if created:
     print "Running setup.py"
-    virtualenv.run("python " + DIR + "/setup.py develop")
+    virtualenv.run(DIR + "/setup.py develop")
     virtualenv.add_moxlib_pointer()
 
 # -----------------------------------------------------------------------------
