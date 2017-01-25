@@ -129,12 +129,12 @@ class NotificationMessage(ObjectMessage):
 # A message saying that an object's effective period has begun or ended
 class EffectUpdateMessage(ObjectMessage):
 
-    TYPE_BEGIN = 1
-    TYPE_END = 2
-    TYPE_BOTH = TYPE_BEGIN | TYPE_END
+    TYPE_BEGIN = "begin"
+    TYPE_END = "end"
+    TYPE_BOTH = "both"
 
-    HEADER_UPDATE_TYPE = "updatetype"
-    HEADER_EFFECT_TIME = "effecttime"
+    HEADER_UPDATE_TYPE = 'updatetype'
+    HEADER_EFFECT_TIME = 'effecttime'
     MESSAGE_TYPE = 'effectupdate'
 
     def __init__(self, objectid, objecttype, updatetype, effecttime):
@@ -148,7 +148,7 @@ class EffectUpdateMessage(ObjectMessage):
 
     @updatetype.setter
     def updatetype(self, updatetype):
-        if type(updatetype) != int:
+        if isinstance(updatetype, basestring):
             raise TypeError
         elif updatetype not in [
             self.TYPE_BEGIN, self.TYPE_END, self.TYPE_BOTH
