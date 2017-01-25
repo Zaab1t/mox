@@ -1381,7 +1381,7 @@ Using the OIO Mox Library
 **CAUTION! !!! This section is currently out of date!!! Please refer to the
 examples above for more up to date details.**
 
-This is located in the folder ``agent/`` in the Mox source code
+This is located in the folder ``agents/MoxRestFrontend/`` in the Mox source code
 repository.
 
 The library is built with Apache Maven - see pom.xml for Maven dependencies. 
@@ -1407,7 +1407,7 @@ For example: ::
     type.facet.create.method = POST
     type.facet.create.path = /klassifikation/facet
 
-The default agent.properties file defines all of the classes from the
+The default structure.conf file defines all of the classes from the
 OIOXML hierarchies Klassifikation, Organisation, Sag and Dokument.
 
 You can then get your ObjectType by calling get(String name) on the returned collection.
@@ -1512,8 +1512,8 @@ sendCommand
 
 ::
 
-     Future<String> sendCommand(MessageSender sender, String operationName, UUID uuid, JSONObject data)
-     Future<String> sendCommand(MessageSender sender, String operationName, UUID uuid, JSONObject data, String authorization)
+    Future<String> sendCommand(MessageSender sender, String operationName, UUID uuid, JSONObject data)
+    Future<String> sendCommand(MessageSender sender, String operationName, UUID uuid, JSONObject data, String authorization)
 
 Sends a custom operationName (useful if you added an operation other
 than create, update, passivate or delete). Add a UUID and a JSON Object
@@ -1530,10 +1530,12 @@ If you do not wish to use the Java library described above, you can send
 messages directly to the AMQP queue where the message handler is
 running.
 
-The message handler will recognize four AMQP headers when sending Mox
+The message handler will recognize these AMQP headers when sending Mox
 messages:
 
 * "autorisation" - must contain the SAML token as described above.
+
+* "beskedID" - must contain a unique UUID for the message, for logging purposes.
 
 * "objektID" - must contain the UUID of the object to manipulate; not
   used with create operations.
@@ -1543,20 +1545,21 @@ messages:
 * "operation", the action to be performed. Must be one of "create",
   "update", "passivate" or "delete".
 
+* "beskedtype" - the type of message. For document manipulation messages,
+  recognized types are: CreateDocumentMessage, UpdateDocumentMessage,
+  PassivateDocumentMessage, DeleteDocumentMessage, ListDocumentMessage,
+  ReadDocumentMessage, SearchDocumentMessage
+
 Import operations can be performed with the "update" command - but note
 that it's also possible to map new commands by editing the
-``agent.properties`` file as described above. This could also be used to
-specify read operations with GET, if so desired.
+``agents/MoxRestFrontend/structure.conf`` file as described above.
+This could also be used to specify read operations with GET, if so desired.
 
-The content of the commands, i.e. the actual data, are send as the
+The content of the commands, i.e. the actual data, are sent as the
 payload of the messages. Note that while it is possible to specify a URL
 when uploading a document, it is currently *not* possible to upload 
 the binary contents of a document through the message queue - for this,
 the REST interface must be used directly.
-
-For an example of how to create and send Mox messages with Java, please
-see the file ObjectType.java in
-``agent/src/main/java/dk/magenta/mox/agent``.
 
 
 Notification Messages
@@ -1572,16 +1575,41 @@ However, this can be modified later on the AMQP server.
 
 The notification message has the following headers:
 
-* "beskedtype" - always contains the value 'Notification'
+* "beskedtype" - always contains the value 'NotificationMessage'
+
+* "beskedID" - contains a unique UUID for the message, for logging purposes.
 
 * "objektID" - contains the UUID of the object.
 
-* "objekttype" - i.e., OIO class, e.g. "Facet".
+* "objekttype" - i.e., OIO class, e.g. 'Facet'.
 
 * "livscykluskode" - i.e. 'Opstaaet', 'Importeret', 'Passiveret', 'Slettet' or
   'Rettet'
 
 The notification message has an empty body.
+
+
+EffectUpdate Messages
++++++++++++++++++++++
+
+The MoxEffectWatcher agent (if it is installed) stores timestamps on when value
+effects (virkninger) change in objects, and sends out messages on the
+mox.effectupdate exchange. These messages have the following headers:
+
+* "beskedtype" - always contains the value 'EffectUpdateMessage'
+
+* "beskedID" - contains a unique UUID for the message, for logging purposes.
+
+* "objektID" - contains the UUID of the object.
+
+* "objekttype" - i.e., OIO class, e.g. 'Facet'.
+
+* "updatetype" - contains the update type (one of 'start', 'end' or 'both').
+
+* "effecttime" - contains the specific time at which the effect changes.
+
+The notification message has an empty body.
+
 
 Licensing
 =========
