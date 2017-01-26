@@ -1,5 +1,6 @@
 package dk.magenta.mox.agent.messages;
 
+import dk.magenta.mox.agent.exceptions.MissingHeaderException;
 import dk.magenta.mox.agent.json.JSONArray;
 import dk.magenta.mox.agent.json.JSONObject;
 
@@ -10,21 +11,41 @@ import java.util.UUID;
 /**
  * Created by lars on 15-02-16.
  */
-public class ListDocumentMessage extends DocumentMessage {
+public class ListDocumentMessage extends ObjectTypeMessage {
+
+    public static final String messageType = "ListDocumentMessage";
 
     protected ArrayList<UUID> uuids;
 
-    public static final String OPERATION = "list";
+    private static final String OPERATION = "list";
 
     public ListDocumentMessage(String authorization, String objectType, List<UUID> uuids) {
         super(authorization, objectType);
-        this.uuids = new ArrayList<>(uuids);
+        this.uuids = new ArrayList<UUID>(uuids);
     }
 
     public ListDocumentMessage(String authorization, String objectType, UUID uuid) {
         super(authorization, objectType);
-        this.uuids = new ArrayList<>();
+        this.uuids = new ArrayList<UUID>();
         this.uuids.add(uuid);
+    }
+
+    public ListDocumentMessage(String authorization, String objectType, JSONArray uuids) {
+        super(authorization, objectType);
+        this.uuids = new ArrayList<UUID>();
+        for (int i=0; i<uuids.length(); i++) {
+            this.uuids.add(i, UUID.fromString(uuids.getString(i)));
+        }
+    }
+
+    @Override
+    public String getMessageType() {
+        return ListDocumentMessage.messageType;
+    }
+
+    @Override
+    public String getOperationName() {
+        return ListDocumentMessage.OPERATION;
     }
 
     @Override
@@ -36,31 +57,25 @@ public class ListDocumentMessage extends DocumentMessage {
             uuidList.put(uuid.toString());
         }
         object.put("uuid", uuidList);
-        headers.put(Message.HEADER_QUERY, object.toString());
+        headers.put(ObjectTypeMessage.HEADER_QUERY, object.toString());
         return headers;
     }
 
-    @Override
-    protected String getOperationName() {
-        return DocumentMessage.OPERATION_LIST;
+    public static boolean matchType(Headers headers) {
+        try {
+            return ListDocumentMessage.messageType.equals(headers.getString(Message.HEADER_MESSAGETYPE)) && ListDocumentMessage.OPERATION.equalsIgnoreCase(headers.getString(ObjectTypeMessage.HEADER_OPERATION));
+        } catch (MissingHeaderException e) {
+            return false;
+        }
     }
 
-    public static ListDocumentMessage parse(Headers headers, JSONObject data) {
-        String operationName = headers.optString(Message.HEADER_OPERATION);
-        if (ListDocumentMessage.OPERATION.equalsIgnoreCase(operationName)) {
-            String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-            String objectType = headers.optString(Message.HEADER_OBJECTTYPE);
-            if (objectType != null) {
-                ArrayList<UUID> uuids = new ArrayList<>();
-                if (data != null) {
-                    JSONObject jsonObject = new JSONObject(data);
-                    JSONArray uuidList = jsonObject.optJSONArray("query");
-                    for (int i = 0; i < uuidList.length(); i++) {
-                        uuids.add(UUID.fromString(uuidList.getString(i)));
-                    }
-                }
-                return new ListDocumentMessage(authorization, objectType, uuids);
-            }
+    public static ListDocumentMessage parse(Headers headers, JSONObject data) throws MissingHeaderException {
+        if (ListDocumentMessage.matchType(headers)) {
+            return new ListDocumentMessage(
+                    headers.getString(Message.HEADER_AUTHORIZATION),
+                    headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE),
+                    new JSONObject(headers.getString(ObjectTypeMessage.HEADER_QUERY)).getJSONArray("uuid")
+            );
         }
         return null;
     }

@@ -63,6 +63,12 @@ public class ParameterMap<K,V> extends HashMap<K,ArrayList<V>> {
         }
     }
 
+    public static ParameterMap<String, String> fromJSON(JSONObject jsonObject) {
+        ParameterMap<String, String> parameterMap = new ParameterMap<>();
+        parameterMap.populateFromJSON(jsonObject);
+        return parameterMap;
+    }
+
     public V getAtIndex(K key, int index) {
         if (this.containsKey(key)) {
             List<V> values = this.get(key);
