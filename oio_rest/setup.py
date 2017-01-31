@@ -36,7 +36,6 @@ setup(
         'python-saml==2.1.3',
         'pexpect==3.3',
         'pika',
-        'requests'
         'python-dateutil==2.6.0',
         'egenix-mx-base==3.2.9'
     ],
