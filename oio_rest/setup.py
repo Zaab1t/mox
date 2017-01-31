@@ -37,6 +37,8 @@ setup(
         'pexpect==3.3',
         'pika',
         'requests'
+        'python-dateutil==2.6.0',
+        'egenix-mx-base==3.2.9'
     ],
     entry_points={
         # -*- Entry points: -*-

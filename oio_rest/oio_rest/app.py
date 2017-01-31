@@ -40,9 +40,11 @@ class RegexConverter(BaseConverter):
 
 app.url_map.converters['regex'] = RegexConverter
 
+
 @app.route('/')
 def root():
     return redirect(url_for('sitemap'), code=308)
+
 
 @app.route('/get-token', methods=['GET', 'POST'])
 def get_token():
@@ -133,21 +135,32 @@ def handle_db_error(error):
     return jsonify(message=message, context=context), 400
 
 
-def main():
+def setup_api():
+
     from settings import BASE_URL
     from klassifikation import KlassifikationsHierarki
     from organisation import OrganisationsHierarki
     from sag import SagsHierarki
     from dokument import DokumentHierarki
     from log import LogHierarki
+    from aktivitet import AktivitetsHierarki
+    from indsats import IndsatsHierarki
+    from tilstand import TilstandsHierarki
 
     KlassifikationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     LogHierarki.setup_api(base_url=BASE_URL, flask=app)
     SagsHierarki.setup_api(base_url=BASE_URL, flask=app)
     OrganisationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     DokumentHierarki.setup_api(base_url=BASE_URL, flask=app)
+    AktivitetsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    IndsatsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    TilstandsHierarki.setup_api(base_url=BASE_URL, flask=app)
 
-    app.run(host='192.168.122.65', debug=True)
+
+def main():
+
+    setup_api()
+    app.run(debug=True)
 
 
 if __name__ == '__main__':
