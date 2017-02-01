@@ -1,7 +1,5 @@
 # encoding: utf-8
 from setuptools import setup, find_packages
-import sys
-import os
 
 version = '0.0.1'
 authors = 'C. Agger, Jørgen Ulrik B. Krag, Thomas Kristensen, Seth Yastrov'
@@ -24,6 +22,7 @@ setup(
     zip_safe=False,
     install_requires=[
         # -*- Extra requirements: -*-
+        'requests==2.12.4',
         'pytz>=2016.10',
         'Flask==0.10.1',
         'Jinja2==2.7.3',
@@ -37,7 +36,8 @@ setup(
         'python-saml==2.1.3',
         'pexpect==3.3',
         'pika',
-        'requests'
+        'python-dateutil==2.6.0',
+        'egenix-mx-base==3.2.9'
     ],
     entry_points={
         # -*- Entry points: -*-

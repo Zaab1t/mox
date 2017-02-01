@@ -5,17 +5,19 @@ import datetime
 import urlparse
 import traceback
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, redirect, request, url_for, Response
 from werkzeug.routing import BaseConverter
 from jinja2 import Environment, FileSystemLoader
+from psycopg2 import DataError
 
 from authentication import get_authenticated_user
 from log_client import log_service_call
 
 from settings import MOX_BASE_DIR, SAML_IDP_URL
 from custom_exceptions import OIOFlaskException, AuthorizationFailedException
-from custom_exceptions import UnauthorizedException, BadRequestException
+from custom_exceptions import BadRequestException
 from auth import tokens
+import settings
 
 app = Flask(__name__)
 
@@ -39,12 +41,17 @@ class RegexConverter(BaseConverter):
 app.url_map.converters['regex'] = RegexConverter
 
 
+@app.route('/')
+def root():
+    return redirect(url_for('sitemap'), code=308)
+
+
 @app.route('/get-token', methods=['GET', 'POST'])
 def get_token():
     if request.method == 'GET':
 
         t = jinja_env.get_template('get_token.html')
-        html = t.render()
+        html = t.render(settings=settings)
         return html
     elif request.method == 'POST':
         username = request.form.get('username')
@@ -70,7 +77,7 @@ def sitemap():
         if "GET" in rule.methods:
             links.append(str(rule))
             print rule
-    return jsonify({"site-map": links})
+    return jsonify({"site-map": sorted(links)})
 
 
 @app.errorhandler(OIOFlaskException)
@@ -122,21 +129,38 @@ def log_api_call(response):
     return response
 
 
-def main():
+@app.errorhandler(DataError)
+def handle_db_error(error):
+    message, context = error.message.split('\n', 1)
+    return jsonify(message=message, context=context), 400
+
+
+def setup_api():
+
     from settings import BASE_URL
     from klassifikation import KlassifikationsHierarki
     from organisation import OrganisationsHierarki
     from sag import SagsHierarki
     from dokument import DokumentHierarki
     from log import LogHierarki
+    from aktivitet import AktivitetsHierarki
+    from indsats import IndsatsHierarki
+    from tilstand import TilstandsHierarki
 
     KlassifikationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     LogHierarki.setup_api(base_url=BASE_URL, flask=app)
     SagsHierarki.setup_api(base_url=BASE_URL, flask=app)
     OrganisationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     DokumentHierarki.setup_api(base_url=BASE_URL, flask=app)
+    AktivitetsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    IndsatsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    TilstandsHierarki.setup_api(base_url=BASE_URL, flask=app)
 
-    app.run(host='192.168.122.65', debug=True)
+
+def main():
+
+    setup_api()
+    app.run(debug=True)
 
 
 if __name__ == '__main__':
