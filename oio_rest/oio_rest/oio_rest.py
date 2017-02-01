@@ -180,7 +180,10 @@ class OIORestObject(object):
                                       registreret_til)
         if results is None:
             results = []
-        request.uuid = "List/Søg: " + str(list_args)
+        if uuid_param:
+            request.uuid = uuid_param
+        else:
+            request.uuid = ''
         return jsonify({'results': results})
 
     @classmethod
