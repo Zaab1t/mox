@@ -9,6 +9,7 @@ import os
 import sys
 import datetime
 import threading
+import logging
 from agent.config import read_properties_files, MissingConfigKeyError
 from flask import Flask, render_template, request, make_response
 
@@ -19,8 +20,8 @@ LOGFILE = '/var/log/mox/moxdocumentdownload.log'
 
 app = Flask(__name__)
 
+app.logger.setLevel(logging.INFO)
 if not app.debug:
-    import logging
     logfile_handler = logging.FileHandler(LOGFILE)
     logfile_handler.setLevel(logging.WARNING)
     logfile_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s"))
