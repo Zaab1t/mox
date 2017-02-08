@@ -598,5 +598,5 @@ def main():
 
 @app.errorhandler(MoxFlaskException)
 def handle_error(error):
-    app.logger.warn(error.message)
+    app.logger.error(error.message)
     return error.message, error.status_code
