@@ -6,6 +6,7 @@ import requests
 import json
 import io
 import os
+import sys
 import datetime
 import threading
 from agent.config import read_properties_files, MissingConfigKeyError
@@ -14,8 +15,16 @@ from flask import Flask, render_template, request, make_response
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 GET_TOKEN = "/get-token"
+LOGFILE = '/var/log/mox/moxdocumentdownload.log'
 
 app = Flask(__name__)
+
+if not app.debug:
+    import logging
+    logfile_handler = logging.FileHandler(LOGFILE)
+    logfile_handler.setLevel(logging.WARNING)
+    logfile_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s"))
+    app.logger.addHandler(logfile_handler)
 
 config = read_properties_files(DIR + "/moxdocumentdownload.conf")
 
@@ -100,7 +109,7 @@ def extract(host, username, password, objecttypes, load_threaded=10):
     request_counter = 0
     objects = {}
     for objecttype_name, objecttype_url in objecttypes.iteritems():
-        # print "Listing objects of type %s" % objecttype_name
+        app.logger.info("Listing objects of type %s" % objecttype_name)
         uuids = []
         for parameterset in [
             "brugervendtnoegle=%", "livscykluskode=Importeret"
@@ -116,7 +125,7 @@ def extract(host, username, password, objecttypes, load_threaded=10):
             try:
                 response = json.loads(list_request.text)
                 uuid_list = response.get("results")[0]
-                # print "%d %s items" % (len(uuid_list), objecttype_name)
+                app.logger.info("%d %s items" % (len(uuid_list), objecttype_name))
                 uuids.extend(uuid_list)
             except Exception as e:
                 msg = e.message
@@ -157,7 +166,7 @@ def extract(host, username, password, objecttypes, load_threaded=10):
             for loader in loaders:
                 results = loader.get_results()
                 for result in results:
-                    # print "there are %d results" % len(result)
+                    app.logger.info("there are %d results" % len(result))
                     objects[objecttype_name].extend(result)
         else:
             for chunk in chunks:
@@ -192,7 +201,7 @@ def extract(host, username, password, objecttypes, load_threaded=10):
 def get_token(host, username, password):
     """ Get a token from the server"""
     token_url = "%s%s" % (host, GET_TOKEN)
-    # print "Obtaining token from %s" % token_url
+    app.logger.info("Obtaining token from %s" % token_url)
     token_request = requests.post(
         token_url,
         data={
@@ -208,7 +217,7 @@ def get_token(host, username, password):
         except ValueError:
             message = token_request.text
         if "invalid username or password" in message:
-            print "wrong pw"
+            app.logger.info("Incorrect password for user %s" % username)
             raise NotAllowedException(message)
         raise ServiceException(message)
 
@@ -336,7 +345,6 @@ def compare_virkning(virkning1, virkning2):
 
 def convert(row, structure, include_virkning=True):
     converted = {}
-    # print row
     for key in structure:
         path = structure[key]
         ptr = row
@@ -431,7 +439,6 @@ def format(data, mergelevel=1):
         app.open_instance_resource("structure.json")
     )
     for objecttype_name, items in data.iteritems():
-        # print "Type %s has %d objects" % (objecttype_name, len(items))
         rows = []
         structure = structure_collection[objecttype_name]
         baseheaders = [
@@ -523,8 +530,12 @@ def main():
     elif request.method == 'POST':
         require_parameter('type')
         objecttype = request.form['type']
-        print objecttype
+        app.logger.info("Got request for objects of type %s" % objecttype)
         if objecttype not in OBJECTTYPE_MAP:
+            app.logger.info("Unsupported object type %s" % objecttype)
+            app.logger.info(
+                "Supported types are: %s" % ", ".join(OBJECTTYPE_MAP.keys())
+            )
             raise BadRequestException(
                 "The type parameter must be one of the following: %s" %
                 ", ".join(OBJECTTYPE_MAP.keys())
@@ -540,10 +551,16 @@ def main():
         try:
             mergelevel = int(mergelevel)
             if mergelevel not in [0, 1, 2]:
+                app.logger.info(
+                    "Unsupported merge parameter '%d'" % mergelevel
+                )
                 raise BadRequestException(
                     "'merge' parameter must be 0, 1 or 2. Default is 1"
                 )
         except ValueError:
+            app.logger.info(
+                "Unsupported merge parameter '%s'" % str(mergelevel)
+            )
             raise BadRequestException(
                 "'merge' parameter must be 0, 1 or 2. Default is 1"
             )
@@ -567,6 +584,10 @@ def main():
             ]
         )
 
+        app.logger.info(
+            "Responding with %d bytes / %d chars of payload data" %
+            (sys.getsizeof(filedata), len(filedata))
+        )
         response = make_response(filedata)
         response.headers['Content-Type'] = 'text/csv; charset=utf-8'
         response.headers['Content-Disposition'] = \
@@ -576,4 +597,5 @@ def main():
 
 @app.errorhandler(MoxFlaskException)
 def handle_error(error):
+    app.logger.warn(error.message)
     return error.message, error.status_code
