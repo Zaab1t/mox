@@ -97,8 +97,10 @@ sender = MessageSender(
 @app.route('/', methods=['GET', 'POST'])
 def upload():
     if request.method == 'GET':
+        app.logger.info("Incoming GET request")
         return render_template('form.html')
     elif request.method == 'POST':
+        app.logger.info("Incoming POST request")
 
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -156,6 +158,7 @@ def upload():
         amqpMessage = UploadedDocumentMessage(uuid, authorization)
         jobId = sender.send(amqpMessage)
 
+        app.logger("Returning jobid '%s'" % jobId)
         # Send http response
         jobObject = {'jobId': jobId}
         if output == 'json':

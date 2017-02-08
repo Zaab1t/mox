@@ -527,8 +527,10 @@ def require_parameter(parametername):
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
+        app.logger.info("Incoming GET request")
         return render_template('form.html')
     elif request.method == 'POST':
+        app.logger.info("Incoming POST request")
         require_parameter('type')
         objecttype = request.form['type']
         app.logger.info("Got request for objects of type %s" % objecttype)
@@ -544,6 +546,7 @@ def main():
 
         require_parameter('username')
         username = request.form['username']
+        app.logger.info("Username: %s" % username)
 
         require_parameter('password')
         password = request.form['password']
@@ -565,6 +568,8 @@ def main():
             raise BadRequestException(
                 "'merge' parameter must be 0, 1 or 2. Default is 1"
             )
+
+        app.logger.info("Mergelevel: %d" % mergelevel)
 
         try:
             server = config['moxdocumentdownload.rest.host']
