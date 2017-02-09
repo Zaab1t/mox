@@ -182,13 +182,13 @@ public class ObjectType {
         }
 
         String[] neededOperations = {
-                DocumentMessage.OPERATION_CREATE,
-                DocumentMessage.OPERATION_READ,
-                DocumentMessage.OPERATION_SEARCH,
-                DocumentMessage.OPERATION_LIST,
-                DocumentMessage.OPERATION_UPDATE,
-                DocumentMessage.OPERATION_PASSIVATE,
-                DocumentMessage.OPERATION_DELETE
+                CreateDocumentMessage.OPERATION,
+                ReadDocumentMessage.OPERATION,
+                SearchDocumentMessage.OPERATION,
+                ListDocumentMessage.OPERATION,
+                UpdateDocumentMessage.OPERATION,
+                PassivateDocumentMessage.OPERATION,
+                DeleteDocumentMessage.OPERATION
         };
         for (ObjectType objectType : objectTypes.values()) {
             for (String operation : neededOperations) {
