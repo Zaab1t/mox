@@ -3,7 +3,7 @@
 import argparse
 import os
 import sys
-from installutils import VirtualEnv, WSGI
+from installutils import VirtualEnv, WSGI, LogFile
 
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -35,3 +35,9 @@ wsgi = WSGI(
     virtualenv,
 )
 wsgi.install(True)
+
+# ------------------------------------------------------------------------------
+
+# Create logfile
+program_log = LogFile('/var/log/mox/moxdocumentdownload.log')
+program_log.create('www-data')

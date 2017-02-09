@@ -5,6 +5,7 @@ import datetime
 from werkzeug.utils import secure_filename
 import requests
 import json
+import logging
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from agent.amqpclient import MessageSender, NoSuchJob
@@ -16,7 +17,7 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 config = read_properties_files(DIR + "/moxdocumentupload.conf")
 
 ALLOWED_EXTENSIONS = {'ods', 'xls', 'xlsx'}
-
+LOGFILE = '/var/log/mox/moxdocumentupload.log'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -77,6 +78,14 @@ def getCreateDocumentJson(documentName, mimetype):
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/tmp'
 
+app.logger.setLevel(logging.INFO)
+if not app.debug:
+    logfile_handler = logging.FileHandler(LOGFILE)
+    logfile_handler.setLevel(logging.WARNING)
+    logfile_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s"))
+    app.logger.addHandler(logfile_handler)
+
+
 sender = MessageSender(
     config.get("moxdocumentupload.amqp.username"),
     config.get("moxdocumentupload.amqp.password"),
@@ -88,8 +97,10 @@ sender = MessageSender(
 @app.route('/', methods=['GET', 'POST'])
 def upload():
     if request.method == 'GET':
+        app.logger.info("Incoming GET request")
         return render_template('form.html')
     elif request.method == 'POST':
+        app.logger.info("Incoming POST request")
 
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -147,6 +158,7 @@ def upload():
         amqpMessage = UploadedDocumentMessage(uuid, authorization)
         jobId = sender.send(amqpMessage)
 
+        app.logger("Returning jobid '%s'" % jobId)
         # Send http response
         jobObject = {'jobId': jobId}
         if output == 'json':
@@ -172,6 +184,7 @@ def checkStatus():
 
 @app.errorhandler(MoxFlaskException)
 def handle_error(error):
+    app.logger.error(error.message)
     return jsonify(error.to_dict()), error.status_code
 
 

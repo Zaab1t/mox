@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 from installutils import VirtualEnv, WSGI, Folder, sudo, install_dependencies
+from installutils import LogFile
 
 DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 STORAGEDIR = '/var/mox'
@@ -55,3 +56,9 @@ wsgi = WSGI(
     virtualenv,
 )
 wsgi.install(True)
+
+# ------------------------------------------------------------------------------
+
+# Create logfile
+program_log = LogFile('/var/log/mox/oio_rest.log')
+program_log.create('www-data')
