@@ -40,6 +40,7 @@ class RegexConverter(BaseConverter):
 
 app.url_map.converters['regex'] = RegexConverter
 
+
 LOGFILE = '/var/log/mox/oio_rest.log'
 
 app.logger.setLevel(logging.INFO)
@@ -53,6 +54,7 @@ if not app.debug:
 @app.route('/')
 def root():
     return redirect(url_for('sitemap'), code=308)
+
 
 @app.route('/get-token', methods=['GET', 'POST'])
 def get_token():
@@ -132,7 +134,7 @@ def log_api_call(response):
         msg = response.status
         note = "Is there a note too?"
         user_uuid = get_authenticated_user()
-        object_uuid = request.uuid
+        object_uuid = getattr(request, 'uuid', None)
         log_service_call(service_name, class_name, time, operation,
                          return_code, msg, note, user_uuid, "N/A", object_uuid)
     return response
@@ -145,21 +147,32 @@ def handle_db_error(error):
     return jsonify(message=message, context=context), 400
 
 
-def main():
+def setup_api():
+
     from settings import BASE_URL
     from klassifikation import KlassifikationsHierarki
     from organisation import OrganisationsHierarki
     from sag import SagsHierarki
     from dokument import DokumentHierarki
     from log import LogHierarki
+    from aktivitet import AktivitetsHierarki
+    from indsats import IndsatsHierarki
+    from tilstand import TilstandsHierarki
 
     KlassifikationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     LogHierarki.setup_api(base_url=BASE_URL, flask=app)
     SagsHierarki.setup_api(base_url=BASE_URL, flask=app)
     OrganisationsHierarki.setup_api(base_url=BASE_URL, flask=app)
     DokumentHierarki.setup_api(base_url=BASE_URL, flask=app)
+    AktivitetsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    IndsatsHierarki.setup_api(base_url=BASE_URL, flask=app)
+    TilstandsHierarki.setup_api(base_url=BASE_URL, flask=app)
 
-    app.run(host='192.168.122.65', debug=True)
+
+def main():
+
+    setup_api()
+    app.run(debug=True)
 
 
 if __name__ == '__main__':

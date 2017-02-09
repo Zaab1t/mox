@@ -19,6 +19,7 @@ from authentication import requires_auth
 def j(t):
     return jsonify(output=t)
 
+
 def typed_get(d, field, default):
     v = d.get(field, default)
     t = type(default)
@@ -36,6 +37,7 @@ def typed_get(d, field, default):
                                    json.dumps(v)))
 
     return v
+
 
 class ArgumentDict(ImmutableOrderedMultiDict):
     '''
@@ -228,14 +230,17 @@ class OIORestObject(object):
                                       registreret_til)
         if results is None:
             results = []
-        request.uuid = "List/Søg: " + str(list_args)
+        if uuid_param:
+            request.uuid = uuid_param
+        else:
+            request.uuid = ''
         return jsonify({'results': results})
 
     @classmethod
     @requires_auth
     def get_object(cls, uuid):
         """
-        READ a facet, return as JSON.
+        READ an object, return as JSON.
         """
         args = cls._get_args()
         virkning_fra = args.get('virkningfra', None)
@@ -289,6 +294,8 @@ class OIORestObject(object):
             ):
                 deleted_or_passive = True
 
+        request.uuid = uuid
+
         if not exists:
             # Do import.
             request.api_operation = "Import"
@@ -319,7 +326,6 @@ class OIORestObject(object):
                 db.update_object(cls.__name__, note, registration,
                                  uuid)
                 return jsonify({'uuid': uuid}), 200
-        request.uuid = uuid
         return j(u"Forkerte parametre!"), 405
 
     @classmethod
