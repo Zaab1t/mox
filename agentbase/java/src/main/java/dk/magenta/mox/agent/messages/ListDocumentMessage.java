@@ -17,7 +17,7 @@ public class ListDocumentMessage extends ObjectTypeMessage {
 
     protected ArrayList<UUID> uuids;
 
-    private static final String OPERATION = "list";
+    public static final String OPERATION = "list";
 
     public ListDocumentMessage(String authorization, String objectType, List<UUID> uuids) {
         super(authorization, objectType);
