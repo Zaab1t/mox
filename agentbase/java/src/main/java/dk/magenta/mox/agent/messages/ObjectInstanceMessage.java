@@ -39,6 +39,10 @@ public abstract class ObjectInstanceMessage extends ObjectTypeMessage {
         return headers;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public static boolean matchType(Headers headers) {
         return (
                 EffectUpdateMessage.matchType(headers) || NotificationMessage.matchType(headers) ||

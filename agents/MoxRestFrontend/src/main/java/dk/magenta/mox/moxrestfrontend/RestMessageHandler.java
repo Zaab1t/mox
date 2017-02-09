@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,23 +65,23 @@ public class RestMessageHandler implements MessageHandler {
                 ParameterMap<String, String> queryMap = null;
 
                 if (objectTypeMessage instanceof ListDocumentMessage) {
-                    ListDocumentMessage listDocumentMessage = (ListDocumentMessage) objectTypeMessage;
-                    queryMap.add("uuid", listDocumentMessage.getUuidsAsStrings());
+                    queryMap.add("uuid", ((ListDocumentMessage) objectTypeMessage).getUuidsAsStrings());
                 }
 
                 if (objectTypeMessage instanceof SearchDocumentMessage) {
-                    SearchDocumentMessage searchDocumentMessage = (SearchDocumentMessage) objectTypeMessage;
-                    queryMap.add(searchDocumentMessage.getQuery());
+                    queryMap.add(((SearchDocumentMessage) objectTypeMessage).getQuery());
                 }
 
                 final String authorization = message.getAuthorization();
                 String path = operation.path;
                 if (path.contains("[uuid]")) {
-                    String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
-                    if (uuid == null) {
+                    // an object instance is required
+                    if (objectTypeMessage instanceof ObjectInstanceMessage) {
+                        UUID uuid = ((ObjectInstanceMessage) objectTypeMessage).getUuid();
+                        path = path.replace("[uuid]", uuid.toString());
+                    } else {
                         throw new IllegalArgumentException("Operation '" + operationName + "' requires a UUID to be set in the AMQP header '" + ObjectInstanceMessage.HEADER_OBJECTID + "'");
                     }
-                    path = path.replace("[uuid]", uuid);
                 }
                 URL url;
 
