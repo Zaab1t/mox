@@ -16,7 +16,7 @@ public class DeleteDocumentMessage extends ObjectInstanceMessage {
 
     private String note = null;
 
-    private static final String OPERATION = "delete";
+    public static final String OPERATION = "delete";
 
     public DeleteDocumentMessage(String authorization, String objectType, UUID uuid, String note) {
         super(authorization, objectType, uuid);

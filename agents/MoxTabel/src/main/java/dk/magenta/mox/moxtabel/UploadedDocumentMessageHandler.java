@@ -63,10 +63,10 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
     }
 
     private class MessageRequest {
-        public DocumentMessage documentMessage;
+        public ObjectTypeMessage documentMessage;
         public String identifier;
         public Future<String> response;
-        public MessageRequest(String identifier, DocumentMessage documentMessage) {
+        public MessageRequest(String identifier, ObjectTypeMessage documentMessage) {
             this.identifier = identifier;
             this.documentMessage = documentMessage;
         }
@@ -115,7 +115,7 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
     public Future<String> run(Headers headers, JSONObject jsonObject) {
         this.log.info("Parsing message");
         try {
-            UUID reference = UUID.fromString(headers.getString(Message.HEADER_OBJECTREFERENCE));
+            UUID reference = UUID.fromString(headers.getString(UploadedDocumentMessage.HEADER_OBJECTREFERENCE));
             this.log.info("Reference: " + reference);
 
             String authorization = headers.getString(Message.HEADER_AUTHORIZATION);
@@ -123,8 +123,7 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
 
             // Fetch document metadata
             this.log.info("Retrieving document metadata");
-            SimpleOIODocument simpleOIODocument = fetchDocumentByUUID
-                    (reference, authorization);
+            SimpleOIODocument simpleOIODocument = fetchDocumentByUUID(reference, authorization);
             URI content = simpleOIODocument.getContent();
             String contentType = simpleOIODocument.getContentType();
             String title = simpleOIODocument.getTitle();
@@ -132,8 +131,7 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
 
             // Download document
             this.log.info("Retrieving document contents");
-            InputStream data = restClient.restRawResponse("GET",
-                    "/dokument/dokument/" + contentPath, null, authorization);
+            InputStream data = restClient.restRawResponse("GET", "/dokument/dokument/" + contentPath, null, authorization);
 
             // Save it to a temp file.
             File tempFile = File.createTempFile("tmp", ".temp");
@@ -172,24 +170,25 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
                         this.log.info("Operation: " + operation);
                         this.log.info("UUID: " + ((uuid == null) ? null : uuid.toString()));
 
-                        DocumentMessage documentMessage = null;
+                        ObjectTypeMessage documentMessage = null;
+
                         switch (operation.trim().toLowerCase()) {
-                            case DocumentMessage.OPERATION_READ:
+                            case ReadDocumentMessage.OPERATION:
                                 documentMessage = new ReadDocumentMessage(authorization, objectTypeName, uuid);
                                 break;
-                            case DocumentMessage.OPERATION_LIST:
+                            case ListDocumentMessage.OPERATION:
                                 documentMessage = new ListDocumentMessage(authorization, objectTypeName, uuid);
                                 break;
-                            case DocumentMessage.OPERATION_CREATE:
+                            case CreateDocumentMessage.OPERATION:
                                 documentMessage = new CreateDocumentMessage(authorization, objectTypeName, objectData);
                                 break;
-                            case DocumentMessage.OPERATION_UPDATE:
+                            case UpdateDocumentMessage.OPERATION:
                                 documentMessage = new UpdateDocumentMessage(authorization, objectTypeName, uuid, objectData);
                                 break;
-                            case DocumentMessage.OPERATION_PASSIVATE:
+                            case PassivateDocumentMessage.OPERATION:
                                 documentMessage = new PassivateDocumentMessage(authorization, objectTypeName, uuid);
                                 break;
-                            case DocumentMessage.OPERATION_DELETE:
+                            case DeleteDocumentMessage.OPERATION:
                                 documentMessage = new DeleteDocumentMessage(authorization, objectTypeName, uuid);
                                 break;
                         }

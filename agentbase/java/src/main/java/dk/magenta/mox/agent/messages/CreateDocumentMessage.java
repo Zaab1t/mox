@@ -12,7 +12,7 @@ public class CreateDocumentMessage extends ObjectTypeMessage {
 
     protected JSONObject data;
 
-    private static final String OPERATION = "create";
+    public static final String OPERATION = "create";
 
     public CreateDocumentMessage(String authorization, String objectType, JSONObject data) {
         super(authorization, objectType);

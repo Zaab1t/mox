@@ -13,7 +13,7 @@ public class SearchDocumentMessage extends ObjectTypeMessage {
 
     protected ParameterMap<String, String> query;
 
-    private static final String OPERATION = "search";
+    public static final String OPERATION = "search";
 
     public SearchDocumentMessage(String authorization, String objectType, ParameterMap<String, String> query) {
         super(authorization, objectType);

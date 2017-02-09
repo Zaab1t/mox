@@ -14,7 +14,7 @@ public class UpdateDocumentMessage extends ObjectInstanceMessage {
 
     protected UUID uuid;
 
-    private static final String OPERATION = "update";
+    public static final String OPERATION = "update";
 
     protected JSONObject data;
 
