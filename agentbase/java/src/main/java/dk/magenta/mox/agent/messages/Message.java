@@ -33,6 +33,10 @@ public abstract class Message {
         return Message.messageType;
     }
 
+    public String getAuthorization() {
+        return authorization;
+    }
+
     public Headers getHeaders() {
         Headers headers = new Headers();
         headers.put(HEADER_MESSAGEID, UUID.randomUUID().toString());

@@ -40,88 +40,73 @@ public class RestMessageHandler implements MessageHandler {
     public Future<String> run(Headers headers, JSONObject jsonObject) {
         this.log.info("Parsing message");
         try {
-            String objectTypeName = headers.getString(ObjectTypeMessage.HEADER_OBJECTTYPE).toLowerCase();
-            this.log.info("objectTypeName: " + objectTypeName);
-            String operationName = headers.getString(ObjectTypeMessage.HEADER_OPERATION).toLowerCase();
-            this.log.info("operationName: " + operationName);
+            Message message = Message.parse(headers, jsonObject);
+            if (message instanceof ObjectTypeMessage) {
+                ObjectTypeMessage objectTypeMessage = (ObjectTypeMessage) message;
 
-            ObjectType objectType = this.objectTypes.get(objectTypeName);
-            if (objectType == null) {
-                throw new InvalidObjectTypeException(objectTypeName);
-            } else {
+                String objectTypeName = objectTypeMessage.getObjectType();
+                this.log.info("objectTypeName: " + objectTypeName);
+                ObjectType objectType = this.objectTypes.get(objectTypeName);
+                if (objectType == null) {
+                    throw new InvalidObjectTypeException(objectTypeName);
+                }
+
+                String operationName = objectTypeMessage.getOperationName();
+                this.log.info("operationName: " + operationName);
+                if (operationName == null) {
+                    throw new InvalidOperationException(operationName);
+                }
                 ObjectType.Operation operation = objectType.getOperation(operationName);
                 if (operation == null) {
                     throw new InvalidOperationException(operationName);
-                } else {
-
-                    String query = headers.optString(ObjectTypeMessage.HEADER_QUERY);
-                    HashMap<String, ArrayList<String>> queryMap = null;
-                    if (query != null) {
-                        this.log.info("query: " + query);
-                        JSONObject queryObject = new JSONObject(query);
-                        queryMap = new HashMap<>();
-                        for (String key : queryObject.keySet()) {
-                            ArrayList<String> list = new ArrayList<>();
-                            try {
-                                JSONArray array = queryObject.getJSONArray(key);
-                                for (int i = 0; i < array.length(); i++) {
-                                    list.add(array.optString(i));
-                                }
-                            } catch (org.json.JSONException e) {
-                                list.add(queryObject.optString(key));
-                            }
-                            queryMap.put(key, list);
-                        }
-                    }
-
-                    final String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
-                    if (operationName != null) {
-                        String path = operation.path;
-                        if (path.contains("[uuid]")) {
-                            String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
-                            if (uuid == null) {
-                                throw new IllegalArgumentException("Operation '" + operationName + "' requires a UUID to be set in the AMQP header '" + ObjectInstanceMessage.HEADER_OBJECTID + "'");
-                            }
-                            path = path.replace("[uuid]", uuid);
-                        }
-                        URL url;
-
-                        try {
-                            if (queryMap == null) {
-                                url = restClient.getURLforPath(path);
-                            } else {
-                                StringJoiner parameters = new StringJoiner("&");
-                                for (String key : queryMap.keySet()) {
-                                    ArrayList<String> list = queryMap.get(key);
-                                    for (String item : list) {
-                                        parameters.add(key + "=" + item);
-                                    }
-                                }
-                                url = new URI(this.restClient.url.getProtocol(), null, this.restClient.url.getHost(), this.restClient.url.getPort(), path, parameters.toString(), null).toURL();
-                            }
-                        } catch (MalformedURLException e) {
-                            return Util.futureError(e);
-                        } catch (URISyntaxException e) {
-                            return Util.futureError(e);
-                        }
-                        this.log.info("Calling REST interface at " + url.toString());
-                        final String method = operation.method.toString();
-                        final URL finalUrl = url;
-                        final char[] data = jsonObject.toString().toCharArray();
-                        return this.pool.submit(new Callable<String>() {
-                            public String call() {
-                                String response = null;
-                                try {
-                                    response = restClient.rest(method, finalUrl, data, authorization);
-                                } catch (IOException e) {
-                                    response = Util.error(e);
-                                }
-                                RestMessageHandler.this.log.info("Response: " + response);
-                                return response;
-                            }
-                        });
-                    }
                 }
+
+                ParameterMap<String, String> queryMap = null;
+
+                if (objectTypeMessage instanceof ListDocumentMessage) {
+                    ListDocumentMessage listDocumentMessage = (ListDocumentMessage) objectTypeMessage;
+                    queryMap.add("uuid", listDocumentMessage.getUuidsAsStrings());
+                }
+
+                if (objectTypeMessage instanceof SearchDocumentMessage) {
+                    SearchDocumentMessage searchDocumentMessage = (SearchDocumentMessage) objectTypeMessage;
+                    queryMap.add(searchDocumentMessage.getQuery());
+                }
+
+                final String authorization = message.getAuthorization();
+                String path = operation.path;
+                if (path.contains("[uuid]")) {
+                    String uuid = headers.optString(ObjectInstanceMessage.HEADER_OBJECTID);
+                    if (uuid == null) {
+                        throw new IllegalArgumentException("Operation '" + operationName + "' requires a UUID to be set in the AMQP header '" + ObjectInstanceMessage.HEADER_OBJECTID + "'");
+                    }
+                    path = path.replace("[uuid]", uuid);
+                }
+                URL url;
+
+                try {
+                    url = new URI(this.restClient.url.getProtocol(), null, this.restClient.url.getHost(), this.restClient.url.getPort(), path, queryMap.toString(), null).toURL();
+                } catch (MalformedURLException e) {
+                    return Util.futureError(e);
+                } catch (URISyntaxException e) {
+                    return Util.futureError(e);
+                }
+                this.log.info("Calling REST interface at " + url.toString());
+                final String method = operation.method.toString();
+                final URL finalUrl = url;
+                final char[] data = jsonObject.toString().toCharArray();
+                return this.pool.submit(new Callable<String>() {
+                    public String call() {
+                        String response = null;
+                        try {
+                            response = restClient.rest(method, finalUrl, data, authorization);
+                        } catch (IOException e) {
+                            response = Util.error(e);
+                        }
+                        RestMessageHandler.this.log.info("Response: " + response);
+                        return response;
+                    }
+                });
             }
             return null;
         } catch (Exception e) {

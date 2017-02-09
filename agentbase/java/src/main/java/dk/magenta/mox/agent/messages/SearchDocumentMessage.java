@@ -37,6 +37,10 @@ public class SearchDocumentMessage extends ObjectTypeMessage {
         return SearchDocumentMessage.OPERATION;
     }
 
+    public ParameterMap<String, String> getQuery() {
+        return this.query;
+    }
+
     public static boolean matchType(Headers headers) {
         try {
             return SearchDocumentMessage.messageType.equals(headers.getString(Message.HEADER_MESSAGETYPE)) && SearchDocumentMessage.OPERATION.equalsIgnoreCase(headers.getString(ObjectTypeMessage.HEADER_OPERATION));
