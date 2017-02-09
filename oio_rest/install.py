@@ -61,4 +61,4 @@ wsgi.install(True)
 
 # Create logfile
 program_log = LogFile('/var/log/mox/oio_rest.log')
-program_log.create()
+program_log.create('www-data')

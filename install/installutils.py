@@ -404,11 +404,11 @@ class File(object):
 
 class LogFile(File):
 
-    def create(self):
+    def create(self, owner='mox', group='mox', mode='666'):
         self.touch()
-        self.chmod('666')
-        self.chown('mox')
-        self.chgrp('mox')
+        self.chown(owner)
+        self.chgrp(group)
+        self.chmod(mode)
 
 
 class Folder(object):

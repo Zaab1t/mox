@@ -40,4 +40,4 @@ wsgi.install(True)
 
 # Create logfile
 program_log = LogFile('/var/log/mox/moxdocumentdownload.log')
-program_log.create()
+program_log.create('www-data')
