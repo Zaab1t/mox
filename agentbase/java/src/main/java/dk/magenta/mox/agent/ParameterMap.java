@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * Created by lars on 23-09-15.
@@ -27,6 +28,16 @@ public class ParameterMap<K,V> extends HashMap<K,ArrayList<V>> {
 
     public void add(K key, V value) {
         this.add(key).add(value);
+    }
+
+    public void add(K key, List<V> values) {
+        this.add(key).addAll(values);
+    }
+
+    public void add(ParameterMap<K,V> map) {
+        for (K key : map.keySet()) {
+            this.add(key, map.get(key));
+        }
     }
 
     public JSONObject toJSON() {
@@ -89,5 +100,19 @@ public class ParameterMap<K,V> extends HashMap<K,ArrayList<V>> {
             map.put(key, this.getFirst(key));
         }
         return map;
+    }
+
+    public String toString() {
+        StringJoiner parameters = new StringJoiner("&");
+        for (K key : this.keySet()) {
+            String sKey = key.toString();
+            ArrayList<V> list = this.get(sKey);
+            for (V value : list) {
+                if (value != null) {
+                    parameters.add(sKey + "=" + value.toString());
+                }
+            }
+        }
+        return parameters.toString();
     }
 }

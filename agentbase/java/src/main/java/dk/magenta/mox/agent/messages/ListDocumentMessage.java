@@ -48,6 +48,18 @@ public class ListDocumentMessage extends ObjectTypeMessage {
         return ListDocumentMessage.OPERATION;
     }
 
+    public List<UUID> getUuids() {
+        return new ArrayList<UUID>(this.uuids);
+    }
+    public List<String> getUuidsAsStrings() {
+        ArrayList<String> list = new ArrayList<String>();
+        for (UUID uuid : this.uuids) {
+            list.add(uuid.toString());
+        }
+        return list;
+    }
+
+
     @Override
     public Headers getHeaders() {
         Headers headers = super.getHeaders();
