@@ -87,11 +87,8 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Creating "+name);
-            Headers headers = this.getBaseHeaders();
-            headers.put(Message.HEADER_OBJECTTYPE, name);
-            headers.put(Message.HEADER_OPERATION, CreateDocumentMessage.OPERATION);
             JSONObject payload = getJSONObjectFromFilename("data/"+name+"/create.json");
-            Message message = CreateDocumentMessage.parse(headers, payload);
+            CreateDocumentMessage message = new CreateDocumentMessage(this.getAuthToken(), name, payload);
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -117,7 +114,7 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Reading "+name+", uuid: "+uuid.toString());
-            Message message = new ReadDocumentMessage(this.getAuthToken(), name, uuid);
+            ReadDocumentMessage message = new ReadDocumentMessage(this.getAuthToken(), name, uuid);
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -158,7 +155,7 @@ public class MoxTest extends MoxAgent {
             System.out.println("Searching for "+name);
             ParameterMap<String, String> query = new ParameterMap<>();
             query.populateFromJSON(getJSONObjectFromFilename("data/"+name+"/search.json"));
-            Message message = new SearchDocumentMessage(this.getAuthToken(), name, query);
+            SearchDocumentMessage message = new SearchDocumentMessage(this.getAuthToken(), name, query);
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -199,7 +196,7 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Listing "+name+" items");
-            Message message = new ListDocumentMessage(this.getAuthToken(), name, uuid);
+            ListDocumentMessage message = new ListDocumentMessage(this.getAuthToken(), name, uuid);
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -241,7 +238,7 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Updating "+name+", uuid: "+uuid.toString());
-            Message message = new UpdateDocumentMessage(this.getAuthToken(), name, uuid, getJSONObjectFromFilename("data/"+name+"/update.json"));
+            UpdateDocumentMessage message = new UpdateDocumentMessage(this.getAuthToken(), name, uuid, getJSONObjectFromFilename("data/"+name+"/update.json"));
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -268,7 +265,7 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Passivating "+name+", uuid: "+uuid.toString());
-            Message message = new PassivateDocumentMessage(this.getAuthToken(), name, uuid, "Passivate, please");
+            PassivateDocumentMessage message = new PassivateDocumentMessage(this.getAuthToken(), name, uuid, "Passivate, please");
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -295,7 +292,7 @@ public class MoxTest extends MoxAgent {
         try {
             printDivider();
             System.out.println("Deleting "+name+", uuid: "+uuid.toString());
-            Message message = new DeleteDocumentMessage(this.getAuthToken(), name, uuid, "Delete, please");
+            DeleteDocumentMessage message = new DeleteDocumentMessage(this.getAuthToken(), name, uuid, "Delete, please");
             response = this.sender.send(message, true).get(30, TimeUnit.SECONDS);
             if (response == null) {
                 throw new TestException("Got null response from sender");
@@ -318,12 +315,6 @@ public class MoxTest extends MoxAgent {
     }
 
     //--------------------------------------------------------------------------
-
-    private Headers getBaseHeaders() {
-        Headers headers = new Headers();
-        headers.put(Message.HEADER_AUTHORIZATION, this.getAuthToken());
-        return headers;
-    }
 
     private static JSONObject getJSONObjectFromFilename(String jsonFilename) throws IOException, org.json.JSONException {
         return new JSONObject(new FileInputStream(new File(jsonFilename)));
