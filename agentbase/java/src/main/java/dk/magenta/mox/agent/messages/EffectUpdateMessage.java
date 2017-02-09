@@ -31,7 +31,7 @@ public class EffectUpdateMessage extends ObjectInstanceMessage {
     public EffectUpdateMessage(String objectType, UUID uuid, String updateType, Date effectTime) {
         super(objectType, uuid);
         if (!EffectUpdateMessage.UPDATETYPE_START.equals(updateType) && !EffectUpdateMessage.UPDATETYPE_END.equals(updateType) && !EffectUpdateMessage.UPDATETYPE_BOTH.equals(updateType)) {
-            throw IllegalArgumentException("updateType must be one of EffectUpdateMessage.UPDATETYPE_START, EffectUpdateMessage.UPDATETYPE_END or EffectUpdateMessage.UPDATETYPE_BOTH");
+            throw new IllegalArgumentException("updateType must be one of EffectUpdateMessage.UPDATETYPE_START, EffectUpdateMessage.UPDATETYPE_END or EffectUpdateMessage.UPDATETYPE_BOTH");
         }
         this.updateType = updateType;
         this.effectTime = effectTime;
