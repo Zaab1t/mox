@@ -2,6 +2,7 @@
 
 import os
 import traceback
+import logging
 
 from flask import Flask, jsonify, redirect, request, url_for, Response
 from werkzeug.routing import BaseConverter
@@ -31,8 +32,17 @@ class RegexConverter(BaseConverter):
         super(RegexConverter, self).__init__(url_map)
         self.regex = items[0]
 
-
 app.url_map.converters['regex'] = RegexConverter
+
+LOGFILE = '/var/log/mox/oio_rest.log'
+
+app.logger.setLevel(logging.INFO)
+if not app.debug:
+    logfile_handler = logging.FileHandler(LOGFILE)
+    logfile_handler.setLevel(logging.WARNING)
+    logfile_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s"))
+    app.logger.addHandler(logfile_handler)
+
 
 @app.route('/')
 def root():
@@ -68,12 +78,13 @@ def sitemap():
         # and rules that require parameters
         if "GET" in rule.methods:
             links.append(str(rule))
-            print rule
+            app.logger.info(rule)
     return jsonify({"site-map": sorted(links)})
 
 
 @app.errorhandler(OIOFlaskException)
 def handle_not_allowed(error):
+    app.logger.error(error.message)
     dct = error.to_dict()
     response = jsonify(dct)
     response.status_code = error.status_code
@@ -83,6 +94,7 @@ def handle_not_allowed(error):
 @app.errorhandler(DataError)
 def handle_db_error(error):
     message, context = error.message.split('\n', 1)
+    app.logger.error(message)
     return jsonify(message=message, context=context), 400
 
 def main():
