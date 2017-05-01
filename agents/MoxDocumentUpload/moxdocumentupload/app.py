@@ -11,6 +11,8 @@ from agent.amqpclient import MessageSender, NoSuchJob
 from agent.message import UploadedDocumentMessage
 from agent.config import read_properties_files
 
+from oio_rest import settings
+
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 config = read_properties_files(DIR + "/moxdocumentupload.conf")
@@ -88,14 +90,14 @@ sender = MessageSender(
 @app.route('/', methods=['GET', 'POST'])
 def upload():
     if request.method == 'GET':
-        return render_template('form.html')
+        return render_template('form.html', settings=settings)
     elif request.method == 'POST':
 
         # check if the post request has the file part
         if 'file' not in request.files:
             return redirect(request.url)
         file = request.files['file']
-        authorization = request.form['token']
+        authorization = request.form.get('token', '')
         output = request.form.get("output", "html")
 
         if not file:
@@ -109,7 +111,7 @@ def upload():
         if not allowed_file(file.filename):
             raise BadRequestException("Invalid file extension")
 
-        if not authorization or len(authorization) == 0:
+        if settings.USE_SAML_AUTHENTICATION and not authorization:
             raise UnauthorizedException("Authtoken missing")
 
         # Save file to cache

@@ -11,6 +11,8 @@ import threading
 from agent.config import read_properties_files, MissingConfigKeyError
 from flask import Flask, render_template, request, make_response
 
+from oio_rest import settings
+
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 GET_TOKEN = "/get-token"
@@ -91,7 +93,6 @@ class ChunkGet(threading.Thread):
 
 
 def extract(host, username, password, objecttypes, load_threaded=10):
-
     token = get_token(host, username, password)
 
     register_time = datetime.datetime.today().date() + \
@@ -191,6 +192,8 @@ def extract(host, username, password, objecttypes, load_threaded=10):
 
 def get_token(host, username, password):
     """ Get a token from the server"""
+    if not settings.USE_SAML_AUTHENTICATION:
+        return ''
     token_url = "%s%s" % (host, GET_TOKEN)
     # print "Obtaining token from %s" % token_url
     token_request = requests.post(
@@ -519,7 +522,7 @@ def require_parameter(parametername):
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'GET':
-        return render_template('form.html')
+        return render_template('form.html', settings=settings)
     elif request.method == 'POST':
         require_parameter('type')
         objecttype = request.form['type']
@@ -530,11 +533,14 @@ def main():
                 ", ".join(OBJECTTYPE_MAP.keys())
             )
 
-        require_parameter('username')
-        username = request.form['username']
+        if settings.USE_SAML_AUTHENTICATION:
+            require_parameter('username')
+            username = request.form['username']
 
-        require_parameter('password')
-        password = request.form['password']
+            require_parameter('password')
+            password = request.form['password']
+        else:
+            username = password = None
 
         mergelevel = request.form.get('merge', 1)
         try:

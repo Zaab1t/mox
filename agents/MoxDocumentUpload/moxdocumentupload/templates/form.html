@@ -6,9 +6,15 @@
     </head>
     <body>
         <form action="" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-            Select File to Upload:<input type="file" name="file"/><br/>
-            Authentication token:<textarea name="token"></textarea><br/>
-            <input type="submit" value="Upload"/>
+          Select File to Upload:
+          <input type="file" name="file"/>
+          <br/>
+          {% if settings.USE_SAML_AUTHENTICATION %}
+          Authentication token:
+          <textarea name="token"></textarea>
+          <br/>
+          {% endif %}
+          <input type="submit" value="Upload"/>
         </form>
     </body>
 </html>
