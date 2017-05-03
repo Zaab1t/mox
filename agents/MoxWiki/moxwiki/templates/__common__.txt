@@ -3,10 +3,21 @@
     {% set comma=joiner(",") %}
     {% for item in list.current %}
         {% if item.uuid and item.current.brugervendtnoegle -%}
-             {{ comma() }}{{ item.current.brugervendtnoegle }}_{{ item.id }}
+             {{ comma() }}{{ item.oio_class_name }}{{ item.current.brugervendtnoegle }}_{{ item.id }}
         {%- elif item.urn -%}
             {{ comma() }}{{ item.urn }}
         {%- endif %}
     {% endfor %}
 {% endif %}
+{%- endmacro %}
+
+{% macro searchlist(list, key) -%}
+{% if list -%}
+    {% set comma=joiner(",") %}
+    {% for item in list -%}
+        {% if item[key] -%}
+            {{ comma() }}{{ item[key] }}
+        {%- endif %}
+    {%- endfor %}
+{%- endif %}
 {%- endmacro %}

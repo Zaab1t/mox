@@ -5,7 +5,8 @@ import json
 from uuid import UUID
 from PyOIO.OIOCommon.entity import OIOEntity
 from PyOIO.organisation import Bruger, Interessefaellesskab, ItSystem
-from PyOIO.organisation Organisation, OrganisationEnhed, OrganisationFunktion
+from PyOIO.organisation import Organisation, OrganisationEnhed
+from PyOIO.organisation import OrganisationFunktion
 from PyOIO.klassifikation import Facet, Klasse, Klassifikation
 from PyOIO.OIOCommon.exceptions import InvalidUUIDException
 from PyOIO.OIOCommon.exceptions import InvalidObjectTypeException
@@ -59,7 +60,6 @@ class Lora(object):
             data={
                 'username': self.username,
                 'password': self.password,
-                'sts': self.host + ":9443/services/wso2carbon-sts?wsdl"
             }
         )
         if not response.text.startswith("saml-gzipped"):
@@ -100,7 +100,10 @@ class Lora(object):
             )
         response = self.request(url, headers=self.get_headers())
         data = json.loads(response.text)
-        return data['results'][0]
+        if 'results' in data:
+            return data['results'][0]
+        else:
+            raise RestAccessException(data)
 
     def load_all_of_type(self, objecttype):
         if issubclass(objecttype, OIOEntity):

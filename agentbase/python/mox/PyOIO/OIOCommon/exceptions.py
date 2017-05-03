@@ -3,8 +3,11 @@ import json
 
 def load_json_message(message):
     try:
-        return json.loads(message)['message']
-    except ValueError:
+        if isinstance(message, basestring):
+            return json.loads(message)['message']
+        elif isinstance(message, dict):
+            return message['message']
+    except:
         return message
 
 
