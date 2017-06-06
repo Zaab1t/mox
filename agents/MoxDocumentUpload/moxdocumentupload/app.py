@@ -97,7 +97,7 @@ def upload():
         if 'file' not in request.files:
             return redirect(request.url)
         file = request.files['file']
-        authorization = request.form.get('token', '')
+        authorization = request.form.get('token', None)
         output = request.form.get("output", "html")
 
         if not file:
@@ -128,9 +128,11 @@ def upload():
             }
         )
         headers = {
-            "Authorization": authorization,
             "Content-Type": data.content_type
         }
+        if authorization:
+            headers["Authorization"] = authorization
+
         response = requests.post(url, headers=headers, data=data)
         os.remove(destfilepath)
         if response.status_code != 200 and response.status_code != 201:
@@ -143,6 +145,7 @@ def upload():
             raise ServiceException("Failed to parse document service response")
         if 'uuid' not in responseJson:
             raise ServiceException("Document service didn't return a uuid")
+        print 'responseJson', responseJson, repr(authorization)
         uuid = responseJson['uuid']
 
         # Send AMQP message detailing the upload

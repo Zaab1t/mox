@@ -4,13 +4,11 @@
     </head>
     <body>
         <form method="POST">
-            {% if settings.USE_SAML_AUTHENTICATION %}
             <label for="username">Brugernavn: </label>
             <input type="text" id="username" name="username"/><br/>
 
             <label for="password">Password: </label>
             <input type="password" id="password" name="password"/><br/>
-            {% endif %}
 
             <label for="type">Type: </label>
             <select id="type" name="type">

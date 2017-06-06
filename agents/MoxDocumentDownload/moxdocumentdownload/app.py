@@ -69,12 +69,14 @@ class ChunkGet(threading.Thread):
         return self.results
 
     def run(self):
+        headers={
+            "Content-type": "application/json"
+        }
+        if self.token:
+            headers["Authorization"] = self.token
+
         item_request = requests.get(
             self.url,
-            headers={
-                "Authorization": self.token,
-                "Content-type": "application/json"
-            },
             verify=False
         )
         try:
@@ -94,7 +96,6 @@ class ChunkGet(threading.Thread):
 
 def extract(host, username, password, objecttypes, load_threaded=10):
     token = get_token(host, username, password)
-
     register_time = datetime.datetime.today().date() + \
         datetime.timedelta(days=1)
 
@@ -106,13 +107,15 @@ def extract(host, username, password, objecttypes, load_threaded=10):
         for parameterset in [
             "brugervendtnoegle=%", "livscykluskode=Importeret"
         ]:
+            headers={
+                "Content-type": "application/json"
+            }
+            if token:
+                headers["Authorization"] = token
+
             list_request = requests.get(
                 "%s%s?%s" % (host, objecttype_url, parameterset),
-                headers={
-                    "Authorization": token,
-                    "Content-type": "application/json"
-                },
-                verify=False
+                headers=headers, verify=False,
             )
             try:
                 response = json.loads(list_request.text)
@@ -166,14 +169,13 @@ def extract(host, username, password, objecttypes, load_threaded=10):
                     host, objecttype_url, register_time, "&uuid=".join(chunk)
                 )
 
-                item_request = requests.get(
-                    url,
-                    headers={
-                        "Authorization": token,
-                        "Content-type": "application/json"
-                    },
-                    verify=False
-                )
+                headers={
+                    "Content-type": "application/json"
+                }
+                if token:
+                    headers["Authorization"] = token
+
+                item_request = requests.get(url, headers=headers, verify=False)
                 try:
                     response = json.loads(item_request.text)
                     objects[objecttype_name].extend(response.get("results")[0])
@@ -184,16 +186,18 @@ def extract(host, username, password, objecttypes, load_threaded=10):
                     raise ServiceException(msg)
 
                 request_counter += 1
-                if request_counter % 20 == 0:
-                    token = get_token(host, username, password)
+                if token and request_counter % 20 == 0:
+:                    token = get_token(host, username, password)
 
     return objects
 
 
 def get_token(host, username, password):
     """ Get a token from the server"""
-    if not settings.USE_SAML_AUTHENTICATION:
-        return ''
+
+    if settings.USE_SAML_AUTHENTICATION:
+        return None
+
     token_url = "%s%s" % (host, GET_TOKEN)
     # print "Obtaining token from %s" % token_url
     token_request = requests.post(

@@ -118,7 +118,7 @@ public class UploadedDocumentMessageHandler implements MessageHandler {
             UUID reference = UUID.fromString(headers.getString(Message.HEADER_OBJECTREFERENCE));
             this.log.info("Reference: " + reference);
 
-            String authorization = headers.getString(Message.HEADER_AUTHORIZATION);
+            String authorization = headers.optString(Message.HEADER_AUTHORIZATION);
             this.log.info("Got authorization");
 
             // Fetch document metadata
