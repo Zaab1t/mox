@@ -10,6 +10,7 @@ from werkzeug.datastructures import ImmutableOrderedMultiDict
 
 import db
 import db_structure
+from db_helpers import typed_get
 from utils.build_registration import build_registration, to_lower_param
 
 # Just a helper during debug
@@ -18,25 +19,6 @@ from authentication import requires_auth
 
 def j(t):
     return jsonify(output=t)
-
-
-def typed_get(d, field, default):
-    v = d.get(field, default)
-    t = type(default)
-
-    if v is None:
-        return default
-
-    # special case strings
-    if t is str or t is unicode:
-        t = basestring
-
-    if not isinstance(v, t):
-        raise BadRequestException('expected %s for %r, found %s: %s' %
-                                  (t.__name__, field, type(v).__name__,
-                                   json.dumps(v)))
-
-    return v
 
 
 class ArgumentDict(ImmutableOrderedMultiDict):

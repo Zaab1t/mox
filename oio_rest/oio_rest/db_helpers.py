@@ -14,6 +14,25 @@ from custom_exceptions import BadRequestException
 _attribute_fields = {}
 
 
+def typed_get(d, field, default):
+    v = d.get(field, default)
+    t = type(default)
+
+    if v is None:
+        return default
+
+    # special case strings
+    if t is str or t is unicode:
+        t = basestring
+
+    if not isinstance(v, t):
+        raise BadRequestException('expected %s for %r, found %s: %s' %
+                                  (t.__name__, field, type(v).__name__,
+                                   json.dumps(v)))
+
+    return v
+
+
 def get_attribute_fields(attribute_name):
     """Return the field names from the PostgreSQL type in question.
 

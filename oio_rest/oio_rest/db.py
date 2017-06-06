@@ -13,7 +13,7 @@ from mx.DateTime import DateTimeDeltaFrom
 
 from settings import DATABASE, DB_USER, DO_ENABLE_RESTRICTIONS, DB_PASSWORD
 
-from db_helpers import get_attribute_fields, get_attribute_names
+from db_helpers import get_attribute_fields, get_attribute_names, typed_get
 from db_helpers import get_field_type, get_state_names, get_relation_field_type
 from db_helpers import (Soegeord, OffentlighedUndtaget, JournalNotat,
                         JournalDokument, DokumentVariantType, AktoerAttr,
@@ -128,7 +128,9 @@ def convert_attributes(attributes):
             current_attr_periods = attributes[attr_name]
             converted_attr_periods = []
             for attr_period in current_attr_periods:
+                assert isinstance(attr_period, (list, dict)), attr_period
                 field_names = get_attribute_fields(attr_name)
+                assert isinstance(field_names, list), field_names
                 attr_value_list = [
                     convert_attr_value(
                         attr_name, f, attr_period[f]
@@ -207,9 +209,13 @@ def sql_relations_array(class_name, relations):
 
 def sql_convert_registration(registration, class_name):
     """Convert input JSON to the SQL arrays we need."""
-    registration["attributes"] = convert_attributes(registration["attributes"])
-    registration["relations"] = convert_relations(registration["relations"],
-                                                  class_name)
+    registration["attributes"] = convert_attributes(
+        typed_get(registration, "attributes", {}),
+    )
+    registration["relations"] = convert_relations(
+        typed_get(registration, "relations", {}), class_name,
+    )
+
     if "variants" in registration:
         registration["variants"] = adapt(
             convert_variants(registration["variants"])
