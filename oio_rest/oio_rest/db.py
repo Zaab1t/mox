@@ -322,6 +322,7 @@ def object_exists(class_name, uuid):
             raise
 
     result = cursor.fetchone()[0]
+    conn.close()
 
     return result
 
@@ -350,6 +351,7 @@ where de.indhold = %s"""
             raise
 
     result = cursor.fetchone()
+    conn.close()
     return result
 
 
@@ -408,6 +410,7 @@ def create_or_import_object(class_name, note, registration,
             raise
 
     output = cursor.fetchone()
+    conn.close()
     return output[0]
 
 
@@ -498,6 +501,7 @@ def passivate_object(class_name, note, registration, uuid):
             raise
 
     output = cursor.fetchone()
+    conn.close()
     return output[0]
 
 
@@ -546,6 +550,8 @@ def update_object(class_name, note, registration, uuid=None,
         else:
             raise
 
+    conn.close()
+
     return uuid
 
 
@@ -589,6 +595,7 @@ def list_objects(class_name, uuid, virkning_fra, virkning_til,
             raise
 
     output = cursor.fetchone()
+    conn.close()
     if not output:
         # nothing found
         raise NotFoundException("{0} with UUID {1} not found.".format(
@@ -779,6 +786,7 @@ def search_objects(class_name, uuid, registration,
             raise
 
     output = cursor.fetchone()
+    conn.close()
     return output
 
 
