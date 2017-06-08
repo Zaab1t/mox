@@ -24,7 +24,7 @@ setup(
         # -*- Extra requirements: -*-
         'requests==2.12.4',
         'pytz>=2016.10',
-        'Flask==0.10.1',
+        'Flask==0.12',
         'Jinja2==2.7.3',
         'MarkupSafe==0.23',
         'Werkzeug==0.10.4',

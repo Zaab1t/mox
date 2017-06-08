@@ -115,32 +115,27 @@ def handle_db_error(error):
     message, context = error.message.split('\n', 1)
     return jsonify(message=message, context=context), 400
 
+from settings import BASE_URL
+from klassifikation import KlassifikationsHierarki
+from organisation import OrganisationsHierarki
+from sag import SagsHierarki
+from dokument import DokumentHierarki
+from aktivitet import AktivitetsHierarki
+from indsats import IndsatsHierarki
+from tilstand import TilstandsHierarki
+from log import LogHierarki
 
-def setup_api():
-
-    from settings import BASE_URL
-    from klassifikation import KlassifikationsHierarki
-    from organisation import OrganisationsHierarki
-    from sag import SagsHierarki
-    from dokument import DokumentHierarki
-    from aktivitet import AktivitetsHierarki
-    from indsats import IndsatsHierarki
-    from tilstand import TilstandsHierarki
-    from log import LogHierarki
-
-    KlassifikationsHierarki.setup_api(base_url=BASE_URL, flask=app)
-    LogHierarki.setup_api(base_url=BASE_URL, flask=app)
-    SagsHierarki.setup_api(base_url=BASE_URL, flask=app)
-    OrganisationsHierarki.setup_api(base_url=BASE_URL, flask=app)
-    DokumentHierarki.setup_api(base_url=BASE_URL, flask=app)
-    AktivitetsHierarki.setup_api(base_url=BASE_URL, flask=app)
-    IndsatsHierarki.setup_api(base_url=BASE_URL, flask=app)
-    TilstandsHierarki.setup_api(base_url=BASE_URL, flask=app)
+KlassifikationsHierarki.setup_api(base_url=BASE_URL, flask=app)
+LogHierarki.setup_api(base_url=BASE_URL, flask=app)
+SagsHierarki.setup_api(base_url=BASE_URL, flask=app)
+OrganisationsHierarki.setup_api(base_url=BASE_URL, flask=app)
+DokumentHierarki.setup_api(base_url=BASE_URL, flask=app)
+AktivitetsHierarki.setup_api(base_url=BASE_URL, flask=app)
+IndsatsHierarki.setup_api(base_url=BASE_URL, flask=app)
+TilstandsHierarki.setup_api(base_url=BASE_URL, flask=app)
 
 
 def main():
-
-    setup_api()
     app.run(debug=True)
 
 
