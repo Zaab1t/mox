@@ -5,6 +5,8 @@ import os
 BASE_URL = ''
 
 DATABASE = 'mox'
+DB_HOST = 'localhost'
+DB_PORT = 5432
 DB_USER = 'mox'
 DB_PASSWORD = 'mox'
 
