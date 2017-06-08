@@ -1,5 +1,7 @@
 # -*- python -*-
 
+import os
+
 BASE_URL = ''
 
 DATABASE = 'mox'
