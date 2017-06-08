@@ -11,7 +11,6 @@ from jinja2 import Environment, FileSystemLoader
 from psycopg2 import DataError
 
 from authentication import get_authenticated_user
-from log_client import log_service_call
 
 from settings import MOX_BASE_DIR, SAML_IDP_URL
 from custom_exceptions import OIOFlaskException, AuthorizationFailedException
@@ -109,23 +108,6 @@ def get_class_name():
     url = urlparse.urlparse(request.url)
     class_name = url.path.split('/')[2].capitalize()
     return class_name
-
-
-@app.after_request
-def log_api_call(response):
-    if hasattr(request, 'api_operation'):
-        service_name = get_service_name()
-        class_name = get_class_name()
-        time = datetime.datetime.now()
-        operation = request.api_operation
-        return_code = response.status_code
-        msg = response.status
-        note = "Is there a note too?"
-        user_uuid = get_authenticated_user()
-        object_uuid = getattr(request, 'uuid', None)
-        log_service_call(service_name, class_name, time, operation,
-                         return_code, msg, note, user_uuid, "N/A", object_uuid)
-    return response
 
 
 @app.errorhandler(DataError)
