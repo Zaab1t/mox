@@ -43,6 +43,10 @@ class ContentStore:
 
         The object is expected to be a werkzeug.datastructures.FileStorage
         object."""
+
+        if not os.path.isdir(FILE_UPLOAD_FOLDER):
+            os.makedirs(FILE_UPLOAD_FOLDER)
+
         while True:
             file_name = self._get_new_file_name()
             sub_path = self._get_file_sub_path()
