@@ -446,7 +446,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('Interessefaellesskab', livscykluskode, interessefaellesskab_uuid);
 
 return new_interessefaellesskab_registrering.id;
 

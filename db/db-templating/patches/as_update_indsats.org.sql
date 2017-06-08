@@ -585,7 +585,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('Indsats', livscykluskode, indsats_uuid);
 
 return new_indsats_registrering.id;
 

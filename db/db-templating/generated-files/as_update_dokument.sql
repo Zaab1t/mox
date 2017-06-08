@@ -1050,7 +1050,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('Dokument', livscykluskode, dokument_uuid);
 
 return new_dokument_registrering.id;
 

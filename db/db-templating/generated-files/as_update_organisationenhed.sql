@@ -441,7 +441,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('Organisationenhed', livscykluskode, organisationenhed_uuid);
 
 return new_organisationenhed_registrering.id;
 

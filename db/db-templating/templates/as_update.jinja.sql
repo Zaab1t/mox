@@ -462,7 +462,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('{{oio_type|title}}', livscykluskode, {{oio_type}}_uuid);
 
 return new_{{oio_type}}_registrering.id;
 

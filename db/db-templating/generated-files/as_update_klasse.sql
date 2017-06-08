@@ -542,7 +542,6 @@ END IF;
 
 /******************************************************************/
 
-PERFORM actual_state._amqp_publish_notification('Klasse', livscykluskode, klasse_uuid);
 
 return new_klasse_registrering.id;
 

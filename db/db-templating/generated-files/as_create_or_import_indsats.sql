@@ -237,7 +237,6 @@ END IF;
 /*********************/
 
 
-  PERFORM actual_state._amqp_publish_notification('Indsats', (indsats_registrering.registrering).livscykluskode, indsats_uuid);
 
 RETURN indsats_uuid;
 
