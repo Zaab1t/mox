@@ -2,12 +2,11 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.3
--- Dumped by pg_dump version 9.6.3
+-- Dumped from database version 9.5.7
+-- Dumped by pg_dump version 9.5.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -69374,7 +69373,7 @@ SELECT pg_catalog.setval('tilstand_tils_status_id_seq', 1, false);
 
 
 --
--- Name: aktivitet_attr_egenskaber aktivitet_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_attr_egenskaber
@@ -69382,7 +69381,7 @@ ALTER TABLE ONLY aktivitet_attr_egenskaber
 
 
 --
--- Name: aktivitet_attr_egenskaber aktivitet_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_attr_egenskaber
@@ -69390,7 +69389,7 @@ ALTER TABLE ONLY aktivitet_attr_egenskaber
 
 
 --
--- Name: aktivitet aktivitet_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet
@@ -69398,7 +69397,7 @@ ALTER TABLE ONLY aktivitet
 
 
 --
--- Name: aktivitet_registrering aktivitet_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_registrering
@@ -69406,7 +69405,7 @@ ALTER TABLE ONLY aktivitet_registrering
 
 
 --
--- Name: aktivitet_registrering aktivitet_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_registrering
@@ -69414,7 +69413,7 @@ ALTER TABLE ONLY aktivitet_registrering
 
 
 --
--- Name: aktivitet_relation aktivitet_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_relation
@@ -69422,7 +69421,7 @@ ALTER TABLE ONLY aktivitet_relation
 
 
 --
--- Name: aktivitet_relation aktivitet_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_relation
@@ -69430,7 +69429,7 @@ ALTER TABLE ONLY aktivitet_relation
 
 
 --
--- Name: aktivitet_tils_publiceret aktivitet_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_publiceret
@@ -69438,7 +69437,7 @@ ALTER TABLE ONLY aktivitet_tils_publiceret
 
 
 --
--- Name: aktivitet_tils_publiceret aktivitet_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_publiceret
@@ -69446,7 +69445,7 @@ ALTER TABLE ONLY aktivitet_tils_publiceret
 
 
 --
--- Name: aktivitet_tils_status aktivitet_tils_status_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_status_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_status
@@ -69454,7 +69453,7 @@ ALTER TABLE ONLY aktivitet_tils_status
 
 
 --
--- Name: aktivitet_tils_status aktivitet_tils_status_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_status_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_status
@@ -69462,7 +69461,7 @@ ALTER TABLE ONLY aktivitet_tils_status
 
 
 --
--- Name: bruger_attr_egenskaber bruger_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_attr_egenskaber
@@ -69470,7 +69469,7 @@ ALTER TABLE ONLY bruger_attr_egenskaber
 
 
 --
--- Name: bruger_attr_egenskaber bruger_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_attr_egenskaber
@@ -69478,7 +69477,7 @@ ALTER TABLE ONLY bruger_attr_egenskaber
 
 
 --
--- Name: bruger bruger_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger
@@ -69486,7 +69485,7 @@ ALTER TABLE ONLY bruger
 
 
 --
--- Name: bruger_registrering bruger_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_registrering
@@ -69494,7 +69493,7 @@ ALTER TABLE ONLY bruger_registrering
 
 
 --
--- Name: bruger_registrering bruger_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_registrering
@@ -69502,7 +69501,7 @@ ALTER TABLE ONLY bruger_registrering
 
 
 --
--- Name: bruger_relation bruger_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_relation
@@ -69510,7 +69509,7 @@ ALTER TABLE ONLY bruger_relation
 
 
 --
--- Name: bruger_relation bruger_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_relation
@@ -69518,7 +69517,7 @@ ALTER TABLE ONLY bruger_relation
 
 
 --
--- Name: bruger_tils_gyldighed bruger_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_tils_gyldighed
@@ -69526,7 +69525,7 @@ ALTER TABLE ONLY bruger_tils_gyldighed
 
 
 --
--- Name: bruger_tils_gyldighed bruger_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_tils_gyldighed
@@ -69534,7 +69533,7 @@ ALTER TABLE ONLY bruger_tils_gyldighed
 
 
 --
--- Name: dokument_attr_egenskaber dokument_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_attr_egenskaber
@@ -69542,7 +69541,7 @@ ALTER TABLE ONLY dokument_attr_egenskaber
 
 
 --
--- Name: dokument_attr_egenskaber dokument_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_attr_egenskaber
@@ -69550,7 +69549,7 @@ ALTER TABLE ONLY dokument_attr_egenskaber
 
 
 --
--- Name: dokument_del_egenskaber dokument_del_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del_egenskaber
@@ -69558,7 +69557,7 @@ ALTER TABLE ONLY dokument_del_egenskaber
 
 
 --
--- Name: dokument_del_egenskaber dokument_del_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del_egenskaber
@@ -69566,7 +69565,7 @@ ALTER TABLE ONLY dokument_del_egenskaber
 
 
 --
--- Name: dokument_del dokument_del_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del
@@ -69574,7 +69573,7 @@ ALTER TABLE ONLY dokument_del
 
 
 --
--- Name: dokument_del_relation dokument_del_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del_relation
@@ -69582,7 +69581,7 @@ ALTER TABLE ONLY dokument_del_relation
 
 
 --
--- Name: dokument_del dokument_del_variant_id_deltekst_key; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_variant_id_deltekst_key; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del
@@ -69590,7 +69589,7 @@ ALTER TABLE ONLY dokument_del
 
 
 --
--- Name: dokument dokument_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument
@@ -69598,7 +69597,7 @@ ALTER TABLE ONLY dokument
 
 
 --
--- Name: dokument_registrering dokument_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_registrering
@@ -69606,7 +69605,7 @@ ALTER TABLE ONLY dokument_registrering
 
 
 --
--- Name: dokument_registrering dokument_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_registrering
@@ -69614,7 +69613,7 @@ ALTER TABLE ONLY dokument_registrering
 
 
 --
--- Name: dokument_relation dokument_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_relation
@@ -69622,7 +69621,7 @@ ALTER TABLE ONLY dokument_relation
 
 
 --
--- Name: dokument_relation dokument_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_relation
@@ -69630,7 +69629,7 @@ ALTER TABLE ONLY dokument_relation
 
 
 --
--- Name: dokument_tils_fremdrift dokument_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_tils_fremdrift
@@ -69638,7 +69637,7 @@ ALTER TABLE ONLY dokument_tils_fremdrift
 
 
 --
--- Name: dokument_tils_fremdrift dokument_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_tils_fremdrift
@@ -69646,7 +69645,7 @@ ALTER TABLE ONLY dokument_tils_fremdrift
 
 
 --
--- Name: dokument_variant dokument_variant_dokument_registrering_id_varianttekst_key; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_dokument_registrering_id_varianttekst_key; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant
@@ -69654,7 +69653,7 @@ ALTER TABLE ONLY dokument_variant
 
 
 --
--- Name: dokument_variant_egenskaber dokument_variant_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant_egenskaber
@@ -69662,7 +69661,7 @@ ALTER TABLE ONLY dokument_variant_egenskaber
 
 
 --
--- Name: dokument_variant_egenskaber dokument_variant_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant_egenskaber
@@ -69670,7 +69669,7 @@ ALTER TABLE ONLY dokument_variant_egenskaber
 
 
 --
--- Name: dokument_variant dokument_variant_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant
@@ -69678,7 +69677,7 @@ ALTER TABLE ONLY dokument_variant
 
 
 --
--- Name: facet_attr_egenskaber facet_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_attr_egenskaber
@@ -69686,7 +69685,7 @@ ALTER TABLE ONLY facet_attr_egenskaber
 
 
 --
--- Name: facet_attr_egenskaber facet_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_attr_egenskaber
@@ -69694,7 +69693,7 @@ ALTER TABLE ONLY facet_attr_egenskaber
 
 
 --
--- Name: facet facet_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet
@@ -69702,7 +69701,7 @@ ALTER TABLE ONLY facet
 
 
 --
--- Name: facet_registrering facet_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_registrering
@@ -69710,7 +69709,7 @@ ALTER TABLE ONLY facet_registrering
 
 
 --
--- Name: facet_registrering facet_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_registrering
@@ -69718,7 +69717,7 @@ ALTER TABLE ONLY facet_registrering
 
 
 --
--- Name: facet_relation facet_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_relation
@@ -69726,7 +69725,7 @@ ALTER TABLE ONLY facet_relation
 
 
 --
--- Name: facet_relation facet_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_relation
@@ -69734,7 +69733,7 @@ ALTER TABLE ONLY facet_relation
 
 
 --
--- Name: facet_tils_publiceret facet_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_tils_publiceret
@@ -69742,7 +69741,7 @@ ALTER TABLE ONLY facet_tils_publiceret
 
 
 --
--- Name: facet_tils_publiceret facet_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_tils_publiceret
@@ -69750,7 +69749,7 @@ ALTER TABLE ONLY facet_tils_publiceret
 
 
 --
--- Name: indsats_attr_egenskaber indsats_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_attr_egenskaber
@@ -69758,7 +69757,7 @@ ALTER TABLE ONLY indsats_attr_egenskaber
 
 
 --
--- Name: indsats_attr_egenskaber indsats_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_attr_egenskaber
@@ -69766,7 +69765,7 @@ ALTER TABLE ONLY indsats_attr_egenskaber
 
 
 --
--- Name: indsats indsats_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats
@@ -69774,7 +69773,7 @@ ALTER TABLE ONLY indsats
 
 
 --
--- Name: indsats_registrering indsats_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_registrering
@@ -69782,7 +69781,7 @@ ALTER TABLE ONLY indsats_registrering
 
 
 --
--- Name: indsats_registrering indsats_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_registrering
@@ -69790,7 +69789,7 @@ ALTER TABLE ONLY indsats_registrering
 
 
 --
--- Name: indsats_relation indsats_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_relation
@@ -69798,7 +69797,7 @@ ALTER TABLE ONLY indsats_relation
 
 
 --
--- Name: indsats_relation indsats_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_relation
@@ -69806,7 +69805,7 @@ ALTER TABLE ONLY indsats_relation
 
 
 --
--- Name: indsats_tils_fremdrift indsats_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_fremdrift
@@ -69814,7 +69813,7 @@ ALTER TABLE ONLY indsats_tils_fremdrift
 
 
 --
--- Name: indsats_tils_fremdrift indsats_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_fremdrift
@@ -69822,7 +69821,7 @@ ALTER TABLE ONLY indsats_tils_fremdrift
 
 
 --
--- Name: indsats_tils_publiceret indsats_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_publiceret
@@ -69830,7 +69829,7 @@ ALTER TABLE ONLY indsats_tils_publiceret
 
 
 --
--- Name: indsats_tils_publiceret indsats_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_publiceret
@@ -69838,7 +69837,7 @@ ALTER TABLE ONLY indsats_tils_publiceret
 
 
 --
--- Name: interessefaellesskab_attr_egenskaber interessefaellesskab_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
@@ -69846,7 +69845,7 @@ ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
 
 
 --
--- Name: interessefaellesskab_attr_egenskaber interessefaellesskab_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
@@ -69854,7 +69853,7 @@ ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
 
 
 --
--- Name: interessefaellesskab interessefaellesskab_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab
@@ -69862,7 +69861,7 @@ ALTER TABLE ONLY interessefaellesskab
 
 
 --
--- Name: interessefaellesskab_registrering interessefaellesskab_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_registrering
@@ -69870,7 +69869,7 @@ ALTER TABLE ONLY interessefaellesskab_registrering
 
 
 --
--- Name: interessefaellesskab_registrering interessefaellesskab_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_registrering
@@ -69878,7 +69877,7 @@ ALTER TABLE ONLY interessefaellesskab_registrering
 
 
 --
--- Name: interessefaellesskab_relation interessefaellesskab_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_relation
@@ -69886,7 +69885,7 @@ ALTER TABLE ONLY interessefaellesskab_relation
 
 
 --
--- Name: interessefaellesskab_relation interessefaellesskab_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_relation
@@ -69894,7 +69893,7 @@ ALTER TABLE ONLY interessefaellesskab_relation
 
 
 --
--- Name: interessefaellesskab_tils_gyldighed interessefaellesskab_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
@@ -69902,7 +69901,7 @@ ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
 
 
 --
--- Name: interessefaellesskab_tils_gyldighed interessefaellesskab_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
@@ -69910,7 +69909,7 @@ ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
 
 
 --
--- Name: itsystem_attr_egenskaber itsystem_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_attr_egenskaber
@@ -69918,7 +69917,7 @@ ALTER TABLE ONLY itsystem_attr_egenskaber
 
 
 --
--- Name: itsystem_attr_egenskaber itsystem_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_attr_egenskaber
@@ -69926,7 +69925,7 @@ ALTER TABLE ONLY itsystem_attr_egenskaber
 
 
 --
--- Name: itsystem itsystem_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem
@@ -69934,7 +69933,7 @@ ALTER TABLE ONLY itsystem
 
 
 --
--- Name: itsystem_registrering itsystem_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_registrering
@@ -69942,7 +69941,7 @@ ALTER TABLE ONLY itsystem_registrering
 
 
 --
--- Name: itsystem_registrering itsystem_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_registrering
@@ -69950,7 +69949,7 @@ ALTER TABLE ONLY itsystem_registrering
 
 
 --
--- Name: itsystem_relation itsystem_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_relation
@@ -69958,7 +69957,7 @@ ALTER TABLE ONLY itsystem_relation
 
 
 --
--- Name: itsystem_relation itsystem_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_relation
@@ -69966,7 +69965,7 @@ ALTER TABLE ONLY itsystem_relation
 
 
 --
--- Name: itsystem_tils_gyldighed itsystem_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_tils_gyldighed
@@ -69974,7 +69973,7 @@ ALTER TABLE ONLY itsystem_tils_gyldighed
 
 
 --
--- Name: itsystem_tils_gyldighed itsystem_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_tils_gyldighed
@@ -69982,7 +69981,7 @@ ALTER TABLE ONLY itsystem_tils_gyldighed
 
 
 --
--- Name: klasse_attr_egenskaber klasse_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_attr_egenskaber
@@ -69990,7 +69989,7 @@ ALTER TABLE ONLY klasse_attr_egenskaber
 
 
 --
--- Name: klasse_attr_egenskaber klasse_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_attr_egenskaber
@@ -69998,7 +69997,7 @@ ALTER TABLE ONLY klasse_attr_egenskaber
 
 
 --
--- Name: klasse_attr_egenskaber_soegeord klasse_attr_egenskaber_soegeord_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_attr_egenskaber_soegeord_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_attr_egenskaber_soegeord
@@ -70006,7 +70005,7 @@ ALTER TABLE ONLY klasse_attr_egenskaber_soegeord
 
 
 --
--- Name: klasse klasse_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse
@@ -70014,7 +70013,7 @@ ALTER TABLE ONLY klasse
 
 
 --
--- Name: klasse_registrering klasse_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_registrering
@@ -70022,7 +70021,7 @@ ALTER TABLE ONLY klasse_registrering
 
 
 --
--- Name: klasse_registrering klasse_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_registrering
@@ -70030,7 +70029,7 @@ ALTER TABLE ONLY klasse_registrering
 
 
 --
--- Name: klasse_relation klasse_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_relation
@@ -70038,7 +70037,7 @@ ALTER TABLE ONLY klasse_relation
 
 
 --
--- Name: klasse_relation klasse_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_relation
@@ -70046,7 +70045,7 @@ ALTER TABLE ONLY klasse_relation
 
 
 --
--- Name: klasse_tils_publiceret klasse_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_tils_publiceret
@@ -70054,7 +70053,7 @@ ALTER TABLE ONLY klasse_tils_publiceret
 
 
 --
--- Name: klasse_tils_publiceret klasse_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_tils_publiceret
@@ -70062,7 +70061,7 @@ ALTER TABLE ONLY klasse_tils_publiceret
 
 
 --
--- Name: klassifikation_attr_egenskaber klassifikation_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_attr_egenskaber
@@ -70070,7 +70069,7 @@ ALTER TABLE ONLY klassifikation_attr_egenskaber
 
 
 --
--- Name: klassifikation_attr_egenskaber klassifikation_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_attr_egenskaber
@@ -70078,7 +70077,7 @@ ALTER TABLE ONLY klassifikation_attr_egenskaber
 
 
 --
--- Name: klassifikation klassifikation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation
@@ -70086,7 +70085,7 @@ ALTER TABLE ONLY klassifikation
 
 
 --
--- Name: klassifikation_registrering klassifikation_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_registrering
@@ -70094,7 +70093,7 @@ ALTER TABLE ONLY klassifikation_registrering
 
 
 --
--- Name: klassifikation_registrering klassifikation_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_registrering
@@ -70102,7 +70101,7 @@ ALTER TABLE ONLY klassifikation_registrering
 
 
 --
--- Name: klassifikation_relation klassifikation_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_relation
@@ -70110,7 +70109,7 @@ ALTER TABLE ONLY klassifikation_relation
 
 
 --
--- Name: klassifikation_relation klassifikation_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_relation
@@ -70118,7 +70117,7 @@ ALTER TABLE ONLY klassifikation_relation
 
 
 --
--- Name: klassifikation_tils_publiceret klassifikation_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_tils_publiceret
@@ -70126,7 +70125,7 @@ ALTER TABLE ONLY klassifikation_tils_publiceret
 
 
 --
--- Name: klassifikation_tils_publiceret klassifikation_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_tils_publiceret
@@ -70134,7 +70133,7 @@ ALTER TABLE ONLY klassifikation_tils_publiceret
 
 
 --
--- Name: loghaendelse_attr_egenskaber loghaendelse_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_attr_egenskaber
@@ -70142,7 +70141,7 @@ ALTER TABLE ONLY loghaendelse_attr_egenskaber
 
 
 --
--- Name: loghaendelse_attr_egenskaber loghaendelse_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_attr_egenskaber
@@ -70150,7 +70149,7 @@ ALTER TABLE ONLY loghaendelse_attr_egenskaber
 
 
 --
--- Name: loghaendelse loghaendelse_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse
@@ -70158,7 +70157,7 @@ ALTER TABLE ONLY loghaendelse
 
 
 --
--- Name: loghaendelse_registrering loghaendelse_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_registrering
@@ -70166,7 +70165,7 @@ ALTER TABLE ONLY loghaendelse_registrering
 
 
 --
--- Name: loghaendelse_registrering loghaendelse_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_registrering
@@ -70174,7 +70173,7 @@ ALTER TABLE ONLY loghaendelse_registrering
 
 
 --
--- Name: loghaendelse_relation loghaendelse_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_relation
@@ -70182,7 +70181,7 @@ ALTER TABLE ONLY loghaendelse_relation
 
 
 --
--- Name: loghaendelse_relation loghaendelse_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_relation
@@ -70190,7 +70189,7 @@ ALTER TABLE ONLY loghaendelse_relation
 
 
 --
--- Name: loghaendelse_tils_gyldighed loghaendelse_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_tils_gyldighed
@@ -70198,7 +70197,7 @@ ALTER TABLE ONLY loghaendelse_tils_gyldighed
 
 
 --
--- Name: loghaendelse_tils_gyldighed loghaendelse_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_tils_gyldighed
@@ -70206,7 +70205,7 @@ ALTER TABLE ONLY loghaendelse_tils_gyldighed
 
 
 --
--- Name: organisation_attr_egenskaber organisation_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_attr_egenskaber
@@ -70214,7 +70213,7 @@ ALTER TABLE ONLY organisation_attr_egenskaber
 
 
 --
--- Name: organisation_attr_egenskaber organisation_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_attr_egenskaber
@@ -70222,7 +70221,7 @@ ALTER TABLE ONLY organisation_attr_egenskaber
 
 
 --
--- Name: organisation organisation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation
@@ -70230,7 +70229,7 @@ ALTER TABLE ONLY organisation
 
 
 --
--- Name: organisation_registrering organisation_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_registrering
@@ -70238,7 +70237,7 @@ ALTER TABLE ONLY organisation_registrering
 
 
 --
--- Name: organisation_registrering organisation_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_registrering
@@ -70246,7 +70245,7 @@ ALTER TABLE ONLY organisation_registrering
 
 
 --
--- Name: organisation_relation organisation_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_relation
@@ -70254,7 +70253,7 @@ ALTER TABLE ONLY organisation_relation
 
 
 --
--- Name: organisation_relation organisation_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_relation
@@ -70262,7 +70261,7 @@ ALTER TABLE ONLY organisation_relation
 
 
 --
--- Name: organisation_tils_gyldighed organisation_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_tils_gyldighed
@@ -70270,7 +70269,7 @@ ALTER TABLE ONLY organisation_tils_gyldighed
 
 
 --
--- Name: organisation_tils_gyldighed organisation_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_tils_gyldighed
@@ -70278,7 +70277,7 @@ ALTER TABLE ONLY organisation_tils_gyldighed
 
 
 --
--- Name: organisationenhed_attr_egenskaber organisationenhed_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_attr_egenskaber
@@ -70286,7 +70285,7 @@ ALTER TABLE ONLY organisationenhed_attr_egenskaber
 
 
 --
--- Name: organisationenhed_attr_egenskaber organisationenhed_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_attr_egenskaber
@@ -70294,7 +70293,7 @@ ALTER TABLE ONLY organisationenhed_attr_egenskaber
 
 
 --
--- Name: organisationenhed organisationenhed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed
@@ -70302,7 +70301,7 @@ ALTER TABLE ONLY organisationenhed
 
 
 --
--- Name: organisationenhed_registrering organisationenhed_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_registrering
@@ -70310,7 +70309,7 @@ ALTER TABLE ONLY organisationenhed_registrering
 
 
 --
--- Name: organisationenhed_registrering organisationenhed_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_registrering
@@ -70318,7 +70317,7 @@ ALTER TABLE ONLY organisationenhed_registrering
 
 
 --
--- Name: organisationenhed_relation organisationenhed_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_relation
@@ -70326,7 +70325,7 @@ ALTER TABLE ONLY organisationenhed_relation
 
 
 --
--- Name: organisationenhed_relation organisationenhed_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_relation
@@ -70334,7 +70333,7 @@ ALTER TABLE ONLY organisationenhed_relation
 
 
 --
--- Name: organisationenhed_tils_gyldighed organisationenhed_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_tils_gyldighed
@@ -70342,7 +70341,7 @@ ALTER TABLE ONLY organisationenhed_tils_gyldighed
 
 
 --
--- Name: organisationenhed_tils_gyldighed organisationenhed_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_tils_gyldighed
@@ -70350,7 +70349,7 @@ ALTER TABLE ONLY organisationenhed_tils_gyldighed
 
 
 --
--- Name: organisationfunktion_attr_egenskaber organisationfunktion_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_attr_egenskaber
@@ -70358,7 +70357,7 @@ ALTER TABLE ONLY organisationfunktion_attr_egenskaber
 
 
 --
--- Name: organisationfunktion_attr_egenskaber organisationfunktion_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_attr_egenskaber
@@ -70366,7 +70365,7 @@ ALTER TABLE ONLY organisationfunktion_attr_egenskaber
 
 
 --
--- Name: organisationfunktion organisationfunktion_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion
@@ -70374,7 +70373,7 @@ ALTER TABLE ONLY organisationfunktion
 
 
 --
--- Name: organisationfunktion_registrering organisationfunktion_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_registrering
@@ -70382,7 +70381,7 @@ ALTER TABLE ONLY organisationfunktion_registrering
 
 
 --
--- Name: organisationfunktion_registrering organisationfunktion_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_registrering
@@ -70390,7 +70389,7 @@ ALTER TABLE ONLY organisationfunktion_registrering
 
 
 --
--- Name: organisationfunktion_relation organisationfunktion_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_relation
@@ -70398,7 +70397,7 @@ ALTER TABLE ONLY organisationfunktion_relation
 
 
 --
--- Name: organisationfunktion_relation organisationfunktion_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_relation
@@ -70406,7 +70405,7 @@ ALTER TABLE ONLY organisationfunktion_relation
 
 
 --
--- Name: organisationfunktion_tils_gyldighed organisationfunktion_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_tils_gyldighed_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_tils_gyldighed
@@ -70414,7 +70413,7 @@ ALTER TABLE ONLY organisationfunktion_tils_gyldighed
 
 
 --
--- Name: organisationfunktion_tils_gyldighed organisationfunktion_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_tils_gyldighed_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_tils_gyldighed
@@ -70422,7 +70421,7 @@ ALTER TABLE ONLY organisationfunktion_tils_gyldighed
 
 
 --
--- Name: sag_attr_egenskaber sag_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_attr_egenskaber
@@ -70430,7 +70429,7 @@ ALTER TABLE ONLY sag_attr_egenskaber
 
 
 --
--- Name: sag_attr_egenskaber sag_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_attr_egenskaber
@@ -70438,7 +70437,7 @@ ALTER TABLE ONLY sag_attr_egenskaber
 
 
 --
--- Name: sag sag_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag
@@ -70446,7 +70445,7 @@ ALTER TABLE ONLY sag
 
 
 --
--- Name: sag_registrering sag_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_registrering
@@ -70454,7 +70453,7 @@ ALTER TABLE ONLY sag_registrering
 
 
 --
--- Name: sag_registrering sag_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_registrering
@@ -70462,7 +70461,7 @@ ALTER TABLE ONLY sag_registrering
 
 
 --
--- Name: sag_relation sag_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_relation
@@ -70470,7 +70469,7 @@ ALTER TABLE ONLY sag_relation
 
 
 --
--- Name: sag_relation sag_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_relation
@@ -70478,7 +70477,7 @@ ALTER TABLE ONLY sag_relation
 
 
 --
--- Name: sag_tils_fremdrift sag_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_tils_fremdrift_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_tils_fremdrift
@@ -70486,7 +70485,7 @@ ALTER TABLE ONLY sag_tils_fremdrift
 
 
 --
--- Name: sag_tils_fremdrift sag_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_tils_fremdrift_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_tils_fremdrift
@@ -70494,7 +70493,7 @@ ALTER TABLE ONLY sag_tils_fremdrift
 
 
 --
--- Name: tilstand_attr_egenskaber tilstand_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_attr_egenskaber_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_attr_egenskaber
@@ -70502,7 +70501,7 @@ ALTER TABLE ONLY tilstand_attr_egenskaber
 
 
 --
--- Name: tilstand_attr_egenskaber tilstand_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_attr_egenskaber_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_attr_egenskaber
@@ -70510,7 +70509,7 @@ ALTER TABLE ONLY tilstand_attr_egenskaber
 
 
 --
--- Name: tilstand tilstand_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand
@@ -70518,7 +70517,7 @@ ALTER TABLE ONLY tilstand
 
 
 --
--- Name: tilstand_registrering tilstand_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_registrering__uuid_to_text_timeperiod_excl; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_registrering
@@ -70526,7 +70525,7 @@ ALTER TABLE ONLY tilstand_registrering
 
 
 --
--- Name: tilstand_registrering tilstand_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_registrering_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_registrering
@@ -70534,7 +70533,7 @@ ALTER TABLE ONLY tilstand_registrering
 
 
 --
--- Name: tilstand_relation tilstand_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_relation_no_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_relation
@@ -70542,7 +70541,7 @@ ALTER TABLE ONLY tilstand_relation
 
 
 --
--- Name: tilstand_relation tilstand_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_relation_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_relation
@@ -70550,7 +70549,7 @@ ALTER TABLE ONLY tilstand_relation
 
 
 --
--- Name: tilstand_tils_publiceret tilstand_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_publiceret_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_publiceret
@@ -70558,7 +70557,7 @@ ALTER TABLE ONLY tilstand_tils_publiceret
 
 
 --
--- Name: tilstand_tils_publiceret tilstand_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_publiceret_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_publiceret
@@ -70566,7 +70565,7 @@ ALTER TABLE ONLY tilstand_tils_publiceret
 
 
 --
--- Name: tilstand_tils_status tilstand_tils_status_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_status_exclude_virkning_overlap; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_status
@@ -70574,7 +70573,7 @@ ALTER TABLE ONLY tilstand_tils_status
 
 
 --
--- Name: tilstand_tils_status tilstand_tils_status_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_status_pkey; Type: CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_status
@@ -74362,7 +74361,7 @@ CREATE INDEX tilstand_tils_status_pat_virkning_notetekst ON tilstand_tils_status
 
 
 --
--- Name: aktivitet_attr_egenskaber aktivitet_attr_egenskaber_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_attr_egenskaber_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_attr_egenskaber
@@ -74370,7 +74369,7 @@ ALTER TABLE ONLY aktivitet_attr_egenskaber
 
 
 --
--- Name: aktivitet_registrering aktivitet_registrering_aktivitet_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_registrering_aktivitet_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_registrering
@@ -74378,7 +74377,7 @@ ALTER TABLE ONLY aktivitet_registrering
 
 
 --
--- Name: aktivitet_relation aktivitet_relation_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_relation_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_relation
@@ -74386,7 +74385,7 @@ ALTER TABLE ONLY aktivitet_relation
 
 
 --
--- Name: aktivitet_tils_publiceret aktivitet_tils_publiceret_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_publiceret_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_publiceret
@@ -74394,7 +74393,7 @@ ALTER TABLE ONLY aktivitet_tils_publiceret
 
 
 --
--- Name: aktivitet_tils_status aktivitet_tils_status_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: aktivitet_tils_status_forkey_aktivitetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY aktivitet_tils_status
@@ -74402,7 +74401,7 @@ ALTER TABLE ONLY aktivitet_tils_status
 
 
 --
--- Name: bruger_attr_egenskaber bruger_attr_egenskaber_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_attr_egenskaber_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_attr_egenskaber
@@ -74410,7 +74409,7 @@ ALTER TABLE ONLY bruger_attr_egenskaber
 
 
 --
--- Name: bruger_registrering bruger_registrering_bruger_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_registrering_bruger_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_registrering
@@ -74418,7 +74417,7 @@ ALTER TABLE ONLY bruger_registrering
 
 
 --
--- Name: bruger_relation bruger_relation_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_relation_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_relation
@@ -74426,7 +74425,7 @@ ALTER TABLE ONLY bruger_relation
 
 
 --
--- Name: bruger_tils_gyldighed bruger_tils_gyldighed_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: bruger_tils_gyldighed_forkey_brugerregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY bruger_tils_gyldighed
@@ -74434,7 +74433,7 @@ ALTER TABLE ONLY bruger_tils_gyldighed
 
 
 --
--- Name: dokument_attr_egenskaber dokument_attr_egenskaber_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_attr_egenskaber_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_attr_egenskaber
@@ -74442,7 +74441,7 @@ ALTER TABLE ONLY dokument_attr_egenskaber
 
 
 --
--- Name: dokument_del_egenskaber dokument_del_egenskaber_forkey_dokument_del; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_egenskaber_forkey_dokument_del; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del_egenskaber
@@ -74450,7 +74449,7 @@ ALTER TABLE ONLY dokument_del_egenskaber
 
 
 --
--- Name: dokument_del dokument_del_forkey_variant_id; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_forkey_variant_id; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del
@@ -74458,7 +74457,7 @@ ALTER TABLE ONLY dokument_del
 
 
 --
--- Name: dokument_del_relation dokument_del_relation_forkey_dokument_del; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_del_relation_forkey_dokument_del; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_del_relation
@@ -74466,7 +74465,7 @@ ALTER TABLE ONLY dokument_del_relation
 
 
 --
--- Name: dokument_registrering dokument_registrering_dokument_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_registrering_dokument_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_registrering
@@ -74474,7 +74473,7 @@ ALTER TABLE ONLY dokument_registrering
 
 
 --
--- Name: dokument_relation dokument_relation_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_relation_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_relation
@@ -74482,7 +74481,7 @@ ALTER TABLE ONLY dokument_relation
 
 
 --
--- Name: dokument_tils_fremdrift dokument_tils_fremdrift_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_tils_fremdrift_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_tils_fremdrift
@@ -74490,7 +74489,7 @@ ALTER TABLE ONLY dokument_tils_fremdrift
 
 
 --
--- Name: dokument_variant_egenskaber dokument_variant_egenskaber_forkey_dokumentvariant; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_egenskaber_forkey_dokumentvariant; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant_egenskaber
@@ -74498,7 +74497,7 @@ ALTER TABLE ONLY dokument_variant_egenskaber
 
 
 --
--- Name: dokument_variant dokument_variant_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: dokument_variant_forkey_dokumentregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY dokument_variant
@@ -74506,7 +74505,7 @@ ALTER TABLE ONLY dokument_variant
 
 
 --
--- Name: facet_attr_egenskaber facet_attr_egenskaber_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_attr_egenskaber_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_attr_egenskaber
@@ -74514,7 +74513,7 @@ ALTER TABLE ONLY facet_attr_egenskaber
 
 
 --
--- Name: facet_registrering facet_registrering_facet_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_registrering_facet_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_registrering
@@ -74522,7 +74521,7 @@ ALTER TABLE ONLY facet_registrering
 
 
 --
--- Name: facet_relation facet_relation_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_relation_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_relation
@@ -74530,7 +74529,7 @@ ALTER TABLE ONLY facet_relation
 
 
 --
--- Name: facet_tils_publiceret facet_tils_publiceret_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: facet_tils_publiceret_forkey_facetregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY facet_tils_publiceret
@@ -74538,7 +74537,7 @@ ALTER TABLE ONLY facet_tils_publiceret
 
 
 --
--- Name: indsats_attr_egenskaber indsats_attr_egenskaber_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_attr_egenskaber_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_attr_egenskaber
@@ -74546,7 +74545,7 @@ ALTER TABLE ONLY indsats_attr_egenskaber
 
 
 --
--- Name: indsats_registrering indsats_registrering_indsats_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_registrering_indsats_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_registrering
@@ -74554,7 +74553,7 @@ ALTER TABLE ONLY indsats_registrering
 
 
 --
--- Name: indsats_relation indsats_relation_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_relation_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_relation
@@ -74562,7 +74561,7 @@ ALTER TABLE ONLY indsats_relation
 
 
 --
--- Name: indsats_tils_fremdrift indsats_tils_fremdrift_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_fremdrift_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_fremdrift
@@ -74570,7 +74569,7 @@ ALTER TABLE ONLY indsats_tils_fremdrift
 
 
 --
--- Name: indsats_tils_publiceret indsats_tils_publiceret_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: indsats_tils_publiceret_forkey_indsatsregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY indsats_tils_publiceret
@@ -74578,7 +74577,7 @@ ALTER TABLE ONLY indsats_tils_publiceret
 
 
 --
--- Name: interessefaellesskab_attr_egenskaber interessefaellesskab_attr_egenskaber_forkey_interessefaellesska; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_attr_egenskaber_forkey_interessefaellesska; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
@@ -74586,7 +74585,7 @@ ALTER TABLE ONLY interessefaellesskab_attr_egenskaber
 
 
 --
--- Name: interessefaellesskab_registrering interessefaellesskab_registrering_interessefaellesskab_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_registrering_interessefaellesskab_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_registrering
@@ -74594,7 +74593,7 @@ ALTER TABLE ONLY interessefaellesskab_registrering
 
 
 --
--- Name: interessefaellesskab_relation interessefaellesskab_relation_forkey_interessefaellesskabregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_relation_forkey_interessefaellesskabregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_relation
@@ -74602,7 +74601,7 @@ ALTER TABLE ONLY interessefaellesskab_relation
 
 
 --
--- Name: interessefaellesskab_tils_gyldighed interessefaellesskab_tils_gyldighed_forkey_interessefaellesskab; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: interessefaellesskab_tils_gyldighed_forkey_interessefaellesskab; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
@@ -74610,7 +74609,7 @@ ALTER TABLE ONLY interessefaellesskab_tils_gyldighed
 
 
 --
--- Name: itsystem_attr_egenskaber itsystem_attr_egenskaber_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_attr_egenskaber_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_attr_egenskaber
@@ -74618,7 +74617,7 @@ ALTER TABLE ONLY itsystem_attr_egenskaber
 
 
 --
--- Name: itsystem_registrering itsystem_registrering_itsystem_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_registrering_itsystem_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_registrering
@@ -74626,7 +74625,7 @@ ALTER TABLE ONLY itsystem_registrering
 
 
 --
--- Name: itsystem_relation itsystem_relation_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_relation_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_relation
@@ -74634,7 +74633,7 @@ ALTER TABLE ONLY itsystem_relation
 
 
 --
--- Name: itsystem_tils_gyldighed itsystem_tils_gyldighed_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: itsystem_tils_gyldighed_forkey_itsystemregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY itsystem_tils_gyldighed
@@ -74642,7 +74641,7 @@ ALTER TABLE ONLY itsystem_tils_gyldighed
 
 
 --
--- Name: klasse_attr_egenskaber klasse_attr_egenskaber_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_attr_egenskaber_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_attr_egenskaber
@@ -74650,7 +74649,7 @@ ALTER TABLE ONLY klasse_attr_egenskaber
 
 
 --
--- Name: klasse_attr_egenskaber_soegeord klasse_attr_egenskaber_soegeord_forkey_klasse_attr_egenskaber; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_attr_egenskaber_soegeord_forkey_klasse_attr_egenskaber; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_attr_egenskaber_soegeord
@@ -74658,7 +74657,7 @@ ALTER TABLE ONLY klasse_attr_egenskaber_soegeord
 
 
 --
--- Name: klasse_registrering klasse_registrering_klasse_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_registrering_klasse_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_registrering
@@ -74666,7 +74665,7 @@ ALTER TABLE ONLY klasse_registrering
 
 
 --
--- Name: klasse_relation klasse_relation_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_relation_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_relation
@@ -74674,7 +74673,7 @@ ALTER TABLE ONLY klasse_relation
 
 
 --
--- Name: klasse_tils_publiceret klasse_tils_publiceret_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klasse_tils_publiceret_forkey_klasseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klasse_tils_publiceret
@@ -74682,7 +74681,7 @@ ALTER TABLE ONLY klasse_tils_publiceret
 
 
 --
--- Name: klassifikation_attr_egenskaber klassifikation_attr_egenskaber_forkey_klassifikationregistrerin; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_attr_egenskaber_forkey_klassifikationregistrerin; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_attr_egenskaber
@@ -74690,7 +74689,7 @@ ALTER TABLE ONLY klassifikation_attr_egenskaber
 
 
 --
--- Name: klassifikation_registrering klassifikation_registrering_klassifikation_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_registrering_klassifikation_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_registrering
@@ -74698,7 +74697,7 @@ ALTER TABLE ONLY klassifikation_registrering
 
 
 --
--- Name: klassifikation_relation klassifikation_relation_forkey_klassifikationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_relation_forkey_klassifikationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_relation
@@ -74706,7 +74705,7 @@ ALTER TABLE ONLY klassifikation_relation
 
 
 --
--- Name: klassifikation_tils_publiceret klassifikation_tils_publiceret_forkey_klassifikationregistrerin; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: klassifikation_tils_publiceret_forkey_klassifikationregistrerin; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY klassifikation_tils_publiceret
@@ -74714,7 +74713,7 @@ ALTER TABLE ONLY klassifikation_tils_publiceret
 
 
 --
--- Name: loghaendelse_attr_egenskaber loghaendelse_attr_egenskaber_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_attr_egenskaber_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_attr_egenskaber
@@ -74722,7 +74721,7 @@ ALTER TABLE ONLY loghaendelse_attr_egenskaber
 
 
 --
--- Name: loghaendelse_registrering loghaendelse_registrering_loghaendelse_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_registrering_loghaendelse_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_registrering
@@ -74730,7 +74729,7 @@ ALTER TABLE ONLY loghaendelse_registrering
 
 
 --
--- Name: loghaendelse_relation loghaendelse_relation_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_relation_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_relation
@@ -74738,7 +74737,7 @@ ALTER TABLE ONLY loghaendelse_relation
 
 
 --
--- Name: loghaendelse_tils_gyldighed loghaendelse_tils_gyldighed_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: loghaendelse_tils_gyldighed_forkey_loghaendelseregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY loghaendelse_tils_gyldighed
@@ -74746,7 +74745,7 @@ ALTER TABLE ONLY loghaendelse_tils_gyldighed
 
 
 --
--- Name: organisation_attr_egenskaber organisation_attr_egenskaber_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_attr_egenskaber_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_attr_egenskaber
@@ -74754,7 +74753,7 @@ ALTER TABLE ONLY organisation_attr_egenskaber
 
 
 --
--- Name: organisation_registrering organisation_registrering_organisation_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_registrering_organisation_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_registrering
@@ -74762,7 +74761,7 @@ ALTER TABLE ONLY organisation_registrering
 
 
 --
--- Name: organisation_relation organisation_relation_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_relation_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_relation
@@ -74770,7 +74769,7 @@ ALTER TABLE ONLY organisation_relation
 
 
 --
--- Name: organisation_tils_gyldighed organisation_tils_gyldighed_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisation_tils_gyldighed_forkey_organisationregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisation_tils_gyldighed
@@ -74778,7 +74777,7 @@ ALTER TABLE ONLY organisation_tils_gyldighed
 
 
 --
--- Name: organisationenhed_attr_egenskaber organisationenhed_attr_egenskaber_forkey_organisationenhedregis; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_attr_egenskaber_forkey_organisationenhedregis; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_attr_egenskaber
@@ -74786,7 +74785,7 @@ ALTER TABLE ONLY organisationenhed_attr_egenskaber
 
 
 --
--- Name: organisationenhed_registrering organisationenhed_registrering_organisationenhed_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_registrering_organisationenhed_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_registrering
@@ -74794,7 +74793,7 @@ ALTER TABLE ONLY organisationenhed_registrering
 
 
 --
--- Name: organisationenhed_relation organisationenhed_relation_forkey_organisationenhedregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_relation_forkey_organisationenhedregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_relation
@@ -74802,7 +74801,7 @@ ALTER TABLE ONLY organisationenhed_relation
 
 
 --
--- Name: organisationenhed_tils_gyldighed organisationenhed_tils_gyldighed_forkey_organisationenhedregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationenhed_tils_gyldighed_forkey_organisationenhedregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationenhed_tils_gyldighed
@@ -74810,7 +74809,7 @@ ALTER TABLE ONLY organisationenhed_tils_gyldighed
 
 
 --
--- Name: organisationfunktion_attr_egenskaber organisationfunktion_attr_egenskaber_forkey_organisationfunktio; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_attr_egenskaber_forkey_organisationfunktio; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_attr_egenskaber
@@ -74818,7 +74817,7 @@ ALTER TABLE ONLY organisationfunktion_attr_egenskaber
 
 
 --
--- Name: organisationfunktion_registrering organisationfunktion_registrering_organisationfunktion_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_registrering_organisationfunktion_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_registrering
@@ -74826,7 +74825,7 @@ ALTER TABLE ONLY organisationfunktion_registrering
 
 
 --
--- Name: organisationfunktion_relation organisationfunktion_relation_forkey_organisationfunktionregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_relation_forkey_organisationfunktionregist; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_relation
@@ -74834,7 +74833,7 @@ ALTER TABLE ONLY organisationfunktion_relation
 
 
 --
--- Name: organisationfunktion_tils_gyldighed organisationfunktion_tils_gyldighed_forkey_organisationfunktion; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: organisationfunktion_tils_gyldighed_forkey_organisationfunktion; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY organisationfunktion_tils_gyldighed
@@ -74842,7 +74841,7 @@ ALTER TABLE ONLY organisationfunktion_tils_gyldighed
 
 
 --
--- Name: sag_attr_egenskaber sag_attr_egenskaber_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_attr_egenskaber_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_attr_egenskaber
@@ -74850,7 +74849,7 @@ ALTER TABLE ONLY sag_attr_egenskaber
 
 
 --
--- Name: sag_registrering sag_registrering_sag_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_registrering_sag_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_registrering
@@ -74858,7 +74857,7 @@ ALTER TABLE ONLY sag_registrering
 
 
 --
--- Name: sag_relation sag_relation_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_relation_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_relation
@@ -74866,7 +74865,7 @@ ALTER TABLE ONLY sag_relation
 
 
 --
--- Name: sag_tils_fremdrift sag_tils_fremdrift_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: sag_tils_fremdrift_forkey_sagregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY sag_tils_fremdrift
@@ -74874,7 +74873,7 @@ ALTER TABLE ONLY sag_tils_fremdrift
 
 
 --
--- Name: tilstand_attr_egenskaber tilstand_attr_egenskaber_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_attr_egenskaber_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_attr_egenskaber
@@ -74882,7 +74881,7 @@ ALTER TABLE ONLY tilstand_attr_egenskaber
 
 
 --
--- Name: tilstand_registrering tilstand_registrering_tilstand_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_registrering_tilstand_fkey; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_registrering
@@ -74890,7 +74889,7 @@ ALTER TABLE ONLY tilstand_registrering
 
 
 --
--- Name: tilstand_relation tilstand_relation_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_relation_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_relation
@@ -74898,7 +74897,7 @@ ALTER TABLE ONLY tilstand_relation
 
 
 --
--- Name: tilstand_tils_publiceret tilstand_tils_publiceret_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_publiceret_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_publiceret
@@ -74906,11 +74905,21 @@ ALTER TABLE ONLY tilstand_tils_publiceret
 
 
 --
--- Name: tilstand_tils_status tilstand_tils_status_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
+-- Name: tilstand_tils_status_forkey_tilstandregistrering; Type: FK CONSTRAINT; Schema: actual_state; Owner: mox
 --
 
 ALTER TABLE ONLY tilstand_tils_status
     ADD CONSTRAINT tilstand_tils_status_forkey_tilstandregistrering FOREIGN KEY (tilstand_registrering_id) REFERENCES tilstand_registrering(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
