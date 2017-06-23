@@ -111,7 +111,6 @@ patch --silent --fuzz=3 -i  ../patches/json-cast-functions_tilstand.sql.diff
 patch --silent --fuzz=3 -i ../patches/as_search_tilstand.sql.diff
 
 cd ..
-fi
 
 oiotypes=$($PYTHON -m oio_rest.db_helpers)
 
