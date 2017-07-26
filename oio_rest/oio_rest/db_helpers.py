@@ -15,11 +15,14 @@ _attribute_fields = {}
 
 
 def typed_get(d, field, default):
-    v = d.get(field, default)
+    sentinel = object()
+    v = d.get(field, sentinel)
     t = type(default)
 
-    if v is None:
+    if v is sentinel:
         return default
+    elif v is None:
+        return v
 
     # special case strings
     if t is str or t is unicode:
