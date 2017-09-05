@@ -3,14 +3,13 @@ package dk.magenta.mox.test;
 import dk.magenta.mox.agent.MessageSender;
 import dk.magenta.mox.agent.MoxAgent;
 import dk.magenta.mox.agent.ParameterMap;
+import dk.magenta.mox.agent.json.JSONArray;
+import dk.magenta.mox.agent.json.JSONObject;
 import dk.magenta.mox.agent.messages.*;
+import java.lang.ProcessBuilder.Redirect;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -104,7 +103,7 @@ public class MoxTest extends MoxAgent {
                 System.out.println("Create succeeded");
                 return uuid;
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -144,7 +143,7 @@ public class MoxTest extends MoxAgent {
                     throw new TestException();
                 }
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -170,13 +169,13 @@ public class MoxTest extends MoxAgent {
                 try {
                     JSONObject object = new JSONObject(response);
                     array = object.getJSONArray("results");
-                } catch (JSONException e) {
+                } catch (org.json.JSONException e) {
                     System.out.println(response);
                     throw new TestException(e);
                 }
                 try {
                     array = array.getJSONArray(0);
-                } catch (JSONException e) {
+                } catch (org.json.JSONException e) {
                 }
                 for (int i = 0; i < array.length(); i++) {
                     results.add(UUID.fromString(array.getString(i)));
@@ -187,7 +186,7 @@ public class MoxTest extends MoxAgent {
                 }
                 return results;
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -211,7 +210,7 @@ public class MoxTest extends MoxAgent {
                 array = object.getJSONArray("results");
                 try {
                     array = array.getJSONArray(0);
-                } catch (JSONException e) {
+                } catch (org.json.JSONException e) {
                 }
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject item = array.getJSONObject(i);
@@ -229,7 +228,7 @@ public class MoxTest extends MoxAgent {
                     }
                 }
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -256,7 +255,7 @@ public class MoxTest extends MoxAgent {
                     throw new TestException("Unexpected answer '" + object.getString("uuid") + "' (expected '" + uuid.toString() + "')");
                 }
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -283,7 +282,7 @@ public class MoxTest extends MoxAgent {
                     throw new TestException("Unexpected answer '" + object.getString("uuid") + "' (expected '" + uuid.toString() + "')");
                 }
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -310,7 +309,7 @@ public class MoxTest extends MoxAgent {
                     throw new TestException("Unexpected answer '" + object.getString("uuid") + "' (expected '" + uuid.toString() + "')");
                 }
             }
-        } catch (JSONException e) {
+        } catch (org.json.JSONException e) {
             System.out.println(response);
             throw new TestException(e);
         } catch (InterruptedException | IOException | ExecutionException | TimeoutException e) {
@@ -327,15 +326,21 @@ public class MoxTest extends MoxAgent {
         return headers;
     }
 
-    private static JSONObject getJSONObjectFromFilename(String jsonFilename) throws FileNotFoundException, JSONException {
-        return new JSONObject(new JSONTokener(new FileReader(new File(jsonFilename))));
+    private static JSONObject getJSONObjectFromFilename(String jsonFilename) throws IOException, org.json.JSONException {
+        return new JSONObject(new FileInputStream(new File(jsonFilename)));
     }
 
     private String getAuthToken() {
         if (this.authToken == null) {
             try {
-                System.out.println("Getting authtoken");
-                Process authProcess = Runtime.getRuntime().exec(this.properties.getProperty("auth.command"));
+                String command = this.properties.getProperty("auth.command");
+                System.err.println("Getting authtoken");
+                ProcessBuilder pb = new ProcessBuilder();
+                pb.redirectInput(Redirect.INHERIT);
+                pb.redirectError(Redirect.INHERIT);
+                pb.command(command);
+
+                Process authProcess = pb.start();
                 InputStream processOutput = authProcess.getInputStream();
                 StringWriter writer = new StringWriter();
                 IOUtils.copy(processOutput, writer);
@@ -345,8 +350,12 @@ public class MoxTest extends MoxAgent {
                     int index = output.indexOf(tokentype);
                     if (index != -1) {
                         int endIndex = output.indexOf("\n", index);
-                        this.authToken = output.substring(index, endIndex).trim();
-                        System.out.println("Authtoken obtained");
+                        if (endIndex != -1) {
+                            this.authToken = output.substring(index, endIndex).trim();
+                        } else {
+                            this.authToken = output.trim();
+                        }
+                        System.err.println("Authtoken obtained");
                     }
                 }
             } catch (IOException e) {

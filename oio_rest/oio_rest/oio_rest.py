@@ -1,14 +1,16 @@
+# encoding: utf-8
 """Superclasses for OIO objects and object hierarchies."""
 import json
 import datetime
+import urlparse
 
 from flask import jsonify, request
 from custom_exceptions import BadRequestException
+from werkzeug.datastructures import ImmutableOrderedMultiDict
 
 import db
-import settings
+import db_structure
 from utils.build_registration import build_registration, to_lower_param
-
 
 # Just a helper during debug
 from authentication import requires_auth
@@ -16,6 +18,51 @@ from authentication import requires_auth
 
 def j(t):
     return jsonify(output=t)
+
+
+def typed_get(d, field, default):
+    v = d.get(field, default)
+    t = type(default)
+
+    if v is None:
+        return default
+
+    # special case strings
+    if t is str or t is unicode:
+        t = basestring
+
+    if not isinstance(v, t):
+        raise BadRequestException('expected %s for %r, found %s: %s' %
+                                  (t.__name__, field, type(v).__name__,
+                                   json.dumps(v)))
+
+    return v
+
+
+class ArgumentDict(ImmutableOrderedMultiDict):
+    '''
+    A Werkzeug multi dict that maintains the order, and maps alias
+    arguments.
+    '''
+
+    PARAM_ALIASES = {
+        'bvn': 'brugervendtnoegle',
+    }
+
+    @classmethod
+    def _process_item(cls, (key, value)):
+        key = to_lower_param(key)
+
+        return (cls.PARAM_ALIASES.get(key, key), value)
+
+    def __init__(self, mapping):
+        # this code assumes that a) we always get a mapping and b)
+        # that mapping is specified as list of two-tuples -- which
+        # happens to be the case when contructing the dictionary from
+        # query arguments
+        super(ArgumentDict, self).__init__(
+            map(self._process_item, mapping)
+        )
 
 
 class Registration(object):
@@ -43,7 +90,7 @@ class OIOStandardHierarchy(object):
         classes_url = u"{0}/{1}/{2}".format(base_url, hierarchy, u"classes")
 
         def get_classes():
-            structure = settings.REAL_DB_STRUCTURE
+            structure = db_structure.REAL_DB_STRUCTURE
             clsnms = [c.__name__.lower() for c in cls._classes]
             hierarchy_dict = {c: structure[c] for c in clsnms}
             return json.dumps(hierarchy_dict)
@@ -96,9 +143,12 @@ class OIORestObject(object):
         if not input:
             return jsonify({'uuid': None}), 400
 
-        note = input.get("note", "")
+        note = typed_get(input, "note", "")
         registration = cls.gather_registration(input)
         uuid = db.create_or_import_object(cls.__name__, note, registration)
+        # Pass log info on request object.
+        request.api_operation = "Opret"
+        request.uuid = uuid
         return jsonify({'uuid': uuid}), 201
 
     @classmethod
@@ -116,6 +166,8 @@ class OIORestObject(object):
         """
         LIST or SEARCH objects, depending on parameters.
         """
+        request.parameter_storage_class = ArgumentDict
+
         # Convert arguments to lowercase, getting them as lists
         list_args = cls._get_args(True)
         args = cls._get_args()
@@ -131,10 +183,12 @@ class OIORestObject(object):
             virkning_til = datetime.datetime.now()
 
         uuid_param = list_args.get('uuid', None)
+
+        valid_list_args = {'virkningfra', 'virkningtil', 'registreretfra',
+                           'registrerettil', 'uuid'}
+
         # Assume the search operation if other params were specified
-        if not set(args.keys()).issubset(('virkningfra', 'virkningtil',
-                                          'registreretfra', 'registrerettil',
-                                          'uuid')):
+        if not set(args.keys()).issubset(valid_list_args):
             # Only one uuid is supported through the search operation
             if uuid_param is not None and len(uuid_param) > 1:
                 raise BadRequestException("Multiple uuid parameters passed "
@@ -156,6 +210,7 @@ class OIORestObject(object):
 
             # Fill out a registration object based on the query arguments
             registration = build_registration(cls.__name__, list_args)
+            request.api_operation = "Søg"
             results = db.search_objects(cls.__name__,
                                         uuid_param,
                                         registration,
@@ -169,18 +224,23 @@ class OIORestObject(object):
 
         else:
             uuid_param = list_args.get('uuid', None)
+            request.api_operation = "List"
             results = db.list_objects(cls.__name__, uuid_param, virkning_fra,
                                       virkning_til, registreret_fra,
                                       registreret_til)
         if results is None:
             results = []
+        if uuid_param:
+            request.uuid = uuid_param
+        else:
+            request.uuid = ''
         return jsonify({'results': results})
 
     @classmethod
     @requires_auth
     def get_object(cls, uuid):
         """
-        READ a facet, return as JSON.
+        READ an object, return as JSON.
         """
         args = cls._get_args()
         virkning_fra = args.get('virkningfra', None)
@@ -191,7 +251,8 @@ class OIORestObject(object):
         if virkning_fra is None and virkning_til is None:
             virkning_fra = datetime.datetime.now()
             virkning_til = datetime.datetime.now()
-
+        request.api_operation = u'Læs'
+        request.uuid = uuid
         object_list = db.list_objects(cls.__name__, [uuid], virkning_fra,
                                       virkning_til, registreret_fra,
                                       registreret_til)
@@ -204,8 +265,8 @@ class OIORestObject(object):
     @classmethod
     def gather_registration(cls, input):
         """Return a registration dict from the input dict."""
-        attributes = input.get("attributter", {})
-        states = input.get("tilstande", {})
+        attributes = typed_get(input, "attributter", {})
+        states = typed_get(input, "tilstande", {})
         relations = input.get("relationer", None)
         return {"states": states,
                 "attributes": attributes,
@@ -221,7 +282,7 @@ class OIORestObject(object):
         if not input:
             return jsonify({'uuid': None}), 400
         # Get most common parameters if available.
-        note = input.get("note", "")
+        note = typed_get(input, "note", "")
         registration = cls.gather_registration(input)
         exists = db.object_exists(cls.__name__, uuid)
         deleted_or_passive = False
@@ -233,13 +294,17 @@ class OIORestObject(object):
             ):
                 deleted_or_passive = True
 
+        request.uuid = uuid
+
         if not exists:
             # Do import.
+            request.api_operation = "Import"
             db.create_or_import_object(cls.__name__, note,
                                        registration, uuid)
             return jsonify({'uuid': uuid}), 200
         elif deleted_or_passive:
             # Import.
+            request.api_operation = "Import"
             db.update_object(cls.__name__, note, registration,
                              uuid=uuid,
                              life_cycle_code=db.Livscyklus.IMPORTERET.value)
@@ -247,8 +312,9 @@ class OIORestObject(object):
 
         else:
             "Edit or passivate."
-            if input.get('livscyklus', '').lower() == 'passiv':
+            if typed_get(input, 'livscyklus', '').lower() == 'passiv':
                 # Passivate
+                request.api_operation = "Passiver"
                 registration = cls.gather_registration({})
                 db.passivate_object(
                     cls.__name__, note, registration, uuid
@@ -256,6 +322,7 @@ class OIORestObject(object):
                 return jsonify({'uuid': uuid}), 200
             else:
                 # Edit/change
+                request.api_operation = "Ret"
                 db.update_object(cls.__name__, note, registration,
                                  uuid)
                 return jsonify({'uuid': uuid}), 200
@@ -265,13 +332,13 @@ class OIORestObject(object):
     @requires_auth
     def delete_object(cls, uuid):
         # Delete facet
-        input = cls.get_json()
-        if not input:
-            return jsonify({'uuid': None}), 400
-        note = input.get("Note", "")
+        input = cls.get_json() or {}
+        note = typed_get(input, "note", "")
         class_name = cls.__name__
         # Gather a blank registration
         registration = cls.gather_registration({})
+        request.api_operation = "Slet"
+        request.uuid = uuid
         db.delete_object(class_name, registration, note, uuid)
 
         return jsonify({'uuid': uuid}), 200
@@ -279,7 +346,7 @@ class OIORestObject(object):
     @classmethod
     def get_fields(cls):
         """Set up API with correct database access functions."""
-        structure = settings.REAL_DB_STRUCTURE
+        structure = db_structure.REAL_DB_STRUCTURE
         class_key = cls.__name__.lower()
         # TODO: Perform some transformations to improve readability.
         class_dict = structure[class_key]
@@ -307,7 +374,8 @@ class OIORestObject(object):
             return cls.get_classes(hierarchy)
 
         flask.add_url_rule(class_url, u'_'.join([cls.__name__, 'get_objects']),
-                           cls.get_objects, methods=['GET'])
+                           cls.get_objects, methods=['GET'],
+                           strict_slashes=False)
 
         flask.add_url_rule(object_url, u'_'.join([cls.__name__, 'get_object']),
                            cls.get_object, methods=['GET'])

@@ -1,6 +1,10 @@
+ca-certificates
 postgresql
+postgresql-client
 postgresql-server-dev-all
 postgresql-contrib
 python-jinja2
 pgxnclient
 rabbitmq-server
+git
+build-essential
