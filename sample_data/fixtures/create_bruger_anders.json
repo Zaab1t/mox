@@ -1,0 +1,55 @@
+{
+    "attributter": {
+        "brugeregenskaber": [
+        	{
+	            "brugervendtnoegle": "Anders And 8bd41910-1609-45af-85dc-e7bb0af563aa",
+	            "brugernavn": "Anders And",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "tilstande": {
+        "brugergyldighed": [
+        	{
+	        	"gyldighed": "Aktiv",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "relationer": {
+        "adresser": [
+        	{
+        		"urn": "urn:dawa:adresse:uuid:aef7f37f-3683-4938-a612-e25d944cd225",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ],
+        "tilknyttedepersoner": [
+        	{
+        		"urn": "urn:cpr:1201698765",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ],
+		"tilknyttedeorganisationer": [
+			{
+				"uuid": "456362c4-0ee4-4e5e-a72c-751239745e62",
+				"virkning": {
+					"from": "2014-05-19",
+					"to": "infinity"
+				}
+			}
+		]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}

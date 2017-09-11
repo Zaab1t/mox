@@ -1,0 +1,82 @@
+{
+    "attributter": {
+        "organisationenhedegenskaber": [
+            {
+                "brugervendtnoegle": "root",
+                "enhedsnavn": "Overordnet Enhed",
+                "virkning": {
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            }
+        ]
+    },
+    "tilstande": {
+        "organisationenhedgyldighed": [
+            {
+                "gyldighed": "Inaktiv",
+                "virkning": {
+                    "from": "-infinity",
+                    "to": "2016-01-01 00:00:00+01:00",
+                    "to_included": false
+                }
+            },
+            {
+                "gyldighed": "Aktiv",
+                "virkning": {
+                    "from": "2016-01-01 00:00:00+01:00",
+                    "to": "infinity",
+                    "from_included": true
+                }
+            }
+        ]
+    },
+    "relationer": {
+        "overordnet": [
+            {
+                "uuid": "456362c4-0ee4-4e5e-a72c-751239745e62",
+                "virkning": {
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            }
+        ],
+        "tilhoerer": [
+            {
+                "uuid": "456362c4-0ee4-4e5e-a72c-751239745e62",
+                "virkning": {
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            }
+        ],
+        "enhedstype": [
+            {
+                "uuid": "32547559-cfc1-4d97-94c6-70b192eff825",
+                "virkning": {
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            }
+        ],
+        "adresser": [
+            {
+                "uuid": "b1f1817d-5f02-4331-b8b3-97330a5d3197",
+                "virkning": {
+                    "notetekst": "v0:1:Kontor",
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            },
+            {
+                "urn": "urn:magenta.dk:telefon:+4587150000",
+                "virkning": {
+                    "notetekst": "v0:external:b1f1817d-5f02-4331-b8b3-97330a5d3197",
+                    "from": "-infinity",
+                    "to": "infinity"
+                }
+            }
+        ]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}

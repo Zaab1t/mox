@@ -1,0 +1,46 @@
+{
+    "attributter": {
+        "brugeregenskaber": [
+        	{
+	            "brugervendtnoegle": "Joakim von And 5f7e2d61-812b-4b42-a80e-445619f2a56b",
+	            "brugernavn": "Joakim von And",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "tilstande": {
+        "brugergyldighed": [
+        	{
+	        	"gyldighed": "Aktiv",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "relationer": {
+        "adresser": [
+        	{
+        		"urn": "urn:dawa:adresse:uuid:aef7f37f-3683-4938-a612-e25d944cd225",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ],
+        "tilknyttedepersoner": [
+        	{
+        		"urn": "urn:cpr:0612429887",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}

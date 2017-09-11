@@ -1,0 +1,46 @@
+{
+    "attributter": {
+        "brugeregenskaber": [
+        	{
+	            "brugervendtnoegle": "Andersine And e9becd00-c4a7-4312-9383-fc238ce7e2de",
+	            "brugernavn": "Andersine And",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "tilstande": {
+        "brugergyldighed": [
+        	{
+	        	"gyldighed": "Aktiv",
+	            "virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+	            }
+	        }
+        ]
+    },
+    "relationer": {
+        "adresser": [
+        	{
+        		"urn": "urn:dawa:adresse:uuid:aef7f37f-3683-4938-a612-e25d944cd225",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ],
+        "tilknyttedepersoner": [
+        	{
+        		"urn": "urn:cpr:1009721234",
+        		"virkning": {
+	            	"from": "2014-05-19",
+	            	"to": "infinity"
+        		}
+        	}
+        ]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}

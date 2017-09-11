@@ -1,0 +1,36 @@
+{
+    "attributter": {
+        "klasseegenskaber": [
+            {
+                "brugervendtnoegle": "afd",
+                "titel": "Afdeling",
+                "beskrivelse": "Dette er en afdeling",
+                "virkning": {
+                    "from": "1900-01-01 00:00:00+01:00",
+                    "to": "infinity"
+                }
+            }
+        ]
+    },
+    "tilstande": {
+        "klassepubliceret": [
+            {
+                "publiceret": "Publiceret",
+                "virkning": {
+                    "from": "1900-01-01 00:00:00+01:00",
+                    "to": "infinity"
+                }
+            }
+        ]
+    },
+    "relationer": {
+        "facet": [{
+            "uuid": "b8ec5515-7a4f-40b8-85f5-5e8772a372d4",
+            "virkning": {
+                "from": "1900-01-01 00:00:00+01:00",
+                "to": "infinity"
+            }
+        }]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}

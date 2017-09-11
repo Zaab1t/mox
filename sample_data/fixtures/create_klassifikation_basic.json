@@ -1,0 +1,61 @@
+{
+    "attributter": {
+        "klassifikationegenskaber": [
+            {
+                "brugervendtnoegle": "KLE",
+                "beskrivelse": "Klassifikation",
+                "kaldenavn": "XYZ",
+                "virkning": {
+                    "from": "2014-05-19 12:02:32",
+                    "to": "infinity",
+                    "aktoerref": "8c949998-f01b-4e7c-953b-8ae4fec475a2",
+                    "aktoertypekode": "Bruger",
+                    "notetekst": "Nothing to see here!"
+                }
+            }
+        ]
+    },
+    "tilstande": {
+        "klassifikationpubliceret": [
+            {
+                "publiceret": "Publiceret",
+                "virkning": {
+                    "from": "2014-05-19 12:02:32",
+                    "to": "infinity",
+                    "aktoerref": "8c949998-f01b-4e7c-953b-8ae4fec475a2",
+                    "aktoertypekode": "Bruger",
+                    "notetekst": "Nothing to see here!"
+                }
+            }
+        ]
+    },
+    "relationer": {
+        "ansvarlig": [
+            {
+                "uuid": "ddc99abd-c1b0-48c2-aef7-74fea841adae",
+                "virkning": {
+                    "from": "2014-05-19 12:02:32",
+                    "to": "infinity",
+                    "aktoerref": "8c949998-f01b-4e7c-953b-8ae4fec475a2",
+                    "aktoertypekode": "Bruger",
+                    "notetekst": "Nothing to see here!"
+                },
+                "objekttype": "Bruger"
+            }
+        ],
+        "ejer": [
+            {
+                "uuid": "456362c4-0ee4-4e5e-a72c-751239745e62",
+                "virkning": {
+                    "from": "2014-05-19 12:02:32",
+                    "to": "infinity",
+                    "aktoerref": "8c949998-f01b-4e7c-953b-8ae4fec475a2",
+                    "aktoertypekode": "Bruger",
+                    "notetekst": "Nothing to see here!"
+                },
+                "objekttype": "Bruger"
+            }
+        ]
+    },
+    "note": "Automatisk indl\u00e6sning"
+}
