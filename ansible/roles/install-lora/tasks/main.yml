@@ -1,0 +1,4 @@
+---
+# tasks file for install-lora
+- name: Run install.sh
+  command: bash /vagrant/install.sh
