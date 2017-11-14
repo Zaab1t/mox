@@ -1,20 +1,16 @@
 #!/bin/bash -e
 
 # TODO: bail if root
-if [ `id -u` == 0 ]; then
-	echo "Do not run as root. We'll sudo when necessary"
-	exit 1;
-fi
+#if [ `id -u` == 0 ]; then
+#	echo "Do not run as root. We'll sudo when necessary"
+#	exit 1;
+#fi
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-# Query for hostname
-DOMAIN=$(hostname --fqdn)
-
-read -p "Host name: [$DOMAIN] " -r
-echo
-if [[ "x$REPLY" != "x" ]]; then
-	DOMAIN="$REPLY"
+# Set hostname if missing
+if [[ -z $DOMAIN ]]; then
+    DOMAIN=$(hostname --fqdn)
 fi
 
 # Add system user if none exists

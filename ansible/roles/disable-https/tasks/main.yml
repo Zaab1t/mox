@@ -1,0 +1,14 @@
+---
+# tasks file for disable-https
+
+- name: Install apache config file
+  copy:
+    src: mox.conf
+    dest: /etc/apache2/sites-enabled/mox.conf
+- name: Disable 000-default
+  command: a2dissite 000-default
+  become: yes
+- name: Restart apache
+  service:
+    name: apache2
+    state: restarted

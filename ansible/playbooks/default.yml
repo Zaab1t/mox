@@ -13,5 +13,6 @@
 
   roles:
   - install-lora
+  - disable-https
 
 ...
