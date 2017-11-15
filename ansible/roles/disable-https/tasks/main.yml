@@ -2,8 +2,8 @@
 # tasks file for disable-https
 
 - name: Install apache config file
-  copy:
-    src: mox.conf
+  template:
+    src: mox.conf.j2
     dest: /etc/apache2/sites-enabled/mox.conf
 - name: Disable 000-default
   command: a2dissite 000-default

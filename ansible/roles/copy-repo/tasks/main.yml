@@ -1,0 +1,13 @@
+---
+# tasks file for copy-repo
+
+- name: Get commit hash
+  command: git rev-parse HEAD
+  register: gitref
+- name: Clone mox repository
+  git:
+    repo: https://github.com/magenta-aps/mox.git
+    dest: "{{root_dir}}"
+    version: "{{gitref.stdout}}"
+    accept_hostkey: yes
+    recursive: no

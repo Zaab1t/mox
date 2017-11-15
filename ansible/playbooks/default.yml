@@ -8,10 +8,10 @@
   become_user: root
 
   vars:
-    root_dir: /vagrant
-    bin_dir: /usr/local
+    root_dir: /srv/mox
 
   roles:
+  - copy-repo
   - install-lora
   - disable-https
 
