@@ -413,7 +413,7 @@ def create_or_import_object(class_name, note, registration,
             raise DBException(status_code, e.message)
         elif e.message.startswith(noop_msg):
             status_code = int(e.pgcode[2:])
-            raise DBException(status_code, 'fuck no')
+            raise DBException(status_code, e.message)
         else:
             raise
 
