@@ -54,7 +54,10 @@ except ImportError:
     from oio_rest import settings
 
 try:
-    with postgresql.Postgresql(base_dir=tempfile.mkdtemp(prefix='mox')) as pg:
+    with postgresql.Postgresql(
+            base_dir=tempfile.mkdtemp(prefix='mox'),
+            postgres_args='-h localhost -F -c logging_collector=off -c synchronous_commit=off -c fsync=off',
+    ) as pg:
         dsn = pg.dsn()
 
         settings.DB_HOST = dsn['host']
