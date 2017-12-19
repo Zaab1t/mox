@@ -95,4 +95,7 @@ try:
 except KeyboardInterrupt:
     pass
 finally:
-    shutil.rmtree(pg.base_dir)
+    try:
+        shutil.rmtree(pg.base_dir)
+    except NameError:
+        pass
