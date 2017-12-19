@@ -90,11 +90,7 @@ try:
 
         from oio_rest import app
 
-        app.app.run(host='::1',
-                    port=int(sys.argv[1]),
-                    debug=False,
-                    threaded=True,
-                    use_reloader=False)
+        app.app.run(port=int(sys.argv[1]), threaded=True, use_reloader=False)
 except KeyboardInterrupt:
     pass
 finally:
