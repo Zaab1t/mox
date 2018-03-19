@@ -26,7 +26,7 @@ class TestContentStore(TestCase):
                           return_value='testfile.bin'), \
                 patch.object(cs, '_get_file_sub_path',
                              return_value='sub/path/'), \
-                patch('oio_rest.contentstore.FILE_UPLOAD_FOLDER',
+                patch('oio_rest.settings.FILE_UPLOAD_FOLDER',
                       new='/test/'):
             actual_result = cs.save_file_object(mockfile)
 
@@ -81,7 +81,7 @@ class TestContentStore(TestCase):
 
         # Act
 
-        with patch('oio_rest.contentstore.FILE_UPLOAD_FOLDER', new='/test/'):
+        with patch('oio_rest.settings.FILE_UPLOAD_FOLDER', new='/test/'):
             actual_result = cs.get_filename_for_url('store:url')
 
         # Assert
@@ -93,6 +93,6 @@ class TestContentStore(TestCase):
 
         # Act
 
-        with patch('oio_rest.contentstore.FILE_UPLOAD_FOLDER',
+        with patch('oio_rest.settings.FILE_UPLOAD_FOLDER',
                    new='/test/'), self.assertRaises(Exception):
             cs.get_filename_for_url('bla:url')
