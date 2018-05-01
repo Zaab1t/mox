@@ -5,7 +5,7 @@ import datetime
 import urlparse
 import traceback
 
-from flask import Flask, jsonify, redirect, request, url_for, Response
+from flask import Flask, jsonify, redirect, request, url_for, Response, g
 from werkzeug.routing import BaseConverter
 from jinja2 import Environment, FileSystemLoader
 from psycopg2 import DataError
@@ -55,6 +55,13 @@ aktivitet.AktivitetsHierarki.setup_api(base_url=settings.BASE_URL, flask=app)
 indsats.IndsatsHierarki.setup_api(base_url=settings.BASE_URL, flask=app)
 tilstand.TilstandsHierarki.setup_api(base_url=settings.BASE_URL, flask=app)
 
+
+@app.teardown_appcontext
+def close_connection(exc=None):
+    conn = g.pop('connection', None)
+
+    if conn:
+        conn.close()
 
 @app.route('/')
 def root():

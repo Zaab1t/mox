@@ -1,14 +1,19 @@
 import datetime
 import unittest
 
+import flask_testing
 from mock import MagicMock, call, patch
 
 import oio_rest.db as db
+from oio_rest import app
 from oio_rest.custom_exceptions import (BadRequestException, DBException,
                                         NotFoundException)
 
 
-class TestDB(unittest.TestCase):
+class TestDB(flask_testing.TestCase):
+    def create_app(self):
+        return app.app
+
     @patch('oio_rest.db.psycopg2')
     def test_get_connection(self, mock):
         # Arrange
@@ -38,21 +43,6 @@ class TestDB(unittest.TestCase):
 
         # Assert
         self.assertEqual(expected_args, mock.connect.call_args)
-
-    @patch('oio_rest.db.unicode', new=MagicMock())
-    @patch('oio_rest.db.psyco_adapt', new=MagicMock())
-    @patch('oio_rest.db.get_connection')
-    def test_adapt_only_creates_one_connection(self, mock_get_conn):
-        # type: (MagicMock) -> None
-        # Arrange
-
-        # Act
-        db.adapt('')
-        db.adapt('')
-        db.adapt('')
-
-        # Assert
-        self.assertEqual(1, mock_get_conn.call_count)
 
     @patch('oio_rest.db.get_relation_field_type')
     def test_convert_relation_value_default(self, mock_get_rel):

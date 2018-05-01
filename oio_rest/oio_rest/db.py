@@ -3,6 +3,7 @@ from enum import Enum
 from datetime import datetime, timedelta
 
 import psycopg2
+import flask
 
 from psycopg2.extras import DateTimeTZRange
 from psycopg2.extensions import AsIs, QuotedString, adapt as psyco_adapt
@@ -37,13 +38,12 @@ jinja_env = Environment(loader=FileSystemLoader(
 
 
 def adapt(value):
-    if not hasattr(adapt, 'connection'):
-        adapt.connection = get_connection()
+    connection = get_connection()
 
     adapter = psyco_adapt(value)
     if hasattr(adapter, 'prepare'):
-        adapter.prepare(adapt.connection)
-    return unicode(adapter.getquoted(), adapt.connection.encoding)
+        adapter.prepare(connection)
+    return unicode(adapter.getquoted(), connection.encoding)
 
 
 jinja_env.filters['adapt'] = adapt
@@ -55,15 +55,17 @@ jinja_env.filters['adapt'] = adapt
 
 def get_connection():
     """Handle all intricacies of connecting to Postgres."""
-    connection = psycopg2.connect(
-        database=settings.DATABASE,
-        user=settings.DB_USER,
-        password=settings.DB_PASSWORD,
-        host=getattr(settings, 'DB_HOST', 'localhost'),
-        port=getattr(settings, 'DB_PORT', 5432),
-    )
-    connection.autocommit = True
-    return connection
+    if 'connection' not in flask.g:
+        flask.g.connection = psycopg2.connect(
+            database=settings.DATABASE,
+            user=settings.DB_USER,
+            password=settings.DB_PASSWORD,
+            host=getattr(settings, 'DB_HOST', 'localhost'),
+            port=getattr(settings, 'DB_PORT', 5432),
+        )
+        flask.g.connection.autocommit = True
+
+    return flask.g.connection
 
 
 def convert_attr_value(attribute_name, attribute_field_name,

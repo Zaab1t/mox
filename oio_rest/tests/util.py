@@ -140,9 +140,6 @@ class TestCaseMixin(object):
             p.start()
             self.addCleanup(p.stop)
 
-        if hasattr(db.adapt, 'connection'):
-            del db.adapt.connection
-
     def tearDown(self):
         super(TestCaseMixin, self).tearDown()
 
