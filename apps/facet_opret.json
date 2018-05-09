@@ -1,0 +1,68 @@
+{ 
+    "note": "Ny facet",
+    "attributter": { 
+        "facetegenskaber": [ 
+            {
+            "brugervendtnoegle": "-", 
+            "beskrivelse": "Organisatorisk funktion", 
+            "plan": "XYZ", 
+            "opbygning": "Hierarkisk", 
+            "ophavsret": "Magenta", 
+            "supplement": "Ja", 
+            "virkning": { 
+                "from": "2014-05-19 12:02:32", 
+                "to": "infinity", 
+                "aktoerref": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                "aktoertypekode": "Bruger" 
+            } 
+            }
+        ] 
+    }, 
+    "tilstande": { 
+        "facetpubliceret": [{ 
+            "publiceret": "Publiceret", 
+            "virkning": { 
+                "from": "2014-05-19 12:02:32", 
+                "to": "infinity", 
+                "aktoerref": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                "aktoertypekode": "Bruger"
+            } 
+        }
+        ] 
+    },
+    "relationer": { 
+        "ansvarlig": [
+        { 
+            "uuid": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+            "virkning": { 
+                "from": "2014-05-19 12:02:32", 
+                "to": "infinity", 
+                "aktoerref": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                "aktoertypekode": "Bruger"
+            
+            }
+        }
+        ],
+   "redaktoerer": [ 
+        { 
+            "uuid": "ef2713ee-1a38-4c23-8fcb-3c4331262194", 
+            "virkning": { 
+                "from": "2014-05-19 12:02:32", 
+                "to": "infinity", 
+                "aktoerref": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                "aktoertypekode": "Bruger"
+            } 
+        }, 
+            { 
+                "uuid": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                "virkning": { 
+                    "from": "2015-05-19 12:02:32", 
+                    "to": "infinity", 
+                    "aktoerref": "ddc99abd-c1b0-48c2-aef7-74fea841adae", 
+                    "aktoertypekode": "Bruger"
+                } 
+            } 
+        ] 
+    } 
+
+}
