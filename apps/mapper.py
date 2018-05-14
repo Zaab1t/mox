@@ -2,7 +2,7 @@
 """ Small prototype of an applicatin that will allow for mapping
 between OIO classes (Klasse) """
 import requests
-
+import lora_helpers # Consider to inherit from this instead!
 
 class KlasseMapper(object):
     """ Small prototype of an application that will allow for mapping
@@ -15,15 +15,6 @@ class KlasseMapper(object):
         """
         self.hostname = hostname
         self.url = '/klassifikation/klasse/'
-
-    def read_klasse_list(self):
-        """ Get a list of all avaiable Klasser
-        :return: List of uuid's of all Klasser
-        """
-        args = {'bvn': '%'}
-        response = requests.get(self.hostname + self.url, params=args)
-        klasse_list = response.json()['results'][0]
-        return klasse_list
 
     def read_klasse(self, uuid):
         """
@@ -107,7 +98,9 @@ class KlasseMapper(object):
 
 
 def main():
-    lora_hostname = 'http://mox-steffen:8080'
+    lora_hostname = settings.host
+
+    helper = LoraHelper(lora_hostname)
     mapper = KlasseMapper(lora_hostname)
 
     uuid_1 = 'ee8dd627-9ff1-47c2-b900-aa3c214a31ee'
@@ -115,7 +108,7 @@ def main():
 
     print(mapper.create_mapping(uuid_1, uuid_2))
 
-    klasse_list = mapper.read_klasse_list()
+    klasse_list = helper.read_klasse_list()
     for uuid in klasse_list:
         mapping = mapper.read_mappings(uuid)
         if not mapping:
