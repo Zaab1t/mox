@@ -4,6 +4,7 @@ test data """
 import requests
 import json
 import xmltodict
+import settings
 
 # Facetter
 # Emne: http://clever-gewicht-reduzieren.de/resources/kle/emneplan
@@ -24,15 +25,37 @@ class KleUploader(object):
         """
         self.hostname = hostname
 
-    def load_json_template(self, filename):
+    def load_json_template(self, filename, replace_dict=None):
         """ Load a json file and return as dict
         :param filename: Filename for the json file
+        :replace_dict: Dict with parameters to be replace in the template
         :return: The json file formateed as a python dictionary
         """
-        with open(filename) as json_data:
-            data = json.load(json_data)
-        return data
+        with open(filename) as f:
+            data = f.read()
+        for key, value in replace_dict.items():
+            data = data.replace('{' + key +'}', value)
+        json_data = json.loads(data)
+        return json_data
 
+    def read_kle_dict(self, local=True):
+        """ Read the entire KLE file
+        :param local: If True the file is read from local cache
+        :return: The document date and the KLE index as a dict
+        """
+        if local:
+            with open('emneplan.xml', 'r') as content_file:
+                xml_content = content_file.read()
+        else:
+            url  = 'http://clever-gewicht-reduzieren.de/resources/kle/emneplan'
+            response = requests.get(url)
+            xml_content =response.text
+
+        kle_dict = xmltodict.parse(xml_content)['KLE-Emneplan']
+        udgivelses_dato = kle_dict['UdgivelsesDato']
+        kle_dict = kle_dict['Hovedgruppe']  # Everything except date is here
+        return (udgivelses_dato, kle_dict)
+    
     def create_facet(self, facet_name):
         """
         Creates a new facet
@@ -48,17 +71,22 @@ class KleUploader(object):
         response = requests.post(self.hostname + url, json=template)
         return response.json()['uuid']
 
-    def create_klasse(self, facet):
+    def create_kle_klasse(self, facet, klasse_info, overklasse=None):
         """
-        Creates a new Klasse
+        Creates a new Klasse based on KLE
         :param facet: uuid for the korresponding facet
+        :param name: Name for the Klasse
         :return: Returns uuid of the new klasse
         """
         url = '/klassifikation/klasse'
-        template = self.load_json_template('klasse_opret.json')
-        template['relationer']['facet'][0]['uuid'] = facet
+        print(klasse_info)
+        dato = klasse_info['oprettetdato']
 
-        # TODO: Clean up template and update with all info from KLE
+        template = self.load_json_template('kle_klasse_opret.json',
+                                           klasse_info)
+        template['relationer']['facet'][0]['uuid'] = facet
+        if overklasse is not None:
+            template['relationer']['overordnetklasse'][0]['uuid'] = overklasse
         response = requests.post(self.hostname + url, json=template)
         return response.json()['uuid']
 
@@ -72,6 +100,25 @@ class KleUploader(object):
             titel = kle_dict[i]['HovedgruppeTitel']
             hovedgrupper[int(kle_dict[i]['HovedgruppeNr'])] = titel
         return hovedgrupper
+
+    def read_all_from_hovedgruppe(self, kle_dict, hovedgruppe_nummer):
+        """ Read all relevant fields from a Hovedgruppe - this can
+        easily be extended if more info turns out to be relevant
+        :param kle_dict: A dictinary containing KLE
+        :param hovedgruppe: Index for the wanted Hovedgruppe
+        :return: Dict with relevant info 
+        """
+        for i in range(0, len(kle_dict)):
+            if int(kle_dict[i]['HovedgruppeNr']) == hovedgruppe_nummer:
+                break
+        hovedgruppe = kle_dict[i]
+        hovedgruppe_info = {}
+        hovedgruppe_info['titel'] = hovedgruppe['HovedgruppeTitel']
+        adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
+        hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
+        hovedgruppe_info['nummer'] = str(hovedgruppe_nummer).zfill(2)
+        # TODO: Der findes også info om rettet-dato, er dette relevant?
+        return hovedgruppe_info
 
     def read_gruppe(self, kle_dict, hovedgruppe):
         """ Read all Grupper from a KLE Hovedgruppe
@@ -101,45 +148,32 @@ class KleUploader(object):
             emner[emne_nummer] = emne_liste[i]['EmneTitel']
         return emner
 
-
+        
 def main():
-    lora_hostname = 'http://mox-steffen:8080'
+    lora_hostname = settings.host
     kle = KleUploader(lora_hostname)
 
-    # emne_uuid = kle.create_facet('Emne')
+    kle_content = kle.read_kle_dict()
+    print('Document date: ' + kle_content[0])
+    kle_dict = kle_content[1]
+    
+    #emne_uuid = kle.create_facet('Emne')
+    emne_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
+
+    hovedgrupper = (kle.read_all_hovedgrupper(kle_dict))
+    for hovedgruppe in hovedgrupper:
+        print(str(hovedgruppe).zfill(2), hovedgrupper[hovedgruppe])
+        klasse_info = kle.read_all_from_hovedgruppe(kle_dict, hovedgruppe)
+    print(kle.create_kle_klasse(emne_uuid, klasse_info))
+    
     # funktion_uuid = kle.create_facet('Funktion')
-    # test_uuid = kle.create_facet('Klyf')
-    # print(kle.create_klasse(test_uuid))
 
-    # emneplan  = 'http://clever-gewicht-reduzieren.de/resources/kle/emneplan'
-    # response = requests.get(emneplan)
-    # print(response.text)
-
-    with open('emneplan.xml', 'r') as content_file:
-        content = content_file.read()
-    kle_dict = xmltodict.parse(content)['KLE-Emneplan']
-    print('KLE udgivelsesdato: ' + kle_dict['UdgivelsesDato'])
-    kle_dict = kle_dict['Hovedgruppe']  # Everything except date is here
-
-    # hovedgrupper = (kle.read_all_hovedgrupper(elt))
-    # for hovedgruppe in hovedgrupper:
-    #     print(str(hovedgruppe).zfill(2), hovedgrupper[hovedgruppe])
 
     # print(kle.read_gruppe(kle_dict, 2))
 
-    print(kle.read_emner(kle_dict, 2, 5))
+    #print(kle.read_emner(kle_dict, 2, 5))
 
-    """
-    #elt indeholder nu en liste med alle 36 hovedgrupper
-    print(type(elt[0]))
-    #for key in elt[0].keys():
-    #    print(key)
-    print(type(elt[0]['Gruppe']))
-    #print(elt[0]['Gruppe'][0])
-    for key in elt[0]['Gruppe'][0].keys():
-        print(key)
-    print(elt[0]['Gruppe'][0]['Emne'])
-    """
+
 
 
 if __name__ == '__main__':

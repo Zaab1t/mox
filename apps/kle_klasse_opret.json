@@ -1,0 +1,48 @@
+{ 
+    "attributter": { 
+        "klasseegenskaber": [ 
+            {
+            "brugervendtnoegle": "{nummer}", 
+            "beskrivelse": "{titel}", 
+            "titel": "{titel}", 
+            "virkning": { 
+                "from": "{oprettetdato}}", 
+                "to": "infinity"
+            } 
+            }
+        ] 
+    }, 
+    "tilstande": { 
+        "klassepubliceret": [{ 
+            "publiceret": "Publiceret", 
+            "virkning": { 
+                "from": "{oprettetdato}}", 
+                "to": "infinity"
+            } 
+        }
+        ] 
+    },
+    "relationer": { 
+        "facet": [
+        { 
+            "uuid": "-",
+            "virkning": { 
+                "from": "{oprettetdato}", 
+                "to": "infinity"
+            },
+            "objekttype": "Facet"
+        }
+        ],
+        "overordnetklasse": [
+        { 
+            "virkning": { 
+                "from": "{oprettetdato}", 
+                "to": "infinity"
+            },
+            "objekttype": "Klasse"
+        }
+        ]
+
+    } 
+
+}
