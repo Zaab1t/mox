@@ -2,9 +2,10 @@
 """ Small prototype of an applicatin that will allow for mapping
 between OIO classes (Klasse) """
 import requests
-import lora_helpers # Consider to inherit from this instead!
+from lora_helpers import LoraHelper
+import settings
 
-class KlasseMapper(object):
+class KlasseMapper(LoraHelper):
     """ Small prototype of an application that will allow for mapping
     between OIO classes (Klasse) """
 
@@ -16,15 +17,6 @@ class KlasseMapper(object):
         self.hostname = hostname
         self.url = '/klassifikation/klasse/'
 
-    def read_klasse(self, uuid):
-        """
-        Read a Klasse from LoRa
-        :param resource:    Name of the resource path/entity
-        :return:            Returns a dict with the Klasse
-        """
-        response = requests.get(self.hostname + self.url + uuid)
-        klasse = response.json()[uuid][0]['registreringer'][0]
-        return klasse
 
     def read_mappings(self, klasse):
         """ Read all mappings from a klasse
@@ -32,7 +24,7 @@ class KlasseMapper(object):
         :return: Information about the Klasse ie. Brugervendt nøgle
         """
         actual_mappings = []
-        if isinstance(klasse, str):
+        if isinstance(klasse, unicode):
             klasse = self.read_klasse(klasse)
         try:
             mapping_list = klasse['relationer']['mapninger']
@@ -44,17 +36,6 @@ class KlasseMapper(object):
             except KeyError:
                 pass
         return actual_mappings
-
-    def basic_klasse_info(self, klasse):
-        """ Read human-readable data from Klass
-        :param klasse: Klasse object as return by read_klasse, or uuid
-        :return: Information about the Klasse ie. Brugervendt nøgle
-        """
-        if isinstance(klasse, str):
-            klasse = self.read_klasse(klasse)
-        egenskaber = klasse['attributter']['klasseegenskaber'][0]
-        info = egenskaber['brugervendtnoegle']
-        return info
 
     def _create_assymetric_mapping(self, uuid_from, uuid_to):
         """ Map uui_from to uuid_to
@@ -100,15 +81,14 @@ class KlasseMapper(object):
 def main():
     lora_hostname = settings.host
 
-    helper = LoraHelper(lora_hostname)
     mapper = KlasseMapper(lora_hostname)
 
     uuid_1 = 'ee8dd627-9ff1-47c2-b900-aa3c214a31ee'
     uuid_2 = 'a88aa93b-8edc-46ab-bad7-6535f9b765e5'
 
-    print(mapper.create_mapping(uuid_1, uuid_2))
+    #print(mapper.create_mapping(uuid_1, uuid_2))
 
-    klasse_list = helper.read_klasse_list()
+    klasse_list = mapper.read_klasse_list()
     for uuid in klasse_list:
         mapping = mapper.read_mappings(uuid)
         if not mapping:
