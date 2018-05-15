@@ -34,7 +34,7 @@ class KleUploader(object):
         with open(filename) as f:
             data = f.read()
         for key, value in replace_dict.items():
-            data = data.replace('{' + key +'}', value)
+            data = data.replace('{' + key + '}', value)
         json_data = json.loads(data)
         return json_data
 
@@ -47,15 +47,15 @@ class KleUploader(object):
             with open('emneplan.xml', 'r') as content_file:
                 xml_content = content_file.read()
         else:
-            url  = 'http://clever-gewicht-reduzieren.de/resources/kle/emneplan'
+            url = 'http://clever-gewicht-reduzieren.de/resources/kle/emneplan'
             response = requests.get(url)
-            xml_content =response.text
+            xml_content = response.text
 
         kle_dict = xmltodict.parse(xml_content)['KLE-Emneplan']
         udgivelses_dato = kle_dict['UdgivelsesDato']
         kle_dict = kle_dict['Hovedgruppe']  # Everything except date is here
         return (udgivelses_dato, kle_dict)
-    
+
     def create_facet(self, facet_name):
         """
         Creates a new facet
@@ -79,9 +79,6 @@ class KleUploader(object):
         :return: Returns uuid of the new klasse
         """
         url = '/klassifikation/klasse'
-        print(klasse_info)
-        dato = klasse_info['oprettetdato']
-
         template = self.load_json_template('kle_klasse_opret.json',
                                            klasse_info)
         template['relationer']['facet'][0]['uuid'] = facet
@@ -93,62 +90,100 @@ class KleUploader(object):
     def read_all_hovedgrupper(self, kle_dict):
         """ Read all Hovedgrupper from KLE
         :param kle_dict: A dictinary containing KLE
-        :return: Dict with HovedgruppeNr as key and HovedgruppeTitel as value
+        :return: Dict with index as as key and
+        (HovedgruppeTitel, HovedgruppeNr) as value
         """
         hovedgrupper = {}
         for i in range(0, len(kle_dict)):
             titel = kle_dict[i]['HovedgruppeTitel']
-            hovedgrupper[int(kle_dict[i]['HovedgruppeNr'])] = titel
+            hovedgrupper[i] = (titel, kle_dict[i]['HovedgruppeNr'])
         return hovedgrupper
 
-    def read_all_from_hovedgruppe(self, kle_dict, hovedgruppe_nummer):
+    def read_all_from_hovedgruppe(self, kle_dict, hovedgruppe_index):
         """ Read all relevant fields from a Hovedgruppe - this can
         easily be extended if more info turns out to be relevant
         :param kle_dict: A dictinary containing KLE
-        :param hovedgruppe: Index for the wanted Hovedgruppe
-        :return: Dict with relevant info 
+        :param hovedgruppe_index: Index for the wanted Hovedgruppe
+        :return: Dict with relevant info
         """
-        for i in range(0, len(kle_dict)):
-            if int(kle_dict[i]['HovedgruppeNr']) == hovedgruppe_nummer:
-                break
-        hovedgruppe = kle_dict[i]
+        hovedgruppe = kle_dict[hovedgruppe_index]
         hovedgruppe_info = {}
         hovedgruppe_info['titel'] = hovedgruppe['HovedgruppeTitel']
         adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
-        hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
-        hovedgruppe_info['nummer'] = str(hovedgruppe_nummer).zfill(2)
+        hovedgruppe_info['oprettetdato'] = adm_info['OprettetDato']
+        hovedgruppe_info['nummer'] = hovedgruppe['HovedgruppeNr']
         # TODO: Der findes også info om rettet-dato, er dette relevant?
         return hovedgruppe_info
 
-    def read_gruppe(self, kle_dict, hovedgruppe):
+    def read_all_grupper(self, kle_dict, hovedgruppe):
         """ Read all Grupper from a KLE Hovedgruppe
         :param kle_dict: A dictinary containing KLE
-        :param hovedgruppe: A KLE HovedgruppeNr to be retrieved
-        :return: Dict with GruppeNr as key and GruppeTitel as value
+        :param hovedgruppe: A KLE Hovedgruppe index to be retrieved
+        :return: Dict with index as key and (GruppeTitel, GruppeNr) as value
         """
         grupper = {}
         gruppe_liste = kle_dict[hovedgruppe]['Gruppe']
         for i in range(0, len(gruppe_liste)):
-            gruppe_nummer = int(gruppe_liste[i]['GruppeNr'][3:])
-            grupper[gruppe_nummer] = gruppe_liste[i]['GruppeTitel']
+            grupper[i] = (gruppe_liste[i]['GruppeTitel'],
+                          gruppe_liste[i]['GruppeNr'][3:])
         return grupper
 
-    def read_emner(self, kle_dict, hovedgruppe, gruppe):
+    def read_all_from_gruppe(self, kle_dict, hovedgruppe, gruppe):
+        """ Read all relevant fields from a Gruppe - this can
+        easily be extended if more info turns out to be relevant
+        :param kle_dict: A dictinary containing KLE
+        :param hovedgruppe: Index for the wanted Hovedgruppe
+        :param gruppe: Index for the wanted Gruppe
+        :return: Dict with relevant info
+        """
+        gruppe = kle_dict[hovedgruppe]['Gruppe'][gruppe]
+        gruppe_info = {}
+        gruppe_info['titel'] = gruppe['GruppeTitel']
+        # adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
+        # hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
+        gruppe_info['nummer'] = gruppe['GruppeNr'][3:]
+        return gruppe_info
+
+    def read_all_emner(self, kle_dict, hovedgruppe, gruppe):
         """ Read all Emner from a KLE Gruppe
         :param kle_dict: A dictinary containing KLE
-        :param hovedgruppe: The KLE HovedgruppeNR containing the Gruppe
-        :param GruppeNr: The KLE Gruppe to be retrieved
-        :return: Dict with EmneNr as key and EmneTitel as value
+        :param hovedgruppe: The KLE Hovedgruppe index containing the Gruppe
+        :param GruppeNr: The KLE Gruppe index to be retrieved
+        :return: Dict with index as key and (EmneTitel, EmneNr) as value
         """
         emner = {}
-        print(gruppe)
         emne_liste = kle_dict[hovedgruppe]['Gruppe'][gruppe]['Emne']
         for i in range(0, len(emne_liste)):
-            emne_nummer = int(emne_liste[i]['EmneNr'][6:])
-            emner[emne_nummer] = emne_liste[i]['EmneTitel']
+            try:
+                emner[i] = (emne_liste[i]['EmneTitel'],
+                            emne_liste[i]['EmneNr'][6:])
+            except KeyError: # If only one element, there is no list
+                emner[0] = (emne_liste['EmneTitel'],
+                            emne_liste['EmneNr'][6:])
+
         return emner
 
-        
+    def read_all_from_emne(self, kle_dict, hovedgruppe, gruppe, emne):
+        """ Read all relevant fields from a Gruppe - this can
+        easily be extended if more info turns out to be relevant
+        :param kle_dict: A dictinary containing KLE
+        :param hovedgruppe: Index for the wanted Hovedgruppe
+        :param gruppe: Index for the wanted Gruppe
+        :param gruppe: emne for the wanted Emne
+        :return: Dict with relevant info
+        """
+        try:
+            emne = kle_dict[hovedgruppe]['Gruppe'][gruppe]['Emne'][emne]
+        except KeyError:  # If only one element, there is no list
+            emne = kle_dict[hovedgruppe]['Gruppe'][gruppe]['Emne']
+        emne_info = {}
+        emne_info['titel'] = emne['EmneTitel']
+        # adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
+        # hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
+        emne_info['nummer'] = emne['EmneNr'][6:]
+        return emne_info
+
+
 def main():
     lora_hostname = settings.host
     kle = KleUploader(lora_hostname)
@@ -156,24 +191,31 @@ def main():
     kle_content = kle.read_kle_dict()
     print('Document date: ' + kle_content[0])
     kle_dict = kle_content[1]
+
+    # print(len(kle_dict[0]['Gruppe'][13]['Emne']))
     
-    #emne_uuid = kle.create_facet('Emne')
+    # emne_uuid = kle.create_facet('Emne')
     emne_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
 
     hovedgrupper = (kle.read_all_hovedgrupper(kle_dict))
-    for hovedgruppe in hovedgrupper:
-        print(str(hovedgruppe).zfill(2), hovedgrupper[hovedgruppe])
-        klasse_info = kle.read_all_from_hovedgruppe(kle_dict, hovedgruppe)
-    print(kle.create_kle_klasse(emne_uuid, klasse_info))
-    
-    # funktion_uuid = kle.create_facet('Funktion')
-
-
-    # print(kle.read_gruppe(kle_dict, 2))
-
-    #print(kle.read_emner(kle_dict, 2, 5))
-
-
+    for hoved_index in hovedgrupper:
+        hoved_info = kle.read_all_from_hovedgruppe(kle_dict, hoved_index)
+        print(hoved_info['nummer'] + ': ' + hoved_info['titel'])
+        # Create hovedgruppe
+        grupper = kle.read_all_grupper(kle_dict, hoved_index)
+        for gruppe_index in grupper:
+            gruppe_info = kle.read_all_from_gruppe(kle_dict, hoved_index,
+                                                   gruppe_index)
+            print(hoved_info['nummer'] + '.' + gruppe_info['nummer'] + ': ' +
+                  gruppe_info['titel'])
+            # Create gruppe
+            emner = kle.read_all_emner(kle_dict, hoved_index, gruppe_index)
+            for emne_index in emner:
+                emne_info = kle.read_all_from_emne(kle_dict, hoved_index,
+                                                   gruppe_index, emne_index)
+                print(hoved_info['nummer'] + '.' + gruppe_info['nummer'] +
+                      '.' + emne_info['nummer'] + ': ' + emne_info['titel'])
+                # Create emne
 
 
 if __name__ == '__main__':
