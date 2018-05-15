@@ -24,7 +24,7 @@ class KlasseMapper(LoraHelper):
         :return: Information about the Klasse ie. Brugervendt nøgle
         """
         actual_mappings = []
-        if isinstance(klasse, unicode):
+        if isinstance(klasse, str):
             klasse = self.read_klasse(klasse)
         try:
             mapping_list = klasse['relationer']['mapninger']
