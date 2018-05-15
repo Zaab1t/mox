@@ -38,22 +38,34 @@ class KleUploader(object):
         json_data = json.loads(data)
         return json_data
 
-    def read_kle_dict(self, local=True):
+    def read_kle_dict(self, facet='emne', local=True):
         """ Read the entire KLE file
+        :param facet: Either 'emne' or 'handlingsfacetter'
         :param local: If True the file is read from local cache
         :return: The document date and the KLE index as a dict
         """
+        if facet == 'emne':
+            navn = 'emneplan'
+        else:
+            navn = 'handlefacetter'
+
         if local:
-            with open('emneplan.xml', 'r') as content_file:
+            with open(navn + '.xml', 'r') as content_file:
                 xml_content = content_file.read()
         else:
-            url = 'http://clever-gewicht-reduzieren.de/resources/kle/emneplan'
-            response = requests.get(url)
+            url = 'http://clever-gewicht-reduzieren.de/resources/kle/'
+            response = requests.get(url + navn)
             xml_content = response.text
 
-        kle_dict = xmltodict.parse(xml_content)['KLE-Emneplan']
-        udgivelses_dato = kle_dict['UdgivelsesDato']
-        kle_dict = kle_dict['Hovedgruppe']  # Everything except date is here
+        kle_dict = xmltodict.parse(xml_content)
+        if facet == 'emne':
+            kle_dict = kle_dict['KLE-Emneplan']
+            udgivelses_dato = kle_dict['UdgivelsesDato']
+            kle_dict = kle_dict['Hovedgruppe']
+        else:
+            kle_dict = kle_dict['KLE-Handlingsfacetter']
+            udgivelses_dato = kle_dict['UdgivelsesDato']
+            kle_dict =  kle_dict['HandlingsfacetKategori']
         return (udgivelses_dato, kle_dict)
 
     def create_facet(self, facet_name):
@@ -63,7 +75,7 @@ class KleUploader(object):
         :return: Returns uuid of the new facet
         """
         url = '/klassifikation/facet'
-        template = self.load_json_template('facet_opret.json')
+        template = self.load_json_template('facet_opret.json', {})
         bvn = 'brugervendtnoegle'
         template['attributter']['facetegenskaber'][0][bvn] = facet_name
 
@@ -87,61 +99,72 @@ class KleUploader(object):
         response = requests.post(self.hostname + url, json=template)
         return response.json()['uuid']
 
-    def read_all_hovedgrupper(self, kle_dict):
+    def read_all_hovedgrupper(self, kle_dict, facet='emne'):
         """ Read all Hovedgrupper from KLE
         :param kle_dict: A dictinary containing KLE
+        :param facet: Either 'emne' or 'handlingsfacetter'
         :return: Dict with index as as key and
         (HovedgruppeTitel, HovedgruppeNr) as value
         """
+        name = 'Hovedgruppe' if facet == 'emne' else 'HandlingsfacetKategori'
         hovedgrupper = {}
         for i in range(0, len(kle_dict)):
-            titel = kle_dict[i]['HovedgruppeTitel']
-            hovedgrupper[i] = (titel, kle_dict[i]['HovedgruppeNr'])
+            titel = kle_dict[i][name + 'Titel']
+            hovedgrupper[i] = (titel, kle_dict[i][name + 'Nr'])
         return hovedgrupper
 
-    def read_all_from_hovedgruppe(self, kle_dict, hovedgruppe_index):
+    def read_all_from_hovedgruppe(self, kle_dict, hovedgruppe_index,
+                                  facet='emne'):
         """ Read all relevant fields from a Hovedgruppe - this can
         easily be extended if more info turns out to be relevant
         :param kle_dict: A dictinary containing KLE
         :param hovedgruppe_index: Index for the wanted Hovedgruppe
+        :param facet: Either 'emne' or 'handlingsfacetter'
         :return: Dict with relevant info
         """
+        name = 'Hovedgruppe' if facet == 'emne' else 'HandlingsfacetKategori'
         hovedgruppe = kle_dict[hovedgruppe_index]
         hovedgruppe_info = {}
-        hovedgruppe_info['titel'] = hovedgruppe['HovedgruppeTitel']
-        adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
+        hovedgruppe_info['titel'] = hovedgruppe[name + 'Titel']
+        adm_info = hovedgruppe[name + 'AdministrativInfo']
         hovedgruppe_info['oprettetdato'] = adm_info['OprettetDato']
-        hovedgruppe_info['nummer'] = hovedgruppe['HovedgruppeNr']
+        hovedgruppe_info['nummer'] = hovedgruppe[name + 'Nr']
         # TODO: Der findes også info om rettet-dato, er dette relevant?
         return hovedgruppe_info
 
-    def read_all_grupper(self, kle_dict, hovedgruppe):
+    def read_all_grupper(self, kle_dict, hovedgruppe, facet='emne'):
         """ Read all Grupper from a KLE Hovedgruppe
         :param kle_dict: A dictinary containing KLE
         :param hovedgruppe: A KLE Hovedgruppe index to be retrieved
+        :param facet: Either 'emne' or 'handlingsfacetter'
         :return: Dict with index as key and (GruppeTitel, GruppeNr) as value
         """
+        name = 'Gruppe' if facet == 'emne' else 'Handlingsfacet'
         grupper = {}
-        gruppe_liste = kle_dict[hovedgruppe]['Gruppe']
+        gruppe_liste = kle_dict[hovedgruppe][name]
         for i in range(0, len(gruppe_liste)):
-            grupper[i] = (gruppe_liste[i]['GruppeTitel'],
-                          gruppe_liste[i]['GruppeNr'][3:])
+            grupper[i] = (gruppe_liste[i][name + 'Titel'],
+                          gruppe_liste[i][name + 'Nr'][3:])
         return grupper
 
-    def read_all_from_gruppe(self, kle_dict, hovedgruppe, gruppe):
+    def read_all_from_gruppe(self, kle_dict, hovedgruppe, gruppe,
+                             facet='emne'):
         """ Read all relevant fields from a Gruppe - this can
         easily be extended if more info turns out to be relevant
         :param kle_dict: A dictinary containing KLE
         :param hovedgruppe: Index for the wanted Hovedgruppe
         :param gruppe: Index for the wanted Gruppe
+        :param facet: Either 'emne' or 'handlingsfacetter'
         :return: Dict with relevant info
         """
-        gruppe = kle_dict[hovedgruppe]['Gruppe'][gruppe]
+        name = 'Gruppe' if facet == 'emne' else 'Handlingsfacet'
+        slice_val = 3 if facet == 'emne' else 1
+        gruppe = kle_dict[hovedgruppe][name][gruppe]
         gruppe_info = {}
-        gruppe_info['titel'] = gruppe['GruppeTitel']
+        gruppe_info['titel'] = gruppe[name + 'Titel']
         # adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
         # hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
-        gruppe_info['nummer'] = gruppe['GruppeNr'][3:]
+        gruppe_info['nummer'] = gruppe[name + 'Nr'][slice_val:]
         return gruppe_info
 
     def read_all_emner(self, kle_dict, hovedgruppe, gruppe):
@@ -188,12 +211,10 @@ def main():
     lora_hostname = settings.host
     kle = KleUploader(lora_hostname)
 
-    kle_content = kle.read_kle_dict()
+    kle_content = kle.read_kle_dict(facet='emne')
     print('Document date: ' + kle_content[0])
     kle_dict = kle_content[1]
 
-    # print(len(kle_dict[0]['Gruppe'][13]['Emne']))
-    
     # emne_uuid = kle.create_facet('Emne')
     emne_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
 
@@ -216,6 +237,28 @@ def main():
                 print(hoved_info['nummer'] + '.' + gruppe_info['nummer'] +
                       '.' + emne_info['nummer'] + ': ' + emne_info['titel'])
                 # Create emne
+
+
+    kle_content = kle.read_kle_dict(facet='handling')
+    print('Document date: ' + kle_content[0])
+    kle_dict = kle_content[1]
+
+    # funktion_uuid = kle.create_facet('Funktion')
+    funktion_uuid = '7c971657-438b-4cf2-a157-65a2cd7ccdd4'
+    hovedgrupper = (kle.read_all_hovedgrupper(kle_dict, facet='handling'))
+    for hoved_index in hovedgrupper:
+        hoved_info = kle.read_all_from_hovedgruppe(kle_dict, hoved_index,
+                                                   facet='handling')
+        print(hoved_info['nummer'] + ': ' + hoved_info['titel'])
+        # Create hovedgruppe
+        grupper = kle.read_all_grupper(kle_dict, hoved_index, facet='handling')
+        for gruppe_index in grupper:
+            gruppe_info = kle.read_all_from_gruppe(kle_dict, hoved_index,
+                                                   gruppe_index,
+                                                   facet='handling')
+            print(hoved_info['nummer'] + gruppe_info['nummer'] + ': ' +
+                  gruppe_info['titel'])
+            # Create gruppe
 
 
 if __name__ == '__main__':
