@@ -87,7 +87,7 @@ class KleUploader(object):
         """
         Creates a new Klasse based on KLE
         :param facet: uuid for the korresponding facet
-        :param name: Name for the Klasse
+        :param klasse_info: Dict as returned by read_all_*
         :return: Returns uuid of the new klasse
         """
         url = '/klassifikation/klasse'
@@ -162,8 +162,8 @@ class KleUploader(object):
         gruppe = kle_dict[hovedgruppe][name][gruppe]
         gruppe_info = {}
         gruppe_info['titel'] = gruppe[name + 'Titel']
-        # adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
-        # hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
+        adm_info = gruppe[name + 'AdministrativInfo']
+        gruppe_info['oprettetdato'] =  adm_info['OprettetDato']
         gruppe_info['nummer'] = gruppe[name + 'Nr'][slice_val:]
         return gruppe_info
 
@@ -201,8 +201,8 @@ class KleUploader(object):
             emne = kle_dict[hovedgruppe]['Gruppe'][gruppe]['Emne']
         emne_info = {}
         emne_info['titel'] = emne['EmneTitel']
-        # adm_info = hovedgruppe['HovedgruppeAdministrativInfo']
-        # hovedgruppe_info['oprettetdato'] =  adm_info['OprettetDato']
+        adm_info = emne['EmneAdministrativInfo']
+        emne_info['oprettetdato'] =  adm_info['OprettetDato']
         emne_info['nummer'] = emne['EmneNr'][6:]
         return emne_info
 
@@ -215,14 +215,16 @@ def main():
     print('Document date: ' + kle_content[0])
     kle_dict = kle_content[1]
 
-    # emne_uuid = kle.create_facet('Emne')
-    emne_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
+    emne_facet_uuid = kle.create_facet('Emne')
+    #emne_facet_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
 
     hovedgrupper = (kle.read_all_hovedgrupper(kle_dict))
     for hoved_index in hovedgrupper:
         hoved_info = kle.read_all_from_hovedgruppe(kle_dict, hoved_index)
         print(hoved_info['nummer'] + ': ' + hoved_info['titel'])
         # Create hovedgruppe
+        hoved_uuid = kle.create_kle_klasse(emne_facet_uuid, hoved_info)
+
         grupper = kle.read_all_grupper(kle_dict, hoved_index)
         for gruppe_index in grupper:
             gruppe_info = kle.read_all_from_gruppe(kle_dict, hoved_index,
@@ -230,6 +232,8 @@ def main():
             print(hoved_info['nummer'] + '.' + gruppe_info['nummer'] + ': ' +
                   gruppe_info['titel'])
             # Create gruppe
+            gruppe_uuid = kle.create_kle_klasse(emne_facet_uuid, gruppe_info,
+                                                hoved_uuid)
             emner = kle.read_all_emner(kle_dict, hoved_index, gruppe_index)
             for emne_index in emner:
                 emne_info = kle.read_all_from_emne(kle_dict, hoved_index,
@@ -237,20 +241,22 @@ def main():
                 print(hoved_info['nummer'] + '.' + gruppe_info['nummer'] +
                       '.' + emne_info['nummer'] + ': ' + emne_info['titel'])
                 # Create emne
-
+                emne_uuid = kle.create_kle_klasse(emne_facet_uuid, emne_info,
+                                                  gruppe_uuid)
 
     kle_content = kle.read_kle_dict(facet='handling')
     print('Document date: ' + kle_content[0])
     kle_dict = kle_content[1]
 
-    # funktion_uuid = kle.create_facet('Funktion')
-    funktion_uuid = '7c971657-438b-4cf2-a157-65a2cd7ccdd4'
+    funktion_uuid = kle.create_facet('Funktion')
+    # funktion_uuid = '7c971657-438b-4cf2-a157-65a2cd7ccdd4'
     hovedgrupper = (kle.read_all_hovedgrupper(kle_dict, facet='handling'))
     for hoved_index in hovedgrupper:
         hoved_info = kle.read_all_from_hovedgruppe(kle_dict, hoved_index,
                                                    facet='handling')
         print(hoved_info['nummer'] + ': ' + hoved_info['titel'])
-        # Create hovedgruppe
+        hoved_uuid = kle.create_kle_klasse(emne_facet_uuid, hoved_info)
+
         grupper = kle.read_all_grupper(kle_dict, hoved_index, facet='handling')
         for gruppe_index in grupper:
             gruppe_info = kle.read_all_from_gruppe(kle_dict, hoved_index,
@@ -259,6 +265,8 @@ def main():
             print(hoved_info['nummer'] + gruppe_info['nummer'] + ': ' +
                   gruppe_info['titel'])
             # Create gruppe
+            gruppe_uuid = kle.create_kle_klasse(emne_facet_uuid, gruppe_info,
+                                                hoved_uuid)
 
 
 if __name__ == '__main__':
