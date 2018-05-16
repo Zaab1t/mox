@@ -41,8 +41,8 @@ class LoraHelper(object):
         complete_urls = []
         i = 0
         param = ''
-        for _ in range(0, len(uuids)):
-            param = param + uuids[i] + '&uuid='
+        for index in range(0, len(uuids)):
+            param = param + uuids[index] + '&uuid='
             if i > 94:  # Max length of a request to LoRa
                 complete_urls.append(klasse_url + param[:-6])
                 i = 0
@@ -67,7 +67,7 @@ class LoraHelper(object):
     def basic_klasse_info(self, klasser):
         """ Read human-readable data from Klasse
         :param klasse: List of Klasse object as return by read_klasse, or uuids
-        :return: Information about the Klasse ie. Brugervendtnoegle
+        :return: Information about the Klasse e. Brugervendtnoegle
         """
         #  If first element is a uuid, all elements are uuids...
         if not isinstance(klasser[0], dict):
@@ -76,7 +76,15 @@ class LoraHelper(object):
         info = []
         for klasse in klasser:
             egenskaber = klasse['attributter']['klasseegenskaber'][0]
-            info.append(egenskaber['brugervendtnoegle'])
+            relationer = klasse['relationer']
+            try:
+                overklasse = relationer['overordnetklasse'][0]['uuid']
+            except KeyError:
+                overklasse = None
+            info.append({'bvn': egenskaber['brugervendtnoegle'],
+                         'titel': egenskaber['titel'],
+                         'overklasse': overklasse,
+                         'uuid': klasse['uuid']})
         return info
 
     def read_facet_list(self):
@@ -92,27 +100,49 @@ class LoraHelper(object):
         for facet in facet_list:
             self.delete_facet(facet)
 
-    def delte_all_klasser(self):
-        """ Deletes all Facetter  """
+    def delete_all_klasser(self):
+        """ Deletes all klasser  """
+        klasse_list = self.read_klasse_list()
+        deleted_klasser = []
+        for klasse in klasse_list:
+            deleted_klasser.append(self.delete_klasse(klasse))
+        return deleted_klasser        
 
-    def delete_facet(self, uuid):
-        url = '/klassifikation/facet/'
+    def _delete_type(self, uuid, url):
         response = requests.delete(self.hostname + url + uuid)
+        print(response.text)
         try:
             return_val = response.json()['uuid'] == uuid
         except KeyError:
             return_val = False
         return return_val
 
+    def delete_facet(self, uuid):
+        url = '/klassifikation/facet/'
+        return self._delete_type(uuid, url)
+
+    def delete_klasse(self, uuid):
+        url = '/klassifikation/klasse/'
+        return self._delete_type(uuid, url)
+
 
 def main():
     helper = LoraHelper(settings.host)
-    # print(helper.delete_facet('81b80fa7-b71b-4d33-b528-cae03820875'))
-    # print(helper.read_facet_list())
-    # print(helper.delete_all_facetter())
-    klasse_list = helper.read_klasse_list()
-    all_klasser = helper.read_klasser(klasse_list)
-    print(helper.basic_klasse_info(all_klasser))
+
+    #print(helper.read_facet_list())
+    raw_list = helper.read_klasse_list()
+    
+    klasse_list = helper.basic_klasse_info(raw_list)
+    print(len(klasse_list))
+
+    seen = []
+    for i in range(0, len(klasse_list)):
+        if klasse_list[i]['uuid'] == '78b343ab-6aeb-4797-9101-65c56f76d833':
+            print(klasse_list[i])
+
+    for i in range(0, len(raw_list)):
+        if raw_list[i] == '78b343ab-6aeb-4797-9101-65c56f76d833':
+            print(raw_list[i])
 
 if __name__ == '__main__':
     main()
