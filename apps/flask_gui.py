@@ -3,6 +3,8 @@ from lora_helpers import LoraHelper
 import settings
 
 app = Flask(__name__)
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 lora_hostname = settings.host
 helper = LoraHelper(settings.host)
@@ -30,18 +32,14 @@ for klasse in klasse_info:
 app.emner = sorted(emner, key=lambda tup: tup[1])
 
 
-def list_klasse():
-    return str(hovedgrupper)
-
-
-@app.route('/hello/', methods=['GET', 'POST'])
+@app.route('/klassifikation/', methods=['GET', 'POST'])
 def hello():
     selected_hovedgruppe = ''
     selected_gruppe = ''
     selected_emne = ''
 
     if request.method == 'POST':
-        selected_hovedgruppe = request.form['hovedgruppe']
+        selected_hovedgruppe = request.form['hovedgrupper']
 
         relevant_grupper = []
         relevant_emner = []
@@ -50,7 +48,7 @@ def hello():
                 relevant_grupper.append(gruppe)
 
         try:
-            selected_gruppe = request.form['gruppe']
+            selected_gruppe = request.form['grupper']
             print(selected_gruppe)
             for emne in app.emner:
                 if emne[3] == selected_gruppe:
@@ -59,14 +57,14 @@ def hello():
             pass
 
         try:
-            selected_emne = request.form['emne']
+            selected_emne = request.form['emner']
         except KeyError:
             pass
     else:
-        relevant_grupper = app.grupper
-        relevant_emner = app.emner
+        relevant_grupper = []
+        relevant_emner = []
 
-    return render_template('hello.html',
+    return render_template('klassifikation.html',
                            hovedgrupper=app.hovedgrupper,
                            grupper=relevant_grupper,
                            emner=relevant_emner,

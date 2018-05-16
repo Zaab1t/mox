@@ -1,0 +1,28 @@
+{% from "macros.html" import vis_kategori with context %}
+<!doctype html>
+<title>Hello from Flask</title>
+<form method="post">
+
+  <h1>Overblik over alle klassifikationer i LoRa</h1>
+
+  <p>For at se indhold af hovedgruppe: Vælg hovedgruppe, tryk ok</p>
+
+  <p>For at se indhold af gruppe: Vælg hovedgruppe, tryk ok, vælg gruppe, tryk ok</p>
+
+
+{{ vis_kategori(hovedgrupper, selected_hovedgruppe, 'Hovedgrupper') }}
+
+{% if grupper|length > 0 %}
+{{ vis_kategori(grupper, selected_gruppe, 'Grupper') }}
+{% endif %}
+
+{% if emner|length > 0 %}
+{{ vis_kategori(emner, selected_emne, 'Emner') }}
+{% endif %}
+
+  </p>
+
+ <p>
+   <input type="submit" value="ok">
+</p>
+</form>
