@@ -106,7 +106,7 @@ class LoraHelper(object):
         deleted_klasser = []
         for klasse in klasse_list:
             deleted_klasser.append(self.delete_klasse(klasse))
-        return deleted_klasser        
+        return deleted_klasser
 
     def _delete_type(self, uuid, url):
         response = requests.delete(self.hostname + url + uuid)
@@ -128,21 +128,11 @@ class LoraHelper(object):
 
 def main():
     helper = LoraHelper(settings.host)
-
-    #print(helper.read_facet_list())
+    print(helper.read_facet_list())
     raw_list = helper.read_klasse_list()
-    
     klasse_list = helper.basic_klasse_info(raw_list)
     print(len(klasse_list))
 
-    seen = []
-    for i in range(0, len(klasse_list)):
-        if klasse_list[i]['uuid'] == '78b343ab-6aeb-4797-9101-65c56f76d833':
-            print(klasse_list[i])
-
-    for i in range(0, len(raw_list)):
-        if raw_list[i] == '78b343ab-6aeb-4797-9101-65c56f76d833':
-            print(raw_list[i])
 
 if __name__ == '__main__':
     main()

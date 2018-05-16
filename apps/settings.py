@@ -1,1 +1,1 @@
-host = 'http://mox-steffen:8080' #LoRa hostname
+host = 'http://mox-steffen:8080'  # LoRa hostname

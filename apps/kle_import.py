@@ -140,11 +140,13 @@ class KleUploader(object):
         :return: Dict with index as key and (GruppeTitel, GruppeNr) as value
         """
         name = 'Gruppe' if facet == 'emne' else 'Handlingsfacet'
+        # slice_val = 3 if facet == 'emne' else 1
         grupper = {}
         gruppe_liste = kle_dict[hovedgruppe][name]
         for i in range(0, len(gruppe_liste)):
             grupper[i] = (gruppe_liste[i][name + 'Titel'],
-                          gruppe_liste[i][name + 'Nr'][3:])
+                          # gruppe_liste[i][name + 'Nr'][slice_val:])
+                          gruppe_liste[i][name + 'Nr'])
         return grupper
 
     def read_all_from_gruppe(self, kle_dict, hovedgruppe, gruppe,
@@ -158,13 +160,14 @@ class KleUploader(object):
         :return: Dict with relevant info
         """
         name = 'Gruppe' if facet == 'emne' else 'Handlingsfacet'
-        slice_val = 3 if facet == 'emne' else 1
         gruppe = kle_dict[hovedgruppe][name][gruppe]
         gruppe_info = {}
         gruppe_info['titel'] = gruppe[name + 'Titel']
         adm_info = gruppe[name + 'AdministrativInfo']
         gruppe_info['oprettetdato'] = adm_info['OprettetDato']
-        gruppe_info['nummer'] = gruppe[name + 'Nr'][slice_val:]
+        # slice_val = 3 if facet == 'emne' else 1
+        # gruppe_info['nummer'] = gruppe[name + 'Nr'][slice_val:]
+        gruppe_info['nummer'] = gruppe[name + 'Nr']
         return gruppe_info
 
     def read_all_emner(self, kle_dict, hovedgruppe, gruppe):
@@ -182,8 +185,8 @@ class KleUploader(object):
                             emne_liste[i]['EmneNr'][6:])
             except KeyError:  # If only one element, there is no list
                 emner[0] = (emne_liste['EmneTitel'],
-                            emne_liste['EmneNr'][6:])
-
+                            # emne_liste['EmneNr'][6:])
+                            emne_liste['EmneNr'])
         return emner
 
     def read_all_from_emne(self, kle_dict, hovedgruppe, gruppe, emne):
@@ -203,7 +206,8 @@ class KleUploader(object):
         emne_info['titel'] = emne['EmneTitel']
         adm_info = emne['EmneAdministrativInfo']
         emne_info['oprettetdato'] = adm_info['OprettetDato']
-        emne_info['nummer'] = emne['EmneNr'][6:]
+        # emne_info['nummer'] = emne['EmneNr'][6:]
+        emne_info['nummer'] = emne['EmneNr']
         return emne_info
 
 
@@ -216,7 +220,6 @@ def main():
     kle_dict = kle_content[1]
 
     emne_facet_uuid = kle.create_facet('Emne')
-    # emne_facet_uuid = '46c5ce8f-f9a9-4f1b-b0cc-93076168771d'
 
     hovedgrupper = (kle.read_all_hovedgrupper(kle_dict))
     for hoved_index in hovedgrupper:
@@ -248,7 +251,6 @@ def main():
     kle_dict = kle_content[1]
 
     funktion_facet_uuid = kle.create_facet('Funktion')
-    # funktion_uuid = '7c971657-438b-4cf2-a157-65a2cd7ccdd4'
     hovedgrupper = (kle.read_all_hovedgrupper(kle_dict, facet='handling'))
     for hoved_index in hovedgrupper:
         hoved_info = kle.read_all_from_hovedgruppe(kle_dict, hoved_index,

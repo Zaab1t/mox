@@ -29,17 +29,10 @@ for klasse in klasse_info:
                       klasse['titel'], klasse['overklasse']))
 app.emner = sorted(emner, key=lambda tup: tup[1])
 
-print(len(hovedgrupper))
-print(len(grupper))
-print(len(emner))
 
-@app.route("/klasse/<uuid:uuid>")
-def list_klasse_uuid(uuid):
-    return 'Hello Klasse %s' % uuid
-
-@app.route("/klasse/")
 def list_klasse():
     return str(hovedgrupper)
+
 
 @app.route('/hello/', methods=['GET', 'POST'])
 def hello():
@@ -70,7 +63,7 @@ def hello():
         except KeyError:
             pass
     else:
-        relevant_grupper = app.grupper    
+        relevant_grupper = app.grupper
         relevant_emner = app.emner
 
     return render_template('hello.html',

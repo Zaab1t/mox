@@ -5,6 +5,7 @@ import requests
 from lora_helpers import LoraHelper
 import settings
 
+
 class KlasseMapper(LoraHelper):
     """ Small prototype of an application that will allow for mapping
     between OIO classes (Klasse) """
@@ -16,7 +17,6 @@ class KlasseMapper(LoraHelper):
         """
         self.hostname = hostname
         self.url = '/klassifikation/klasse/'
-
 
     def read_mappings(self, klasse):
         """ Read all mappings from a klasse
@@ -83,10 +83,10 @@ def main():
 
     mapper = KlasseMapper(lora_hostname)
 
-    uuid_1 = 'ee8dd627-9ff1-47c2-b900-aa3c214a31ee'
-    uuid_2 = 'a88aa93b-8edc-46ab-bad7-6535f9b765e5'
+    # uuid_1 = 'ee8dd627-9ff1-47c2-b900-aa3c214a31ee'
+    # uuid_2 = 'a88aa93b-8edc-46ab-bad7-6535f9b765e5'
 
-    #print(mapper.create_mapping(uuid_1, uuid_2))
+    # print(mapper.create_mapping(uuid_1, uuid_2))
 
     klasse_list = mapper.read_klasse_list()
     for uuid in klasse_list:
