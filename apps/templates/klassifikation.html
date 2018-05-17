@@ -1,14 +1,13 @@
 {% from "macros.html" import vis_kategori with context %}
 <!doctype html>
-<title>Hello from Flask</title>
-<form method="post">
+<title>GUI Klassifikation - Redmine 22401</title>
 
+<form method="post">
   <h1>Overblik over alle klassifikationer i LoRa</h1>
 
   <p>For at se indhold af hovedgruppe: Vælg hovedgruppe, tryk ok</p>
 
   <p>For at se indhold af gruppe: Vælg hovedgruppe, tryk ok, vælg gruppe, tryk ok</p>
-
 
 {{ vis_kategori(hovedgrupper, selected_hovedgruppe, 'Hovedgrupper') }}
 
@@ -20,9 +19,14 @@
 {{ vis_kategori(emner, selected_emne, 'Emner') }}
 {% endif %}
 
-  </p>
-
  <p>
-   <input type="submit" value="ok">
-</p>
+   <input type="submit" name="ok" value="ok">
+   <input type="submit" name="slet" value="slet">
+ </p>
+
+<p>
+<b>Nøgle</b>: <input type="input" name="ny_noegle" size="8">
+<b>Titel</b>: <input type="input" name="ny_titel" size="30">
+<input type="submit" name="opret" value="opret">
+</p> 
 </form>

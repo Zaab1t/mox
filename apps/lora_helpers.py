@@ -84,6 +84,7 @@ class LoraHelper(object):
             info.append({'bvn': egenskaber['brugervendtnoegle'],
                          'titel': egenskaber['titel'],
                          'overklasse': overklasse,
+                         'facet': relationer['facet'][0]['uuid'],
                          'uuid': klasse['uuid']})
         return info
 
@@ -110,7 +111,6 @@ class LoraHelper(object):
 
     def _delete_type(self, uuid, url):
         response = requests.delete(self.hostname + url + uuid)
-        print(response.text)
         try:
             return_val = response.json()['uuid'] == uuid
         except KeyError:
@@ -118,20 +118,86 @@ class LoraHelper(object):
         return return_val
 
     def delete_facet(self, uuid):
+        """ Delete a specific Facet in LoRa
+        :param uuid: The Facet to be deleted
+        :return: True if deletion succeeded
+        """
         url = '/klassifikation/facet/'
         return self._delete_type(uuid, url)
 
     def delete_klasse(self, uuid):
+        """ Delete a specific Klasse in LoRa
+        :param uuid: The Klasse to be deleted
+        :return: True if deletion succeeded
+        """
         url = '/klassifikation/klasse/'
         return self._delete_type(uuid, url)
+
+    def read_facet_members(self, facet_uuid, klasse_info_list=None):
+        """ Read all Klasser that is member of a spcecifik Facet
+        :param facet_uuid: The Facet to get the members from
+        :return: List of all members
+        """
+        member_list = []
+        if klasse_info_list is None:
+            klasse_info_list = self.basic_klasse_info(self.read_klasse_list())
+        for klasse in klasse_info_list:
+            if klasse['facet'] == facet_uuid:
+                member_list.append(klasse['uuid'])
+        return member_list
+
+    def read_klasse_sub_members(self, uuid, klasse_info_list=None):
+        """ Read a list of the sub_members, ie. Klasser that have Klasse
+        as overklasse
+        :param uuid: The klasse to read sub-members from
+        :param klasse_info_list: If klasse_list already exists, it can be
+        provided for better performance
+        :return: A list of all sub-members to the Klasse
+        """
+        klasse_list = []
+        if klasse_info_list is None:
+            klasse_info_list = self.basic_klasse_info(self.read_klasse_list())
+        for klasse in klasse_info_list:
+            if klasse['overklasse'] == uuid:
+                klasse_list.append(klasse['uuid'])
+        return klasse_list
+
+    def read_klasse_full_tree(self, uuid, klasse_info_list=None,
+                              klasse_list=[]):
+        """ Read all sub-members, including deeper nested levels
+        :param uuid: The klasse to read sub-tree from
+        :param klasse_info_list: If klasse_list already exists, it can be
+        provided for better performance
+        :return: A list of all sub-members to the Klasse
+        """
+        if klasse_info_list is None:
+            klasse_info_list = self.basic_klasse_info(self.read_klasse_list())
+
+        sub_list = self.read_klasse_sub_members(uuid, klasse_info_list)
+        if sub_list:  # Resursively find all sub-levels
+            for klasse in sub_list:
+                sub_list = self.read_klasse_full_tree(klasse,
+                                                      klasse_info_list,
+                                                      klasse_list=klasse_list)
+                klasse_list.append(klasse)
+        return klasse_list
+
+    def delete_klasse_tree(self, uuid, klasse_info_list=None):
+        """ Deletes all klasser and sub-klasser of the klasse
+        :param uuid: The klasse to delete, including all children
+        :param klasse_info_list: If klasse_list already exists, it can be
+        provided for better performance
+        :return: A list of all sub-members to the Klasse
+        """
+        full_sub_list = self.read_klasse_full_tree(uuid, klasse_info_list)
+        for klasse in full_sub_list:
+            self.delete_klasse(klasse)
+        self.delete_klasse(uuid)
 
 
 def main():
     helper = LoraHelper(settings.host)
-    print(helper.read_facet_list())
-    raw_list = helper.read_klasse_list()
-    klasse_list = helper.basic_klasse_info(raw_list)
-    print(len(klasse_list))
+    print(len(helper.read_klasse_list()))
 
 
 if __name__ == '__main__':
