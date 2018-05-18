@@ -16,7 +16,18 @@ import settings
 
 class KleUploader(object):
     """ Script to import KLE into LoRa to allow easy access to relevant
-    test data """
+    test data
+
+    In short, KLE consists of four nested levels, one Facet level and up to
+    three Klasse levels. The amount of code-reuse between the levels is fairly
+    small since the details in the XML files in the three levels are
+    somewhat different. The task of actually retriveing the information
+    about each class is put in seperate functions, read_all_from_, in
+    order to keep flexibility if it becomes relevant to extend the amount
+    of imported information for some of the levels. Possibly the current
+    genereic json-template will be too simple in this case, it might be
+    necessary with seperate templates for the various levels.
+    """
 
     def __init__(self, hostname):
         """
