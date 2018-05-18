@@ -97,7 +97,7 @@ class LoraHelper(object):
                                 uuid)
         facet = response.json()[uuid][0]['registreringer'][0]
         return facet
-    
+
     def read_facet_list(self):
         """ Get a list of all avaiable Facetter
         :return: List of uuid's of all Facetter
@@ -216,10 +216,8 @@ class LoraHelper(object):
 
 def main():
     helper = LoraHelper(settings.host)
-    #klasse_info_list = helper.basic_klasse_info(helper.read_klasse_list())
     print(len(helper.read_klasse_list()))
-    #facet_uuid = '2923a3fd-f8be-4bea-bdae-d73a1cd1e17d'
-    #helper.delete_facet_tree(facet_uuid, klasse_info_list)
+
 
 if __name__ == '__main__':
     main()

@@ -29,7 +29,7 @@ class KlasseMapper(LoraHelper):
         """
         actual_mappings = []
         if isinstance(klasse, str):
-            klasse = self.read_klasse(klasse)
+            klasse = self.read_klasser([klasse])[0]
         try:
             mapping_list = klasse['relationer']['mapninger']
         except KeyError:
@@ -53,10 +53,12 @@ class KlasseMapper(LoraHelper):
                                      'objekttype': 'Klasse',
                                      'virkning': virkning}]}}
 
-        klasse = self.read_klasse(uuid_from)
-        print(self.basic_klasse_info(klasse))
-        for mapping in klasse['relationer']['mapninger']:
-            template['relationer']['mapninger'].append(mapping)
+        klasse = self.read_klasser([uuid_from])[0]
+        try:
+            for mapping in klasse['relationer']['mapninger']:
+                template['relationer']['mapninger'].append(mapping)
+        except KeyError:
+            pass
         response = requests.patch(self.hostname + self.url + uuid_from,
                                   json=template)
         return response.json()['uuid'] == uuid_from
@@ -87,11 +89,11 @@ def main():
 
     mapper = KlasseMapper(lora_hostname)
 
-    # uuid_1 = 'ee8dd627-9ff1-47c2-b900-aa3c214a31ee'
-    # uuid_2 = 'a88aa93b-8edc-46ab-bad7-6535f9b765e5'
+    uuid_1 = 'edc8de71-eb22-467c-91ac-7d4c2596227b'
+    uuid_2 = '9e9bbae9-af9f-41cd-ada7-e38ca2a092e5'
+    print(mapper.create_mapping(uuid_1, uuid_2))
 
-    # print(mapper.create_mapping(uuid_1, uuid_2))
-
+    """
     klasse_list = mapper.read_klasse_list()
     for uuid in klasse_list:
         mapping = mapper.read_mappings(uuid)
@@ -99,6 +101,7 @@ def main():
             print(uuid)
             print(mapper.basic_klasse_info(uuid))
             print('-----------')
+    """
 
 
 if __name__ == '__main__':

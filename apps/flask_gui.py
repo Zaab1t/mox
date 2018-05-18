@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from lora_helpers import LoraHelper
+from mapper import KlasseMapper
 import settings
 
 app = Flask(__name__)
@@ -9,6 +10,7 @@ app.jinja_env.lstrip_blocks = True
 
 def update_lora():
     app.helper = LoraHelper(settings.host)
+    app.mapper = KlasseMapper(settings.host)
     klasse_list = app.helper.read_klasse_list()
     klasse_info = app.helper.basic_klasse_info(klasse_list)
 
@@ -50,6 +52,25 @@ def update_lora():
                           klasse['titel'],
                           klasse['overklasse']))
     app.emner = sorted(emner, key=lambda tup: tup[1])
+
+
+@app.route('/mapping/', methods=['GET', 'POST'])
+def mapping():
+    uuid_1 = ''
+    uuid_2 = ''
+    mapping_return = ''
+    if request.method == 'POST':
+        uuid_1 = request.form['uuid_1']
+        uuid_2 = request.form['uuid_2']
+        map_result = app.mapper.create_mapping(uuid_1, uuid_2)
+        if map_result[0]:
+            mapping_return = 'Success'
+        else:
+            mapping_return = map_result[1]
+    return render_template('mapping.html',
+                           uuid_1=uuid_1,
+                           uuid_2=uuid_2,
+                           mapping_return=mapping_return)
 
 
 @app.route('/klassifikation/', methods=['GET', 'POST'])
@@ -149,7 +170,6 @@ def hello():
             pass
 
     else:  # Not POST
-        update_lora()
         relevant_hovedgrupper = []
         relevant_grupper = []
         relevant_emner = []
