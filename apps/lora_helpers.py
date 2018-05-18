@@ -50,7 +50,6 @@ class LoraHelper(object):
             else:
                 i += 1
         complete_urls.append(klasse_url + param[:-6])
-
         unsent_request = (grequests.get(url) for url in complete_urls)
         results = grequests.map(unsent_request, size=5)
         klasse_list = []
@@ -88,6 +87,17 @@ class LoraHelper(object):
                          'uuid': klasse['uuid']})
         return info
 
+    def read_facet(self, uuid):
+        """
+        Read a list of Facet from LoRa
+        :param uuid:  uuid for the facet
+        :return: Returns a dicts with the facet
+        """
+        response = requests.get(self.hostname + '/klassifikation/facet/' +
+                                uuid)
+        facet = response.json()[uuid][0]['registreringer'][0]
+        return facet
+    
     def read_facet_list(self):
         """ Get a list of all avaiable Facetter
         :return: List of uuid's of all Facetter
@@ -199,6 +209,8 @@ def main():
     helper = LoraHelper(settings.host)
     print(len(helper.read_klasse_list()))
 
+    facet_list = helper.read_facet_list()
+    print(facet_list)
 
 if __name__ == '__main__':
     main()

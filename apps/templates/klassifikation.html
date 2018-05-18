@@ -4,19 +4,24 @@
 
 <form method="post">
   <h1>Overblik over alle klassifikationer i LoRa</h1>
-
+  <p>For at se indhold af facet: Vælg facet, tryk ok</p>
+  
   <p>For at se indhold af hovedgruppe: Vælg hovedgruppe, tryk ok</p>
 
-  <p>For at se indhold af gruppe: Vælg hovedgruppe, tryk ok, vælg gruppe, tryk ok</p>
+  <p>For at se indhold af gruppe: Vælg gruppe, tryk ok</p>
 
-{{ vis_kategori(hovedgrupper, selected_hovedgruppe, 'Hovedgrupper') }}
+{{ vis_kategori(facetter, selected_facet, 'Facetter', 2) }}
+
+{% if hovedgrupper|length > 0 %}
+{{ vis_kategori(hovedgrupper, selected_hovedgruppe, 'Hovedgrupper', 10) }}
+{% endif %}
 
 {% if grupper|length > 0 %}
-{{ vis_kategori(grupper, selected_gruppe, 'Grupper') }}
+{{ vis_kategori(grupper, selected_gruppe, 'Grupper', 5) }}
 {% endif %}
 
 {% if emner|length > 0 %}
-{{ vis_kategori(emner, selected_emne, 'Emner') }}
+{{ vis_kategori(emner, selected_emne, 'Emner', 5) }}
 {% endif %}
 
  <p>

@@ -1,8 +1,8 @@
-{% macro vis_kategori(klasser, selected_uuid, name) %}
+{% macro vis_kategori(klasser, selected_uuid, name, size) %}
 <p>
   <h3>{{ name }}</h3>
   Valgt uuid: {{ selected_uuid }}<br>
-<select name="{{name|lower}}" size=10>
+<select name="{{name|lower}}" size="{{ size  }}">
   {% for klasse in klasser %}
   {% set selected = '' %}
      {%if  selected_uuid == klasse[0] %} {% set selected = 'selected' %} {% endif %} 
