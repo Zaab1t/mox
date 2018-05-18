@@ -8,7 +8,11 @@ import settings
 
 class KlasseMapper(LoraHelper):
     """ Small prototype of an application that will allow for mapping
-    between OIO classes (Klasse) """
+    between OIO classes (Klasse)
+
+    Todo: Implement the possibility to remove mappings. Possibly this can be
+    done with a small modification of create mapping, by simply not including
+    the removed mapping in the iteration"""
 
     def __init__(self, hostname):
         """
