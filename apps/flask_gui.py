@@ -125,6 +125,14 @@ def hello():
                 selected_hovedgruppe = ''
                 selected_gruppe = ''
                 selected_emne = ''
+            elif selected_facet:
+                print('Sletter: ' + str(selected_facet))
+                app.helper.delete_facet_tree(selected_facet)
+                selected_facet = ''
+                selected_hovedgruppe = ''
+                selected_gruppe = ''
+                selected_emne = ''
+
             update_lora()
         except KeyError:
             pass
@@ -141,6 +149,7 @@ def hello():
             pass
 
     else:  # Not POST
+        update_lora()
         relevant_hovedgrupper = []
         relevant_grupper = []
         relevant_emner = []

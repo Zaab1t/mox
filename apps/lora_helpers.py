@@ -180,9 +180,6 @@ class LoraHelper(object):
         provided for better performance
         :return: A list of all sub-members to the Klasse
         """
-        if klasse_info_list is None:
-            klasse_info_list = self.basic_klasse_info(self.read_klasse_list())
-
         sub_list = self.read_klasse_sub_members(uuid, klasse_info_list)
         if sub_list:  # Resursively find all sub-levels
             for klasse in sub_list:
@@ -197,20 +194,32 @@ class LoraHelper(object):
         :param uuid: The klasse to delete, including all children
         :param klasse_info_list: If klasse_list already exists, it can be
         provided for better performance
-        :return: A list of all sub-members to the Klasse
         """
         full_sub_list = self.read_klasse_full_tree(uuid, klasse_info_list)
         for klasse in full_sub_list:
             self.delete_klasse(klasse)
         self.delete_klasse(uuid)
 
+    def delete_facet_tree(self, facet_uuid,  klasse_info_list=None):
+        """ Deletes all members of a Facet
+        :param uuid: The facet to delete, including all members
+        :param klasse_info_list: If klasse_list already exists, it can be
+        provided for better performance
+        """
+        if klasse_info_list is None:
+            klasse_info_list = self.basic_klasse_info(self.read_klasse_list())
+        facet_members = self.read_facet_members(facet_uuid, klasse_info_list)
+        for klasse in facet_members:
+            self.delete_klasse(klasse)
+        self.delete_facet(facet_uuid)
+
 
 def main():
     helper = LoraHelper(settings.host)
+    #klasse_info_list = helper.basic_klasse_info(helper.read_klasse_list())
     print(len(helper.read_klasse_list()))
-
-    facet_list = helper.read_facet_list()
-    print(facet_list)
+    #facet_uuid = '2923a3fd-f8be-4bea-bdae-d73a1cd1e17d'
+    #helper.delete_facet_tree(facet_uuid, klasse_info_list)
 
 if __name__ == '__main__':
     main()
