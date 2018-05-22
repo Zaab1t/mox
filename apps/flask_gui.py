@@ -67,10 +67,24 @@ def mapping():
             mapping_return = 'Success'
         else:
             mapping_return = map_result[1]
+
+    klasse_list = app.mapper.read_klasse_list()
+    klasser = app.mapper.read_klasser(klasse_list)
+    mappings = app.mapper.read_mappings(klasser)
+    klasse_info = app.helper.basic_klasse_info(klasse_list)
+
+    mapping_strings = []
+    for klasse in klasse_info:
+        if mappings[klasse['uuid']]:
+            map_infos = app.helper.basic_klasse_info(mappings[klasse['uuid']])
+            mapping_strings.append(klasse['bvn'] + ' ' + klasse['titel'] +
+                                   ' mapper til: ' + str(map_infos))
+
     return render_template('mapping.html',
                            uuid_1=uuid_1,
                            uuid_2=uuid_2,
-                           mapping_return=mapping_return)
+                           mapping_return=mapping_return,
+                           mapping_strings=mapping_strings)
 
 
 @app.route('/klassifikation/', methods=['GET', 'POST'])

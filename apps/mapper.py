@@ -22,23 +22,23 @@ class KlasseMapper(LoraHelper):
         self.hostname = hostname
         self.url = '/klassifikation/klasse/'
 
-    def read_mappings(self, klasse):
+    def read_mappings(self, klasser):
         """ Read all mappings from a klasse
-        :param klasse: Klasse object as return by read_klasse, or uuid
+        :param klasse: List of Klasse objects as return by read_klasser
         :return: Information about the Klasse ie. Brugervendt nøgle
         """
-        actual_mappings = []
-        if isinstance(klasse, str):
-            klasse = self.read_klasser([klasse])[0]
-        try:
-            mapping_list = klasse['relationer']['mapninger']
-        except KeyError:
-            mapping_list = []
-        for mapping in mapping_list:
+        actual_mappings = {}
+        for klasse in klasser:
+            actual_mappings[klasse['uuid']] = []
             try:
-                actual_mappings.append(mapping['uuid'])
+                mapping_list = klasse['relationer']['mapninger']
             except KeyError:
-                pass
+                mapping_list = []
+            for mapping in mapping_list:
+                try:
+                    actual_mappings[klasse['uuid']].append(mapping['uuid'])
+                except KeyError:
+                    pass
         return actual_mappings
 
     def _create_assymetric_mapping(self, uuid_from, uuid_to):
@@ -72,15 +72,18 @@ class KlasseMapper(LoraHelper):
         """
         error_msg = ''
         success = False
-        map_1 = self.read_mappings(uuid_1)
-        map_2 = self.read_mappings(uuid_2)
+        klasser = self.read_klasser([uuid_1, uuid_2])
+        maps = self.read_mappings(klasser)
+        map_1 = maps[uuid_1]
+        map_2 = maps[uuid_2]
         if uuid_2 in map_1 or uuid_1 in map_2:
             error_msg = 'Mapping already exists'
         else:
+            pass
             success = self._create_assymetric_mapping(uuid_1, uuid_2)
             if success & symmetric:
                 success = self._create_assymetric_mapping(uuid_2, uuid_1)
-            # Todo: What to do if first mapping succeeds but the other fails?
+        # Todo: What to do if first mapping succeeds but the other fails?
         return (success, error_msg)
 
 
@@ -89,20 +92,17 @@ def main():
 
     mapper = KlasseMapper(lora_hostname)
 
-    uuid_1 = 'edc8de71-eb22-467c-91ac-7d4c2596227b'
-    uuid_2 = '9e9bbae9-af9f-41cd-ada7-e38ca2a092e5'
+    uuid_1 = 'd309e72d-a566-457d-8540-2f7b04739b1a'
+    uuid_2 = 'c2604424-2456-4df5-8100-8e01af44f050'
     print(mapper.create_mapping(uuid_1, uuid_2))
 
-    """
     klasse_list = mapper.read_klasse_list()
-    for uuid in klasse_list:
-        mapping = mapper.read_mappings(uuid)
-        if not mapping:
-            print(uuid)
-            print(mapper.basic_klasse_info(uuid))
-            print('-----------')
-    """
+    klasser = mapper.read_klasser(klasse_list)
 
+    mapping = mapper.read_mappings(klasser)
+    for map in mapping:
+        if mapping[map]:
+            print(map, mapping[map])
 
 if __name__ == '__main__':
     main()
