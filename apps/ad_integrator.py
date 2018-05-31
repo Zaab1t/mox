@@ -121,22 +121,53 @@ class AdIntegrator(object):
         """
         path_string = self._format_path_string(super_ou)
         if template is None:
-            ps_script = 'New-ADOrganizationalUnit -Name "{0}"'.format(path_string)
+            ps_script = 'New-ADOrganizationalUnit -Name "{0}" -Path "{1}"'.format(ou_name, path_string)
         else:
             template_path = self._format_path_string(template)
             ps_script = """
             $OuTemplate = Get-ADOrganizationalUnit -Identity "{0}" -Properties seeAlso,managedBy
             New-ADOrganizationalUnit -Name "{1}" -Path "{2}" -Instance $OuTemplate
             """.format(template_path, ou_name, path_string)
+        print(ps_script)
         return self._run_power_shell_script(ps_script)
+
+    def import_mo_structure(self):
+        """ Ultra-ultra primitive implementation of an import of a MO
+        installation into AD. Starts at root and recursively populates AD.
+        """
+        import requests
+
+        def read_all_ou_children(uuid, current_ou_list=[]):
+            response = requests.get(hostname + '/service/ou/' + uuid)
+            ou_info = response.json()
+            response = requests.get(hostname + '/service/ou/' + uuid + '/children')
+            ou_list = response.json()
+            name = ou_info['name']
+            if ou_list:
+                print('Insert ' + name + ' in ' + str(current_ou_list))
+                self.create_ou(name, current_ou_list)
+                current_ou_list = [name] + current_ou_list
+                for ou in ou_list:
+                    read_all_ou_children(ou['uuid'], current_ou_list)
+            else:
+                print('Insert ' + name + ' in ' + str(current_ou_list))
+                self.create_ou(name, current_ou_list)
+
+        hostname = 'http://morademo.atlas.magenta.dk'
+        response = requests.get(hostname + '/service/o/')
+        root_level = response.json()[0]  # We expect only one root level
+        root = requests.get(hostname + '/service/o/' + root_level['uuid'] + '/children')
+        organization_uuid = root.json()[0]['uuid']
+        read_all_ou_children(organization_uuid)
 
 
 def main():
     ad_int = AdIntegrator()
-    print(ad_int.test_connection())
-    print(ad_int.create_user('Lave Høns', ['Spas', 'Udenrigsforhold']))
+    # print(ad_int.test_connection())
+    # print(ad_int.create_user('Lave Høns', ['Spas', 'Udenrigsforhold']))
     # print(ad_int.create_ou('Spas', super_ou=['Udenrigsforhold'],
-    #                        template='Udenrigsforhold'))
+    #                         template='Udenrigsforhold'))
+    print(ad_int.import_mo_structure())
 
 
 if __name__ == '__main__':
