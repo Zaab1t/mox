@@ -31,6 +31,10 @@ class AdIntegrator(object):
         return r.status_code == 0
 
     def _run_power_shell_script(self, ps_script):
+        """ Run a PowerShell script on remote machine
+        :param ps_script: The script to run
+        :return: Tuple indicating success/failure and possible error message
+        """
         r = self.session.run_ps(ps_script)
         if not r.status_code == 0:
             xml = xmltodict.parse(r.std_err[11:])['Objs']
@@ -40,6 +44,10 @@ class AdIntegrator(object):
         return (r.status_code == 0, msg)
 
     def _format_path_string(self, ou):
+        """ Format an OU path into X.500-syntax
+        :param ou: Name of the OU, will be a list if not top-level
+        :return: The X.500 formatted path
+        """
         if isinstance(ou, list):
             path_string = ''
             for unit in ou:
@@ -63,6 +71,16 @@ class AdIntegrator(object):
         :return: A password
         """
         return 'v30ccMNVEIC'.encode('ascii')
+
+    def disable_user(self, name):
+        """ Disable an AD user
+
+        Jira issue OS2mo/MO-25
+        Det er ikke rigtig klart hvordan denne funktion skal bruges, skal
+        der bare kunne disables et brugernavn, eller skal der disables på
+        rigtigt navn med risiko for fejl?
+        """
+        pass
 
     def create_user(self, name, ou):
         """ Create an AD user
