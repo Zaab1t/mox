@@ -1,6 +1,12 @@
 # encoding: utf-8
 """ POC of using pywinrm for AD management """
+import sys
+import xmltodict
 import winrm
+import ad_password
+if sys.version_info[0] < 3:
+    # This is needed to enforce correct handling of unicode
+    exit('You will need python 3')
 
 
 class AdIntegrator(object):
@@ -8,7 +14,8 @@ class AdIntegrator(object):
         self.session = winrm.Session('https://192.168.1.234:5986/wsman',
                                      transport='ntlm',
                                      server_cert_validation='ignore',
-                                     auth=('AD\Administrator', ''))
+                                     auth=('AD\Administrator',
+                                           ad_password.password))
         self.dc = 'dc=ad,dc=magenta-aps,dc=dk'
 
     def test_connection(self, debug=False):
@@ -23,47 +30,95 @@ class AdIntegrator(object):
             print(r.std_err)
         return r.status_code == 0
 
+    def _run_power_shell_script(self, ps_script):
+        r = self.session.run_ps(ps_script)
+        if not r.status_code == 0:
+            xml = xmltodict.parse(r.std_err[11:])['Objs']
+            msg = xml['S'][0]['#text']
+        else:
+            msg = r.std_out
+        return (r.status_code == 0, msg)
+
+    def _format_path_string(self, ou):
+        if isinstance(ou, list):
+            path_string = ''
+            for unit in ou:
+                path_string += 'OU={},'.format(unit)
+            path_string = path_string + self.dc
+        elif ou:
+            path_string = 'OU={},{}'.format(ou, self.dc)
+        else:
+            path_string = self.dc
+        return path_string
+
     def create_password(self, user=None):
         """ Create a password for a user.
         Not implemented, returns hard-coded password
+
+        I henhold til Jira issue OS2mo/MO-14 skal vi kunne oprette et pasword
+        i henhold kommunens retningslinjer. Vi har brug for at se et
+        eksempel på sådan et sæt retningslinjer.
+
         :param user: The user that needs the password
         :return: A password
         """
         return 'v30ccMNVEIC'.encode('ascii')
 
-    def create_user(self, name, ou, debug=False):
+    def create_user(self, name, ou):
         """ Create an AD user
+
+        Vi får i henhold til Jira issue OS2mo/MO-11 brug for at have en
+        mapningstabel som angiver hvilke felter der skal oprettes i AD.
+        Dette kræver et eksempel på sådan en tabel, for at kunne gøres færdigt
+
         :param name: Name of the new user
         :param ou: AD Organisational Unit for the new user
         :param debug: If True, more output will be written to terminal
-        :return: Success if creation succeeded
+        :return: True if creation succeeded
         """
         password = self.create_password()
         username = name[0] + name[-5:]
         username = username.replace(' ', '')
         username = username.lower()
-        path = '"OU=' + ou + ',' + self.dc + '"'
+        path_string = self._format_path_string(ou)
         ps_script = ('New-ADUser -Name "{0}" -DisplayName "{0}" ' +
                      ' -SamAccountName "{1}" -Enable 1 ' +
-                     ' -Path ' + path +
-                     ' -AccountPassword (ConvertTo-SecureString {2} ' +
-                     ' -AsPlainText -Force)').format(name, username, password)
-        r = self.session.run_ps(ps_script.decode("utf8"))
-        if debug:
-            print(ps_script)
-            print(r.status_code)
-            print(r.std_out)
-            print(r.std_err)
-        return r.status_code == 0
+                     ' -Path "{2}"' +
+                     ' -AccountPassword (ConvertTo-SecureString {3} ' +
+                     ' -AsPlainText -Force)').format(name, username,
+                                                     path_string, password)
+        return self._run_power_shell_script(ps_script)
 
-    def create_ou(self):
-        ps_script = 'New-ADOrganizationalUnit -Name "Skoler"'
+    def create_ou(self, ou_name, super_ou=None, template=None):
+        """ Create a new organizational unit, optionally using an existing OU
+        as template
+
+        Vi får i henhold til Jira issue OS2mo/MO-12 brug for at have en
+        mapningstabel som angiver hvilke felter der skal oprettes i AD.
+        Dette kræver et eksempel på sådan en tabel, for at kunne gøres færdigt
+
+        :param ou_name: Name for the new OU
+        :param template: Name of existing OU to use as template
+        :return: True if creation succeeded
+        """
+        path_string = self._format_path_string(super_ou)
+        if template is None:
+            ps_script = 'New-ADOrganizationalUnit -Name "{0}"'.format(path_string)
+        else:
+            template_path = self._format_path_string(template)
+            ps_script = """
+            $OuTemplate = Get-ADOrganizationalUnit -Identity "{0}" -Properties seeAlso,managedBy
+            New-ADOrganizationalUnit -Name "{1}" -Path "{2}" -Instance $OuTemplate
+            """.format(template_path, ou_name, path_string)
+        return self._run_power_shell_script(ps_script)
 
 
 def main():
     ad_int = AdIntegrator()
     print(ad_int.test_connection())
-    print(ad_int.create_user('Vakse Villy', ou='Madafdelingen'))
+    print(ad_int.create_user('Lave Høns', ['Spas', 'Udenrigsforhold']))
+    # print(ad_int.create_ou('Spas', super_ou=['Udenrigsforhold'],
+    #                        template='Udenrigsforhold'))
 
 
 if __name__ == '__main__':
