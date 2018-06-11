@@ -1,3 +1,4 @@
+import time
 from flask import Blueprint, request, render_template, g
 from . update_lora import update_lora
 
@@ -7,6 +8,7 @@ mapping_side = Blueprint('mapping_side', __name__,
 
 @mapping_side.route('/mapping/', methods=['GET', 'POST'])
 def mapping():
+    t = time.time()
     update_lora()  # This needs to be done smarter - currently very slow!
     uuid_1 = ''
     uuid_2 = ''
@@ -22,8 +24,9 @@ def mapping():
 
     klasse_list = g.mapper.read_klasse_list()
     klasser = g.mapper.read_klasser(klasse_list)
+    print('2: {}s'.format(time.time() - t))
     mappings = g.mapper.read_mappings(klasser)
-    klasse_info = g.helper.basic_klasse_info(klasse_list)
+    klasse_info = g.helper.basic_klasse_info(klasser)
 
     mapping_strings = []
     for klasse in klasse_info:

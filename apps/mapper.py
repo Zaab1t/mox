@@ -104,5 +104,6 @@ def main():
         if mapping[map]:
             print(map, mapping[map])
 
+
 if __name__ == '__main__':
     main()

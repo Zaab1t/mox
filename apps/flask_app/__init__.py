@@ -4,6 +4,7 @@ from . hello import simple_page
 from . klassifikation import klassifikation_side
 from . mapping import mapping_side
 
+
 def create_app():
     app = Flask(__name__)
     app.register_blueprint(simple_page)

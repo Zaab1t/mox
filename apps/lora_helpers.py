@@ -14,22 +14,25 @@ class LoraHelper(object):
         """
         self.hostname = hostname
 
-    def _read_type_list(self, url):
+    def _read_type_list(self, url, relation=None):
         """ Get a list of a uuids of a specific type
         :param url: Url for the wanted list type
         :return: The complete list of uuids for the type
         """
-        args = {'bvn': '%'}
+        if relation is None:
+            args = {'bvn': '%'}
+        else:
+            args = {'vilkaarligrel': relation}
         response = requests.get(self.hostname + url, params=args)
         klasse_list = response.json()['results'][0]
         return klasse_list
 
-    def read_klasse_list(self):
+    def read_klasse_list(self, relation=None):
         """ Get a list of all avaiable Klasser
         :return: List of uuid's of all Klasser
         """
         url = '/klassifikation/klasse/'
-        return self._read_type_list(url)
+        return self._read_type_list(url, relation)
 
     def read_klasser(self, uuids):
         """
@@ -75,8 +78,8 @@ class LoraHelper(object):
         info = []
         for klasse in klasser:
             egenskaber = klasse['attributter']['klasseegenskaber'][0]
-            relationer = klasse['relationer']
             try:
+                relationer = klasse['relationer']
                 overklasse = relationer['overordnetklasse'][0]['uuid']
             except KeyError:
                 overklasse = None

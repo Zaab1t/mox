@@ -8,8 +8,6 @@ klassifikation_side = Blueprint('klassifikation_side', __name__,
 
 @klassifikation_side.route('/klassifikation/', methods=['GET', 'POST'])
 def klassifikation():
-    update_lora()  # This needs to be done smarter - currently very slow!
-
     selected_facet = ''
     selected_hovedgruppe = ''
     selected_gruppe = ''
@@ -18,8 +16,10 @@ def klassifikation():
     if request.method == 'POST':
         try:
             selected_facet = request.form['facetter']
+            update_lora(selected_facet)
         except KeyError:
             selected_facet = ''
+            update_lora(None)
 
         relevant_hovedgrupper = []
         relevant_grupper = []
@@ -60,36 +60,6 @@ def klassifikation():
             if not any(selected_emne in info_linje
                        for info_linje in relevant_emner):
                 selected_emne = ''
-
-        except KeyError:
-            pass
-
-        try:
-            request.form['slet']
-            if selected_emne:
-                print('Sletter: ' + str(selected_emne))
-                g.helper.delete_klasse_tree(selected_emne)
-                selected_emne = ''
-            elif selected_gruppe:
-                print('Sletter: ' + str(selected_gruppe))
-                g.helper.delete_klasse_tree(selected_gruppe)
-                selected_gruppe = ''
-                selected_emne = ''
-            elif selected_hovedgruppe:
-                print('Sletter: ' + str(selected_hovedgruppe))
-                g.helper.delete_klasse_tree(selected_hovedgruppe)
-                selected_hovedgruppe = ''
-                selected_gruppe = ''
-                selected_emne = ''
-            elif selected_facet:
-                print('Sletter: ' + str(selected_facet))
-                g.helper.delete_facet_tree(selected_facet)
-                selected_facet = ''
-                selected_hovedgruppe = ''
-                selected_gruppe = ''
-                selected_emne = ''
-
-            update_lora()
         except KeyError:
             pass
 
@@ -100,7 +70,49 @@ def klassifikation():
                 g.helper.delete_klasse_tree(selected_gruppe)
             elif selected_hovedgruppe:
                 print('Opret klasse i: ' + str(selected_hovedgruppe))
-            update_lora()
+            update_lora(selected_facet)
+        except KeyError:
+            pass
+
+        try:
+            request.form['slet']
+            if selected_emne:
+                print('Sletter: ' + str(selected_emne))
+                g.helper.delete_klasse_tree(selected_emne,
+                                            g.klasse_info)
+                for emne in relevant_emner:
+                    if emne[0] == selected_emne:
+                        relevant_emner.remove(emne)
+                selected_emne = ''
+            elif selected_gruppe:
+                print('Sletter: ' + str(selected_gruppe))
+                g.helper.delete_klasse_tree(selected_gruppe,
+                                            g.klasse_info)
+                for gruppe in relevant_grupper:
+                    if gruppe[0] == selected_gruppe:
+                        relevant_grupper.remove(gruppe)
+                relevant_emner = []
+                selected_gruppe = ''
+                selected_emne = ''
+            elif selected_hovedgruppe:
+                print('Sletter: ' + str(selected_hovedgruppe))
+                g.helper.delete_klasse_tree(selected_hovedgruppe,
+                                            g.klasse_info)
+                for hovedgruppe in relevant_hovedgrupper:
+                    if hovedgruppe[0] == selected_hovedgruppe:
+                        relevant_hovedgrupper.remove(hovedgruppe)
+                relevant_emner = []
+                relevant_grupper = []
+                selected_hovedgruppe = ''
+                selected_gruppe = ''
+                selected_emne = ''
+            elif selected_facet:
+                print('Sletter: ' + str(selected_facet))
+                g.helper.delete_facet_tree(selected_facet)
+                selected_facet = ''
+                selected_hovedgruppe = ''
+                selected_gruppe = ''
+                selected_emne = ''
         except KeyError:
             pass
 
@@ -108,8 +120,8 @@ def klassifikation():
         relevant_hovedgrupper = []
         relevant_grupper = []
         relevant_emner = []
+        update_lora(None)
 
-    print(g)
     return render_template('klassifikation.html',
                            facetter=g.facetter,
                            hovedgrupper=relevant_hovedgrupper,
