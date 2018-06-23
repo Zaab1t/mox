@@ -90,14 +90,14 @@ Equivalence class partitioning for testing interval boundaries
 ===================  =================================================  =================================================
 Condition            Invalid ECs                                        Valid ECs
 ===================  =================================================  =================================================
-from_included        True for minus infinite lower bound [115]          False for minus infinite lower bound [116]x
-from_included                                                           False for open lower bound [117]x
-from_included                                                           True for closed lower bound [118]x
-from_included                                                           Should be set automatically if left out [123]x
-to_included          True for infinite upper bound [119]                False for infinite upper bound [120]x
-to_included                                                             False for open upper bound [121]x
-to_included                                                             True for closed lower bound [122]x
-to_included                                                             Should be set automatically if left out [124]x
+from_included        True for minus infinite lower bound [115]          False for minus infinite lower bound [116]
+from_included                                                           False for open lower bound [117]
+from_included                                                           True for closed lower bound [118]
+from_included                                                           Should be set automatically if left out [123]
+to_included          True for infinite upper bound [119]                False for infinite upper bound [120]
+to_included                                                             False for open upper bound [121]
+to_included                                                             True for closed lower bound [122]
+to_included                                                             Should be set automatically if left out [124]
 ===================  =================================================  =================================================
 
 Myers Heuristics
