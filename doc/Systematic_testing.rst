@@ -98,7 +98,7 @@ to_included          True for infinite upper bound [119]                False fo
 to_included                                                             False for open upper bound [121]x
 to_included                                                             True for closed lower bound [122]x
 to_included                                                             Should be set automatically if left out [124]x
-
+===================  =================================================  =================================================
 
 Myers Heuristics
 ----------------
