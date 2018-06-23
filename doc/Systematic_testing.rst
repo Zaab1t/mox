@@ -82,6 +82,24 @@ Virk, notetekst      Not string [107]                                   String [
 
 More cases to come...
 
+Virkning
+--------
+
+Equivalence class partitioning for testing interval boundaries
+
+===================  =================================================  =================================================
+Condition            Invalid ECs                                        Valid ECs
+===================  =================================================  =================================================
+from_included        True for minus infinite lower bound [115]          False for minus infinite lower bound [116]x
+from_included                                                           False for open lower bound [117]x
+from_included                                                           True for closed lower bound [118]x
+from_included                                                           Should be set automatically if left out [123]x
+to_included          True for infinite upper bound [119]                False for infinite upper bound [120]x
+to_included                                                             False for open upper bound [121]x
+to_included                                                             True for closed lower bound [122]x
+to_included                                                             Should be set automatically if left out [124]x
+
+
 Myers Heuristics
 ----------------
 
