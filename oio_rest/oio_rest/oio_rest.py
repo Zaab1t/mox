@@ -404,7 +404,8 @@ class OIORestObject(object):
             request.api_operation = "Passiver"
             registration = cls.gather_registration({})
             db.passivate_object(
-                cls.__name__, note, registration, uuid
+                cls.__name__, note, registration, uuid,
+                lost_update_timestamp=lost_update_timestamp
             )
             return jsonify({'uuid': uuid}), 200
         else:
