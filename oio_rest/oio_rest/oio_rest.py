@@ -223,7 +223,6 @@ class OIORestObject(object):
         LIST or SEARCH objects, depending on parameters.
         """
         request.parameter_storage_class = ArgumentDict
-
         cls.verify_args(*get_valid_search_parameters(cls.__name__))
 
         # Convert arguments to lowercase, getting them as lists
@@ -235,7 +234,6 @@ class OIORestObject(object):
         uuid_param = list_args.get('uuid', None)
 
         valid_list_args = TEMPORALITY_PARAMS | {'uuid'}
-
         # Assume the search operation if other params were specified
         if not valid_list_args.issuperset(args):
             # Only one uuid is supported through the search operation
@@ -283,6 +281,7 @@ class OIORestObject(object):
             request.uuid = uuid_param
         else:
             request.uuid = ''
+
         return jsonify({'results': results})
 
     @classmethod
@@ -341,7 +340,6 @@ class OIORestObject(object):
         IMPORT or UPDATE an  object, replacing its contents entirely.
         """
         cls.verify_args()
-
         input = cls.get_json()
         if not input:
             return jsonify({'uuid': None}), 400
@@ -383,7 +381,6 @@ class OIORestObject(object):
     @requires_auth
     def patch_object(cls, uuid):
         """UPDATE or PASSIVIZE this object."""
-
         # If the object doesn't exist, we can't patch it.
         if not db.object_exists(cls.__name__, uuid):
             raise NotFoundException(
@@ -398,7 +395,10 @@ class OIORestObject(object):
         # Get most common parameters if available.
         note = typed_get(input, "note", "")
         registration = cls.gather_registration(input)
-
+        try:
+            lost_update_timestamp = input['lost_update_timestamp']
+        except KeyError:
+            lost_update_timestamp = None
         if typed_get(input, 'livscyklus', '').lower() == 'passiv':
             # Passivate
             request.api_operation = "Passiver"
@@ -411,7 +411,7 @@ class OIORestObject(object):
             # Edit/change
             request.api_operation = "Ret"
             db.update_object(cls.__name__, note, registration,
-                             uuid)
+                             uuid, lost_update_timestamp=lost_update_timestamp)
             return jsonify({'uuid': uuid}), 200
 
     @classmethod
@@ -497,7 +497,7 @@ class OIORestObject(object):
         # JSON schemas
         flask.add_url_rule(
             '{}/{}'.format(class_url, 'schema'),
-            '_'.join([cls.__name__, 'schema']),cls.get_schema, methods=['GET']
+            '_'.join([cls.__name__, 'schema']), cls.get_schema, methods=['GET']
         )
 
     # Templates which may be overridden on subclass.

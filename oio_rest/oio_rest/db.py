@@ -436,7 +436,8 @@ def create_or_import_object(class_name, note, registration,
     return output[0]
 
 
-def delete_object(class_name, registration, note, uuid):
+def delete_object(class_name, registration, note, uuid,
+                  lost_update_timestamp=None):
     """Delete object by using the stored procedure.
 
     Deleting is the same as updating with the life cycle code "Slettet".
@@ -471,6 +472,7 @@ def delete_object(class_name, registration, note, uuid):
         attributes=registration["attributes"],
         relations=registration["relations"],
         variants=registration.get("variants", None),
+        lost_update_timestamp=lost_update_timestamp,
         restrictions=sql_restrictions
     )
     # Call Postgres! Return OK or not accordingly
@@ -489,7 +491,8 @@ def delete_object(class_name, registration, note, uuid):
     return output[0]
 
 
-def passivate_object(class_name, note, registration, uuid):
+def passivate_object(class_name, note, registration, uuid,
+                     lost_update_timestamp=None):
     """Passivate object by calling the stored procedure."""
 
     user_ref = get_authenticated_user()
@@ -511,6 +514,7 @@ def passivate_object(class_name, note, registration, uuid):
         attributes=registration["attributes"],
         relations=registration["relations"],
         variants=registration.get("variants", None),
+        lost_update_timestamp=lost_update_timestamp,
         restrictions=sql_restrictions
     )
     # Call PostgreSQL
@@ -530,7 +534,8 @@ def passivate_object(class_name, note, registration, uuid):
 
 
 def update_object(class_name, note, registration, uuid=None,
-                  life_cycle_code=Livscyklus.RETTET.value):
+                  life_cycle_code=Livscyklus.RETTET.value,
+                  lost_update_timestamp=None):
     """Update object with the partial data supplied."""
     user_ref = get_authenticated_user()
 
@@ -553,6 +558,7 @@ def update_object(class_name, note, registration, uuid=None,
         attributes=registration["attributes"],
         relations=registration["relations"],
         variants=registration.get("variants", None),
+        lost_update_timestamp=lost_update_timestamp,
         restrictions=sql_restrictions)
     # Call PostgreSQL
     conn = get_connection()

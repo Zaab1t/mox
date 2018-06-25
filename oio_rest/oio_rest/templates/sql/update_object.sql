@@ -14,9 +14,12 @@ SELECT * from as_update_{{ class_name|lower }}(
     {% endfor -%}
     -- relations
     {{ relations }}
-    {% if variants -%},
+    {% if variants -%}
     -- variants
     {{ variants }}
+    {% endif -%}
+    {% if lost_update_timestamp -%},
+    '{{ lost_update_timestamp }}' :: TIMESTAMPTZ
     {% endif -%}
     {% if restrictions -%},
         {{restrictions}}
