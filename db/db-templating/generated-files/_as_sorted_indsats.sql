@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION _as_sorted_indsats(
 
 indsats_sorted_uuid:=array(
 SELECT b.indsats_id
-    FROM  indsats_registrering b
+    FROM  (SELECT DISTINCT ON (indsats_id) indsats_id, id FROM indsats_registrering)  b
+
     JOIN (SELECT DISTINCT ON (indsats_registrering_id) indsats_registrering_id, id, brugervendtnoegle FROM indsats_attr_egenskaber) a ON a.indsats_registrering_id=b.id    
     WHERE b.indsats_id = ANY (indsats_uuids)
     ORDER BY a.brugervendtnoegle

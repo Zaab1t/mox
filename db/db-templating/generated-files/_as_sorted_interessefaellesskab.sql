@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION _as_sorted_interessefaellesskab(
 
 interessefaellesskab_sorted_uuid:=array(
 SELECT b.interessefaellesskab_id
-    FROM  interessefaellesskab_registrering b
+    FROM  (SELECT DISTINCT ON (interessefaellesskab_id) interessefaellesskab_id, id FROM interessefaellesskab_registrering)  b
+
     JOIN (SELECT DISTINCT ON (interessefaellesskab_registrering_id) interessefaellesskab_registrering_id, id, brugervendtnoegle FROM interessefaellesskab_attr_egenskaber) a ON a.interessefaellesskab_registrering_id=b.id    
     WHERE b.interessefaellesskab_id = ANY (interessefaellesskab_uuids)
     ORDER BY a.brugervendtnoegle

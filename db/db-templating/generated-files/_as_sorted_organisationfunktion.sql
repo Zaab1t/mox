@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION _as_sorted_organisationfunktion(
 
 organisationfunktion_sorted_uuid:=array(
 SELECT b.organisationfunktion_id
-    FROM  organisationfunktion_registrering b
+    FROM  (SELECT DISTINCT ON (organisationfunktion_id) organisationfunktion_id, id FROM organisationfunktion_registrering)  b
+
     JOIN (SELECT DISTINCT ON (organisationfunktion_registrering_id) organisationfunktion_registrering_id, id, brugervendtnoegle FROM organisationfunktion_attr_egenskaber) a ON a.organisationfunktion_registrering_id=b.id    
     WHERE b.organisationfunktion_id = ANY (organisationfunktion_uuids)
     ORDER BY a.brugervendtnoegle

@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION _as_sorted_klasse(
 
 klasse_sorted_uuid:=array(
 SELECT b.klasse_id
-    FROM  klasse_registrering b
+    FROM  (SELECT DISTINCT ON (klasse_id) klasse_id, id FROM klasse_registrering)  b
+
     JOIN (SELECT DISTINCT ON (klasse_registrering_id) klasse_registrering_id, id, brugervendtnoegle FROM klasse_attr_egenskaber) a ON a.klasse_registrering_id=b.id    
     WHERE b.klasse_id = ANY (klasse_uuids)
     ORDER BY a.brugervendtnoegle

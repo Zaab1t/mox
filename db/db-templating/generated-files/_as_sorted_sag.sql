@@ -23,7 +23,8 @@ CREATE OR REPLACE FUNCTION _as_sorted_sag(
 
 sag_sorted_uuid:=array(
 SELECT b.sag_id
-    FROM  sag_registrering b
+    FROM  (SELECT DISTINCT ON (sag_id) sag_id, id FROM sag_registrering)  b
+
     JOIN (SELECT DISTINCT ON (sag_registrering_id) sag_registrering_id, id, brugervendtnoegle FROM sag_attr_egenskaber) a ON a.sag_registrering_id=b.id    
     WHERE b.sag_id = ANY (sag_uuids)
     ORDER BY a.brugervendtnoegle
