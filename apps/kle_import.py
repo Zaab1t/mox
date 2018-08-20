@@ -89,7 +89,6 @@ class KleUploader(object):
         template = self.load_json_template('facet_opret.json', {})
         bvn = 'brugervendtnoegle'
         template['attributter']['facetegenskaber'][0][bvn] = facet_name
-
         # TODO: Clean up template and update other relevant fields
         response = requests.post(self.hostname + url, json=template)
         return response.json()['uuid']
@@ -107,6 +106,8 @@ class KleUploader(object):
         template['relationer']['facet'][0]['uuid'] = facet
         if overklasse is not None:
             template['relationer']['overordnetklasse'][0]['uuid'] = overklasse
+        else:
+            del template['relationer']['overordnetklasse']
         response = requests.post(self.hostname + url, json=template)
         return response.json()['uuid']
 
